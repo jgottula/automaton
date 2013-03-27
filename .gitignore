@@ -2,4 +2,4 @@
 *.o
 *.dep
 .redo/
-bin/
+out/
