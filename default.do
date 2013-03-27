@@ -45,7 +45,7 @@ CFLAGS_LINK="$CFLAGS ${LIB_DIRS[@]/#/-L} ${LIBS[@]/#/-l}"
 
 
 SOURCES=$(find src -type f -iname '*.c')
-OBJECTS=${SOURCES//.c/.o}
+OBJECTS=${SOURCES/%.c/.o}
 
 OUT_ELF="out/$PROJ_NAME.elf"
 OUT_BIN="out/PROJ_NAME.bin"
@@ -79,22 +79,21 @@ $OUT_DUMP)
 	$OBJDUMP -aCDfhpS $OUT_ELF >$OUTPUT
 	;;
 *.o)
-	$CC $CFLAGS_COMPILE -o${TARGET//.o/.dep} -MM -MG ${TARGET//.o/.c}
+	$CC $CFLAGS_COMPILE -o${TARGET/%.o/.dep} -MM -MG ${TARGET/%.o/.c}
 	
-	read DEPS <${TARGET//.o/.dep}
+	read DEPS <${TARGET/%.o/.dep}
 	redo-ifchange ${DEPS#*:}
 	
-	$CC $CFLAGS_COMPILE -o$OUTPUT -c ${TARGET//.o/.c}
+	$CC $CFLAGS_COMPILE -o$OUTPUT -c ${TARGET/%.o/.c}
 	;;
 clean)
 	rm -rf $(find out -type f)
 	rm -rf $(find src -type f -iname *.o)
 	rm -rf $(find src -type f -iname *.dep)
 	;;
-sync)
+load)
 	redo-ifchange $OUT_HEX
-	echo "not implemented!"
-	exit 1
+	sudo avrdude -p ${MCU/atmega/m} -c usbasp -B 460800 -U flash:w:$OUT_HEX
 	;;
 *)
 	echo "unknown target '$TARGET'"
