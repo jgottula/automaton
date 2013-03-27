@@ -48,10 +48,10 @@ SOURCES=$(find src -type f -iname '*.c')
 OBJECTS=${SOURCES/%.c/.o}
 
 OUT_ELF="out/$PROJ_NAME.elf"
-OUT_BIN="out/PROJ_NAME.bin"
-OUT_HEX="out/PROJ_NAME.hex"
-OUT_MAP="out/PROJ_NAME.map"
-OUT_DUMP="out/PROJ_NAME.dump"
+OUT_BIN="out/$PROJ_NAME.bin"
+OUT_HEX="out/$PROJ_NAME.hex"
+OUT_MAP="out/$PROJ_NAME.map"
+OUT_DUMP="out/$PROJ_NAME.dump"
 
 
 case "$TARGET" in
