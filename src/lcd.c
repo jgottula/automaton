@@ -124,4 +124,18 @@ static void lcd_write_data(uint8_t data) {
 void lcd_init(void) {
 	io_write(DDR(IO_LCD_CTRL), IO_LCD_CTRL_ALL, IO_LCD_CTRL_ALL);
 	io_write(DDR(IO_LCD_BUS), IO_LCD_BUS_ALL, IO_LCD_BUS_ALL);
+	
+	_delay_ms(40);
+	_lcd_write_instr(_BV(LCD_INSTR_FUNC_SET) | LCD_BUS_DL | LCD_BUS_N);
+	
+	_delay_ms(5);
+	_lcd_write_instr(_BV(LCD_INSTR_FUNC_SET) | LCD_BUS_DL | LCD_BUS_N);
+	
+	_delay_us(100);
+	_lcd_write_instr(_BV(LCD_INSTR_FUNC_SET) | LCD_BUS_DL | LCD_BUS_N);
+	
+	lcd_instr_func_set(LCD_BUS_DL | LCD_BUS_N | LCD_BUS_F);
+	lcd_instr_clear();
+	lcd_instr_onoff(LCD_BUS_D);
+	lcd_instr_ent_mode(LCD_BUS_ID);
 }
