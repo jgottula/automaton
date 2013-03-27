@@ -5,13 +5,12 @@
  */
 
 
-#include "std.h"
-#include "lib.h"
+#ifndef AUTOMATON_LIB_H
+#define AUTOMATON_LIB_H
 
 
-noreturn void main(void) {
-	io_write(PORT(IO_LCD_DATA), 0xaa, 0xff);
-	
-	
-	while (true);
-}
+#include "lib/macro.h"
+#include "lib/io.h"
+
+
+#endif
