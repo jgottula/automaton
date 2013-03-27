@@ -93,7 +93,7 @@ clean)
 	;;
 load)
 	redo-ifchange $OUT_HEX
-	sudo avrdude -p ${MCU/atmega/m} -c usbasp -B 460800 -U flash:w:$OUT_HEX
+	sudo avrdude -F -p ${MCU/atmega/m} -c usbasp -B 460800 -U flash:w:$OUT_HEX
 	;;
 *)
 	echo "unknown target '$TARGET'"
