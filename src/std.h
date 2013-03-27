@@ -9,12 +9,15 @@
 #define AUTOMATON_STD_H
 
 
-#include <avr/io.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdnoreturn.h>
 #include <stdlib.h>
 #include <string.h>
+
+
+#include <avr/io.h>
+#include <util/delay.h>
 
 
 #endif

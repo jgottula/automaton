@@ -28,7 +28,7 @@
 
 
 #define IO_LCD_CTRL C
-#define IO_LCD_DATA D
+#define IO_LCD_BUS  D
 
 
 /*enum io_port_a {
@@ -40,11 +40,14 @@
 };*/
 
 enum io_port_c {
-	IO_LCD_DATA_ALL = 0xff,
+	IO_LCD_BUS_ALL = 0xff,
 };
 
 enum io_port_d {
-	IO_LCD_CTRL_ = 0,
+	IO_LCD_CTRL_ALL = 0xe0,
+	IO_LCD_CTRL_E   = _BV(PD5),
+	IO_LCD_CTRL_RW  = _BV(PD6),
+	IO_LCD_CTRL_RS  = _BV(PD7),
 };
 
 

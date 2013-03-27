@@ -10,8 +10,7 @@
 
 
 noreturn void main(void) {
-	io_write(PORT(IO_LCD_DATA), 0xaa, 0xff);
-	
+	lcd_init();
 	
 	while (true);
 }
