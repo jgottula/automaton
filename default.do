@@ -76,7 +76,7 @@ $OUT_MAP)
 	;;
 $OUT_DUMP)
 	redo-ifchange $OUT_ELF
-	$OBJDUMP -aCDfhpS $OUT_ELF >$OUTPUT
+	$OBJDUMP -aCdfhpS $OUT_ELF >$OUTPUT
 	;;
 *.o)
 	$CC $CFLAGS_COMPILE -o${TARGET/%.o/.dep} -MM -MG ${TARGET/%.o/.c}
