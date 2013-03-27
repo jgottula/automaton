@@ -45,7 +45,7 @@ CFLAGS_LINK="$CFLAGS ${LIB_DIRS[@]/#/-L} ${LIBS[@]/#/-l}"
 
 
 SOURCES=$(find src -type f -iname '*.c')
-OBJECTS=${SOURCES/%.c/.o}
+OBJECTS=${SOURCES//.c/.o}
 
 OUT_ELF="out/$PROJ_NAME.elf"
 OUT_BIN="out/$PROJ_NAME.bin"
@@ -79,12 +79,12 @@ $OUT_DUMP)
 	$OBJDUMP -aCdfhpS $OUT_ELF >$OUTPUT
 	;;
 *.o)
-	$CC $CFLAGS_COMPILE -o${TARGET/%.o/.dep} -MM -MG ${TARGET/%.o/.c}
+	$CC $CFLAGS_COMPILE -o${TARGET//.o/.dep} -MM -MG ${TARGET//.o/.c}
 	
-	read DEPS <${TARGET/%.o/.dep}
+	read DEPS <${TARGET//.o/.dep}
 	redo-ifchange ${DEPS#*:}
 	
-	$CC $CFLAGS_COMPILE -o$OUTPUT -c ${TARGET/%.o/.c}
+	$CC $CFLAGS_COMPILE -o$OUTPUT -c ${TARGET//.o/.c}
 	;;
 clean)
 	rm -rf $(find out -type f)
