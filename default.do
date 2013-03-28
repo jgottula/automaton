@@ -28,7 +28,7 @@ MCU="atmega324a"
 CPU_KHZ="20000"
 
 DEFINES=("F_CPU=${CPU_KHZ}000UL")
-INC_DIRS=()
+INC_DIRS=(src/include)
 LIB_DIRS=()
 LIBS=()
 
