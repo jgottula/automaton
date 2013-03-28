@@ -134,8 +134,15 @@ void lcd_init(void) {
 	_delay_us(100);
 	_lcd_write_instr(_BV(LCD_INSTR_FUNC_SET) | LCD_BUS_DL | LCD_BUS_N);
 	
-	lcd_instr_func_set(LCD_BUS_DL | LCD_BUS_N | LCD_BUS_F);
+	lcd_instr_func_set(LCD_BUS_DL | LCD_BUS_N);
 	lcd_instr_clear();
 	lcd_instr_onoff(LCD_BUS_D);
 	lcd_instr_ent_mode(LCD_BUS_ID);
+}
+
+
+void lcd_put(char chr) {
+	lcd_write_data(chr);
+	
+	// handle wrapping
 }

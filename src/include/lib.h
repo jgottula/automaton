@@ -5,20 +5,14 @@
  */
 
 
-#include "std.h"
-#include "lib.h"
-#include "lcd.h"
+#ifndef AUTOMATON_LIB_H
+#define AUTOMATON_LIB_H
 
 
-noreturn void main(void) {
-	led_set(false);
-	
-	_delay_ms(10000);
-	
-	lcd_init();
-	for ( ; ; ) {
-		lcd_put('A');
-	}
-	
-	die();
-}
+#include "../lib/macro.h"
+#include "../lib/io.h"
+#include "../lib/delay.h"
+#include "../lib/debug.h"
+
+
+#endif

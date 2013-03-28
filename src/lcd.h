@@ -48,4 +48,9 @@ enum lcd_bus_bit {
 };
 
 
+void lcd_init(void);
+
+void lcd_put(char chr);
+
+
 #endif

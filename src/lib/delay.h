@@ -9,8 +9,8 @@
 #define AUTOMATON_LIB_DELAY_H
 
 
-#include "../std.h"
-#include "../lib.h"
+#include "std.h"
+#include "lib.h"
 
 
 #if F_CPU != 20000000UL

@@ -5,13 +5,17 @@
  */
 
 
-#ifndef AUTOMATON_LIB_H
-#define AUTOMATON_LIB_H
+#ifndef AUTOMATON_LIB_DEBUG_H
+#define AUTOMATON_LIB_DEBUG_H
 
 
-#include "lib/macro.h"
-#include "lib/io.h"
-#include "lib/delay.h"
+#include "std.h"
+#include "lib.h"
+
+
+noreturn void die(void);
+
+void led_set(bool on);
 
 
 #endif

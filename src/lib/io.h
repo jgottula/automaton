@@ -9,8 +9,8 @@
 #define AUTOMATON_LIB_IO_H
 
 
-#include "../std.h"
-#include "../lib.h"
+#include "std.h"
+#include "lib.h"
 
 
 #define io_read(_reg, _mask) \
@@ -29,6 +29,7 @@
 
 #define IO_LCD_CTRL C
 #define IO_LCD_BUS  D
+#define IO_DEBUG    D
 
 
 /*enum io_port_a {
@@ -44,10 +45,12 @@ enum io_port_c {
 };
 
 enum io_port_d {
-	IO_LCD_CTRL_ALL = 0xe0,
+	IO_DEBUG_LED = _BV(PD4),
+	
 	IO_LCD_CTRL_E   = _BV(PD5),
 	IO_LCD_CTRL_RW  = _BV(PD6),
 	IO_LCD_CTRL_RS  = _BV(PD7),
+	IO_LCD_CTRL_ALL = IO_LCD_CTRL_E | IO_LCD_CTRL_RW | IO_LCD_CTRL_RS,
 };
 
 
