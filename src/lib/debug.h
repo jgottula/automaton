@@ -14,6 +14,7 @@
 
 
 noreturn void die(void);
+noreturn void reset(void);
 
 void led_set(bool on);
 

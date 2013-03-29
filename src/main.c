@@ -8,16 +8,31 @@
 #include "std.h"
 #include "lib.h"
 #include "lcd.h"
+#include "uart.h"
 
 
 noreturn void main(void) {
+	io_write(MCUSR, _BV(WDRF), 0);
+	wdt_disable();
+	
 	led_set(false);
 	
-	_delay_ms(10000);
+	uart_init();
+	uart_write_pstr("hello world\n");
 	
 	lcd_init();
+	lcd_put('A');
+	uart_write_pstr("done\n");
+	
 	for ( ; ; ) {
-		lcd_put('A');
+		char r;
+		if (uart_read_chr(&r)) {
+			switch (r) {
+			case '\x03':
+				reset();
+			}
+		}
+		
 	}
 	
 	die();

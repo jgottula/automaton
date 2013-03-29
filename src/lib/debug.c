@@ -13,6 +13,12 @@ noreturn void die(void) {
 	for ( ; ; );
 }
 
+noreturn void reset(void) {
+	cli();
+	wdt_enable(WDTO_15MS);
+	die();
+}
+
 
 void led_set(bool on) {
 	io_write(DDR(IO_DEBUG), IO_DEBUG_LED, IO_DEBUG_LED);
