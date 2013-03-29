@@ -15,14 +15,16 @@ noreturn void main(void) {
 	io_write(MCUSR, _BV(WDRF), 0);
 	wdt_disable();
 	
+	sei();
+	
 	led_set(false);
 	
 	uart_init();
-	uart_write_pstr("hello world\n");
+	uart_write_pstr("automaton: debug uart\n");
 	
 	lcd_init();
-	lcd_put('A');
-	uart_write_pstr("done\n");
+	
+	
 	
 	for ( ; ; ) {
 		char r;
@@ -32,7 +34,6 @@ noreturn void main(void) {
 				reset();
 			}
 		}
-		
 	}
 	
 	die();

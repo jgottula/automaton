@@ -27,8 +27,8 @@
 	_CONCAT(PIN, _x)
 
 
-#define IO_LCD_CTRL C
-#define IO_LCD_BUS  D
+#define IO_LCD_BUS  C
+#define IO_LCD_CTRL D
 #define IO_DEBUG    D
 
 
