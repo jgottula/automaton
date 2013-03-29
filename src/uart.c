@@ -18,17 +18,27 @@ void uart_init(void) {
 	/* async 8N1 */
 	UCSR0C = _BV(UCSZ00) | _BV(UCSZ01);
 	
-	/* no interrupts */
-	UCSR0B = 0;
+	/* enable tx and rx; no interrupts */
+	UCSR0B = _BV(TXEN0) | _BV(RXEN0);
 }
 
 
 void uart_write_chr(char chr) {
-	loop_until_bit_is_set(UCSR0A, UDRE0);
+	if (chr == '\n') {
+		uart_write_chr('\r');
+	}
+	
+	while (!(UCSR0A & _BV(UDRE0)));
 	UDR0 = chr;
 }
 
 void uart_write_str(const char *str) {
+	while (*str != '\0') {
+		uart_write_chr(*(str++));
+	}
+}
+
+void uart_write_pstr_func(const __flash char *str) {
 	while (*str != '\0') {
 		uart_write_chr(*(str++));
 	}
@@ -51,4 +61,14 @@ void uart_write_hex8(uint8_t hex) {
 void uart_write_hex16(uint16_t hex) {
 	uart_write_hex8(hex >> 8);
 	uart_write_hex8(hex & 0xff);
+}
+
+
+bool uart_read_chr(char *chr) {
+	if (UCSR0A & _BV(RXC0)) {
+		*chr = UDR0;
+		return true;
+	} else {
+		return false;
+	}
 }
