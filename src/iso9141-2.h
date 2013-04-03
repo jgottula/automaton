@@ -13,7 +13,11 @@
 #include "lib.h"
 
 
+void iso_init(void);
 
+void iso_write(uint8_t byte);
+
+bool iso_read(uint8_t *byte);
 
 
 #endif
