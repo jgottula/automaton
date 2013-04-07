@@ -14,7 +14,7 @@ The AVR firmware is under heavy development. The hardware design is still
 preliminary. The PC support programs for data analysis have not been written.
 
 The current implementation is on a breadboard. Once the hardware design is
-solidified, a PCB version will be manufactured.
+solidified, a PCB version will probably be manufactured.
 
 supported vehicles
 ------------------
