@@ -12,51 +12,98 @@
 #include "std.h"
 
 
-enum lcd_instr {
-	LCD_INSTR_CLEAR      = 0,
-	LCD_INSTR_CUR_HOME   = 1,
-	LCD_INSTR_ENT_MODE   = 2,
-	LCD_INSTR_ONOFF      = 3,
-	LCD_INSTR_SHIFT      = 4,
-	LCD_INSTR_FUNC_SET   = 5,
-	LCD_INSTR_CGRAM_ADDR = 6,
-	LCD_INSTR_DDRAM_ADDR = 7,
+enum hd44780_instr {
+	HD44780_INSTR_CLEAR      = 0,
+	HD44780_INSTR_HOME       = 1,
+	HD44780_INSTR_ENT_MODE   = 2,
+	HD44780_INSTR_ONOFF      = 3,
+	HD44780_INSTR_SHIFT      = 4,
+	HD44780_INSTR_FUNC_SET   = 5,
+	HD44780_INSTR_CGRAM_ADDR = 6,
+	HD44780_INSTR_DDRAM_ADDR = 7,
 };
 
-enum lcd_bus_bit {
+enum hd44780_instr_bit {
 	/* entry mode */
-	LCD_BUS_S  = _BV(0),
-	LCD_BUS_ID = _BV(1),
+	HD44780_IBIT_S  = _BV(0),
+	HD44780_IBIT_ID = _BV(1),
 	
 	/* on/off */
-	LCD_BUS_B = _BV(0),
-	LCD_BUS_C = _BV(1),
-	LCD_BUS_D = _BV(2),
+	HD44780_IBIT_B = _BV(0),
+	HD44780_IBIT_C = _BV(1),
+	HD44780_IBIT_D = _BV(2),
 	
 	/* shift */
-	LCD_BUS_RL = _BV(2),
-	LCD_BUS_SC = _BV(3),
+	HD44780_IBIT_RL = _BV(2),
+	HD44780_IBIT_SC = _BV(3),
 	
 	/* function set */
-	LCD_BUS_F  = _BV(2),
-	LCD_BUS_N  = _BV(3),
-	LCD_BUS_DL = _BV(4),
+	HD44780_IBIT_F  = _BV(2),
+	HD44780_IBIT_N  = _BV(3),
+	HD44780_IBIT_DL = _BV(4),
 	
 	/* read addr */
-	LCD_BUS_BF = _BV(7),
+	HD44780_IBIT_BF = _BV(7),
+};
+
+enum hd44780_param {
+	/* entry mode: address increment/decrement */
+	HD44780_ADDR_INCR = 0,
+	HD44780_ADDR_DECR = HD44780_IBIT_ID,
+	
+	/* entry mode: display shift */
+	HD44780_SHIFT_DISABLE = 0,
+	HD44780_SHIFT_ENABLE  = HD44780_IBIT_S,
+	
+	/* on/off: display power */
+	HD44780_DISPLAY_OFF = 0,
+	HD44780_DISPLAY_ON  = HD44780_IBIT_D,
+	
+	/* on/off: cursor visibility */
+	HD44780_CUR_HIDE = 0,
+	HD44780_CUR_SHOW = HD44780_IBIT_C,
+	
+	/* on/off: cursor blink */
+	HD44780_BLINK_OFF = 0,
+	HD44780_BLINK_ON  = HD44780_IBIT_B,
+	
+	/* shift: cursor or display move */
+	HD44780_SHIFT_CUR  = 0,
+	HD44780_SHIFT_DISP = HD44780_IBIT_SC,
+	
+	/* shift: direction */
+	HD44780_SHIFT_LEFT  = 0,
+	HD44780_SHIFT_RIGHT = HD44780_IBIT_RL,
+	
+	/* function set: bus width */
+	HD44780_BUS_4BIT = 0,
+	HD44780_BUS_8BIT = HD44780_IBIT_DL,
+	
+	/* function set: display lines */
+	HD44780_LINES_ONE = 0,
+	HD44780_LINES_TWO = HD44780_IBIT_N,
+	
+	/* function set: font size */
+	HD44780_FONT_5X8  = 0,
+	HD44780_FONT_5X10 = HD44780_IBIT_F,
 };
 
 
-extern FILE *lcd;
+void hd44780_init(uint8_t func_set, uint8_t onoff, uint8_t ent_mode);
 
+uint8_t hd44780_read_data(void);
+void hd44780_write_data(uint8_t data);
 
-void lcd_init(void);
+uint8_t hd44780_get_addr(void);
+void hd44780_set_cgaddr(uint8_t addr);
+void hd44780_set_ddaddr(uint8_t addr);
 
-void lcd_goto_xy(uint8_t x, uint8_t y);
-void lcd_goto_x(uint8_t x);
-void lcd_goto_y(uint8_t y);
-
-void lcd_write_chr(char chr);
+void hd44780_clear(void);
+void hd44780_home(void);
+void hd44780_ent_mode(uint8_t param);
+void hd44780_onoff(uint8_t param);
+void hd44780_shift(uint8_t param);
+void hd44780_func_set(uint8_t param);
 
 
 #endif

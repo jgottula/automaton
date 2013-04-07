@@ -9,25 +9,20 @@
 #include "time/delay.h"
 
 
-static struct {
-	uint8_t x;
-	uint8_t y;
-} lcd_cur;
-
-FILE *lcd = NULL;
-
-
-static void lcd_bus_mode_input(void) {
+/* private: set the lcd bus to input mode with pull-ups */
+static void hd44780_bus_mode_input(void) {
 	io_write(DDR(IO_LCD_BUS), IO_LCD_BUS_ALL, 0);
 	io_write(PORT(IO_LCD_BUS), IO_LCD_BUS_ALL, IO_LCD_BUS_ALL);
 }
 
-static void lcd_bus_mode_output(void) {
+/* private: set the lcd bus to output mode */
+static void hd44780_bus_mode_output(void) {
 	io_write(DDR(IO_LCD_BUS), IO_LCD_BUS_ALL, IO_LCD_BUS_ALL);
 }
 
 
-static void lcd_raw_write_cycle(uint8_t rs, uint8_t bus) {
+/* private: put a byte on the bus, set/clear RS, and cycle E */
+static void hd44780_raw_write_cycle(uint8_t rs, uint8_t bus) {
 	io_write(PORT(IO_LCD_BUS), IO_LCD_BUS_ALL, bus);
 	
 	io_write(PORT(IO_LCD_CTRL), IO_LCD_CTRL_ALL, rs | IO_LCD_CTRL_E);
@@ -37,8 +32,9 @@ static void lcd_raw_write_cycle(uint8_t rs, uint8_t bus) {
 	delay_1200ns();
 }
 
-static uint8_t lcd_raw_read_cycle(uint8_t rs) {
-	lcd_bus_mode_input();
+/* private: set/clear RS, cycle E, and get a byte from the bus */
+static uint8_t hd44780_raw_read_cycle(uint8_t rs) {
+	hd44780_bus_mode_input();
 	
 	io_write(PORT(IO_LCD_CTRL), IO_LCD_CTRL_ALL,
 		rs | IO_LCD_CTRL_RW | IO_LCD_CTRL_E);
@@ -49,166 +45,160 @@ static uint8_t lcd_raw_read_cycle(uint8_t rs) {
 	io_write(PORT(IO_LCD_CTRL), IO_LCD_CTRL_E, 0);
 	delay_1200ns();
 	
-	lcd_bus_mode_output();
+	hd44780_bus_mode_output();
 	
 	return bus;
 }
 
 
-static void lcd_raw_write_instr(uint8_t instr) {
-	lcd_raw_write_cycle(0, instr);
+/* private: perform a write cycle with RS unset (instruction) */
+static void hd44780_raw_write_instr(uint8_t instr) {
+	hd44780_raw_write_cycle(0, instr);
 }
 
-static void lcd_raw_write_data(uint8_t data) {
-	lcd_raw_write_cycle(IO_LCD_CTRL_RS, data);
-}
-
-
-static uint8_t lcd_read_addr(void) {
-	return lcd_raw_read_cycle(0);
-}
-
-static void lcd_busy_wait(void) {
-	while ((lcd_read_addr() & LCD_BUS_BF) != 0);
+/* private: perform a write cycle with RS set (data) */
+static void hd44780_raw_write_data(uint8_t data) {
+	hd44780_raw_write_cycle(IO_LCD_CTRL_RS, data);
 }
 
 
-static uint8_t lcd_read_data(void) {
-	lcd_busy_wait();
-	
-	uint8_t data = lcd_raw_read_cycle(IO_LCD_CTRL_RS);
-	_delay_us(4);
-	return data;
-}
-
-static void lcd_write_data(uint8_t data) {
-	lcd_busy_wait();
-	
-	lcd_raw_write_data(data);
-	_delay_us(4);
+/* private: continuously poll the busy flag until it clears */
+static void hd44780_busy_wait(void) {
+	while ((hd44780_raw_read_cycle(0) & HD44780_IBIT_BF) != 0);
 }
 
 
-static void lcd_instr_clear(void) {
-	lcd_busy_wait();
-	lcd_raw_write_instr(_BV(LCD_INSTR_CLEAR));
+/* private: wait, then execute the clear instruction */
+static void hd44780_instr_clear(void) {
+	hd44780_busy_wait();
+	hd44780_raw_write_instr(_BV(HD44780_INSTR_CLEAR));
 }
 
-static void lcd_instr_cur_home(void) {
-	lcd_busy_wait();
-	lcd_raw_write_instr(_BV(LCD_INSTR_CUR_HOME));
+/* private: wait, then execute the cursor home instruction */
+static void hd44780_instr_home(void) {
+	hd44780_busy_wait();
+	hd44780_raw_write_instr(_BV(HD44780_INSTR_HOME));
 }
 
-static void lcd_instr_ent_mode(uint8_t param) {
-	lcd_busy_wait();
-	lcd_raw_write_instr(_BV(LCD_INSTR_ENT_MODE) | (param & 0x03));
+/* private: wait, then execute the entry mode instruction */
+static void hd44780_instr_ent_mode(uint8_t param) {
+	hd44780_busy_wait();
+	hd44780_raw_write_instr(_BV(HD44780_INSTR_ENT_MODE) | (param & 0x03));
 }
 
-static void lcd_instr_onoff(uint8_t param) {
-	lcd_busy_wait();
-	lcd_raw_write_instr(_BV(LCD_INSTR_ONOFF) | (param & 0x07));
+/* private: wait, then execute the on/off instruction */
+static void hd44780_instr_onoff(uint8_t param) {
+	hd44780_busy_wait();
+	hd44780_raw_write_instr(_BV(HD44780_INSTR_ONOFF) | (param & 0x07));
 }
 
-static void lcd_instr_shift(uint8_t param) {
-	lcd_busy_wait();
-	lcd_raw_write_instr(_BV(LCD_INSTR_SHIFT) | (param & 0x0a));
+/* private: wait, then execute the shift instruction */
+static void hd44780_instr_shift(uint8_t param) {
+	hd44780_busy_wait();
+	hd44780_raw_write_instr(_BV(HD44780_INSTR_SHIFT) | (param & 0x0a));
 }
 
-static void lcd_instr_func_set(uint8_t param) {
-	lcd_busy_wait();
-	lcd_raw_write_instr(_BV(LCD_INSTR_FUNC_SET) | (param & 0x1a));
+/* private: wait, then execute the function set instruction */
+static void hd44780_instr_func_set(uint8_t param) {
+	hd44780_busy_wait();
+	hd44780_raw_write_instr(_BV(HD44780_INSTR_FUNC_SET) | (param & 0x1a));
 }
 
-static void lcd_instr_cgram_addr(uint8_t addr) {
-	lcd_busy_wait();
-	lcd_raw_write_instr(_BV(LCD_INSTR_CGRAM_ADDR) | (addr & 0x3f));
+/* private: wait, then execute the set cgram address instruction */
+static void hd44780_instr_cgram_addr(uint8_t addr) {
+	hd44780_busy_wait();
+	hd44780_raw_write_instr(_BV(HD44780_INSTR_CGRAM_ADDR) | (addr & 0x3f));
 }
 
-static void lcd_instr_ddram_addr(uint8_t addr) {
-	lcd_busy_wait();
-	lcd_raw_write_instr(_BV(LCD_INSTR_DDRAM_ADDR) | (addr & 0x7f));
-}
-
-
-static void lcd_set_cur(void) {
-	uint8_t new_addr = lcd_cur.x;
-	if ((lcd_cur.y % 2) == 0) {
-		new_addr += (lcd_cur.y * 10);
-	} else {
-		new_addr += 64 + ((lcd_cur.y - 1) * 10);
-	}
-	
-	lcd_instr_ddram_addr(new_addr);
+/* private: wait, then execute the set ddram address instruction */
+static void hd44780_instr_ddram_addr(uint8_t addr) {
+	hd44780_busy_wait();
+	hd44780_raw_write_instr(_BV(HD44780_INSTR_DDRAM_ADDR) | (addr & 0x7f));
 }
 
 
-static int lcd_file_put(char c, FILE *f) {
-	(void)f;
-	
-	lcd_write_chr(c);
-	return 0;
-}
-
-
-void lcd_init(void) {
+/* public: perform the initialization sequence specified in the datasheet */
+void hd44780_init(uint8_t func_set, uint8_t onoff, uint8_t ent_mode) {
 	io_write(DDR(IO_LCD_CTRL), IO_LCD_CTRL_ALL, IO_LCD_CTRL_ALL);
 	io_write(DDR(IO_LCD_BUS), IO_LCD_BUS_ALL, IO_LCD_BUS_ALL);
 	
 	_delay_ms(40);
-	lcd_raw_write_instr(_BV(LCD_INSTR_FUNC_SET) | LCD_BUS_DL | LCD_BUS_N);
+	hd44780_raw_write_instr(_BV(HD44780_INSTR_FUNC_SET) | func_set);
 	
 	_delay_ms(5);
-	lcd_raw_write_instr(_BV(LCD_INSTR_FUNC_SET) | LCD_BUS_DL | LCD_BUS_N);
+	hd44780_raw_write_instr(_BV(HD44780_INSTR_FUNC_SET) | func_set);
 	
 	_delay_us(100);
-	lcd_raw_write_instr(_BV(LCD_INSTR_FUNC_SET) | LCD_BUS_DL | LCD_BUS_N);
+	hd44780_raw_write_instr(_BV(HD44780_INSTR_FUNC_SET) | func_set);
 	
-	lcd_instr_func_set(LCD_BUS_DL | LCD_BUS_N);
-	lcd_instr_clear();
-	lcd_instr_onoff(LCD_BUS_D);
-	lcd_instr_ent_mode(LCD_BUS_ID);
-	
-	lcd_cur.x = 0;
-	lcd_cur.y = 0;
-	
-	lcd = fdevopen(lcd_file_put, NULL);
+	/* these instructions, unlike those above, will wait on the busy flag */
+	hd44780_instr_func_set(func_set);
+	hd44780_instr_clear();
+	hd44780_instr_onoff(onoff);
+	hd44780_instr_ent_mode(ent_mode);
 }
 
 
-void lcd_goto_xy(uint8_t x, uint8_t y) {
-	lcd_cur.x = (x % 20);
-	lcd_cur.y = (y % 4);
-	lcd_set_cur();
-}
-
-void lcd_goto_x(uint8_t x) {
-	lcd_cur.x = (x % 20);
-	lcd_set_cur();
-}
-
-void lcd_goto_y(uint8_t y) {
-	lcd_cur.y = (y % 4);
-	lcd_set_cur();
-}
-
-
-void lcd_write_chr(char chr) {
-	if (chr == '\r') {
-		lcd_goto_x(0);
-		return;
-	} else if (chr == '\n') {
-		lcd_goto_y(lcd_cur.y + 1);
-		return;
-	}
+/* public: read data from cgram or ddram */
+uint8_t hd44780_read_data(void) {
+	hd44780_busy_wait();
 	
-	lcd_write_data(chr);
+	uint8_t data = hd44780_raw_read_cycle(IO_LCD_CTRL_RS);
+	_delay_us(4);
+	return data;
+}
+
+/* public: write data to cgram or ddram */
+void hd44780_write_data(uint8_t data) {
+	hd44780_busy_wait();
 	
-	/* handle cursor wrapping */
-	if (++lcd_cur.x == 20) {
-		lcd_cur.x = 0;
-		if (++lcd_cur.y == 4) {
-			lcd_cur.y = 0;
-		}
-		lcd_set_cur();
-	}
+	hd44780_raw_write_data(data);
+	_delay_us(4);
+}
+
+
+/* public: get the current address */
+uint8_t hd44780_get_addr(void) {
+	return (hd44780_raw_read_cycle(0) & ~HD44780_IBIT_BF);
+}
+
+/* public: set the address (within cgram) */
+void hd44780_set_cgaddr(uint8_t addr) {
+	hd44780_instr_cgram_addr(addr);
+}
+
+/* public: set the address (within ddram) */
+void hd44780_set_ddaddr(uint8_t addr) {
+	hd44780_instr_ddram_addr(addr);
+}
+
+
+/* public: clear the entire display and set the address to ddram:0 */
+void hd44780_clear(void) {
+	hd44780_instr_clear();
+}
+
+/* public: set the address to ddram:0 and reset display shift */
+void hd44780_home(void) {
+	hd44780_instr_home();
+}
+
+/* public: set cursor move direction and display shift */
+void hd44780_ent_mode(uint8_t param) {
+	hd44780_instr_ent_mode(param);
+}
+
+/* public: control display power status, cursor visibility, and cursor blink */
+void hd44780_onoff(uint8_t param) {
+	hd44780_instr_onoff(param);
+}
+
+/* public: move cursor or shift display */
+void hd44780_shift(uint8_t param) {
+	hd44780_instr_shift(param);
+}
+
+/* public: set bus width, number of display lines, and font */
+void hd44780_func_set(uint8_t param) {
+	hd44780_instr_func_set(param);
 }

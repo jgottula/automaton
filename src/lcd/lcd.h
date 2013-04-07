@@ -1,0 +1,27 @@
+/* automaton
+ * (c) 2013 Justin Gottula
+ * The source code of this project is distributed under the terms of the
+ * simplified BSD license. See the LICENSE file for details.
+ */
+
+
+#ifndef AUTOMATON_LCD_LCD_H
+#define AUTOMATON_LCD_LCD_H
+
+
+#include "std.h"
+
+
+extern FILE *lcd;
+
+
+void lcd_init(void);
+
+void lcd_goto_xy(uint8_t x, uint8_t y);
+void lcd_goto_x(uint8_t x);
+void lcd_goto_y(uint8_t y);
+
+void lcd_write_chr(char chr);
+
+
+#endif
