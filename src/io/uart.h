@@ -35,9 +35,9 @@ enum uart_divisor {
 	UART_DIV_250K   = 4,
 	UART_DIV_1_25M  = 0,
 	
-	UART_DIV_230400 = 21 | _BV(12),
-	UART_DIV_500K   = 4  | _BV(12),
-	UART_DIV_2_50M  = 0  | _BV(12),
+	UART_DIV_230400 = _BV(12) | 21,
+	UART_DIV_500K   = _BV(12) | 4,
+	UART_DIV_2_50M  = _BV(12) | 0,
 };
 _Static_assert(F_CPU == 20000000UL, "UART baud rate divisors are wrong");
 
