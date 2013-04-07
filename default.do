@@ -67,6 +67,7 @@ $OUT_ELF)
 $OUT_BIN)
 	redo-ifchange $OUT_ELF
 	$OBJCOPY -O binary $OUT_ELF $OUTPUT
+	stat --printf='%n: %s bytes\n' $OUTPUT
 	;;
 $OUT_HEX)
 	redo-ifchange $OUT_ELF
