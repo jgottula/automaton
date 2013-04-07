@@ -8,23 +8,24 @@
 #include "std.h"
 #include "debug/reset.h"
 #include "io/uart.h"
+#include "lcd/hd44780.h"
 
 
 noreturn void main(void) {
 	reset_defuse();
 	sei();
 	
-	/*uart_init();
-	uart_write_pstr("automaton: debug uart\n");
+	uart_init(UART_DEBUG, UART_DIV_115200, 100, 100);
+	uart_write_pstr(UART_DEBUG, "automaton: debug uart\n");
 	
-	uart_write_pstr("init hd44780\n");
+	uart_write_pstr(UART_DEBUG, "init hd44780\n");
 	lcd_init();
 	lcd_write_pstr("automaton\r\n");
 	
-	uart_write_pstr("init iso9141-2\n");
-	iso_init();
+	/*uart_write_pstr(UART_DEBUG, "init iso9141-2\n");
+	iso_init();*/
 	
-	uart_write_pstr("input loop\n");
+	/*uart_write_pstr("input loop\n");
 	for ( ; ; ) {
 		char r;
 		if (uart_read_chr(&r)) {
