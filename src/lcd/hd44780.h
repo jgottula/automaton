@@ -5,12 +5,11 @@
  */
 
 
-#ifndef AUTOMATON_LCD_H
-#define AUTOMATON_LCD_H
+#ifndef AUTOMATON_LCD_HD44780_H
+#define AUTOMATON_LCD_HD44780_H
 
 
 #include "std.h"
-#include "lib.h"
 
 
 enum lcd_instr {
@@ -48,21 +47,19 @@ enum lcd_bus_bit {
 };
 
 
-#define lcd_put_pstr(_str) \
-	lcd_put_pstr_func(PSTR(_str))
-
-
 void lcd_init(void);
 
 void lcd_goto_xy(uint8_t x, uint8_t y);
 void lcd_goto_x(uint8_t x);
 void lcd_goto_y(uint8_t y);
 
-void lcd_put_chr(char chr);
-void lcd_put_str(const char *str);
-void lcd_put_pstr_func(const __flash char *str);
+void lcd_write_chr(char chr);
+void lcd_write_str(const char *str);
+void lcd_write_pstr_(const __flash char *str);
 
 
+#define lcd_write_pstr(_str) \
+	lcd_write_pstr_(PSTR(_str))
 
 
 #endif

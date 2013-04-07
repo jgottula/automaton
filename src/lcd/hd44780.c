@@ -5,7 +5,8 @@
  */
 
 
-#include "lcd.h"
+#include "lcd/hd44780.h"
+#include "time/delay.h"
 
 
 static struct {
@@ -179,11 +180,13 @@ void lcd_goto_y(uint8_t y) {
 }
 
 
-void lcd_put_chr(char chr) {
+void lcd_write_chr(char chr) {
 	if (chr == '\r') {
 		lcd_goto_x(0);
+		return;
 	} else if (chr == '\n') {
 		lcd_goto_y(lcd_cur.y + 1);
+		return;
 	}
 	
 	lcd_write_data(chr);
@@ -198,14 +201,14 @@ void lcd_put_chr(char chr) {
 	}
 }
 
-void lcd_put_str(const char *str) {
+void lcd_write_str(const char *str) {
 	while (*str != '\0') {
-		lcd_put_chr(*(str++));
+		lcd_write_chr(*(str++));
 	}
 }
 
-void lcd_put_pstr_func(const __flash char *str) {
+void lcd_write_pstr_(const __flash char *str) {
 	while (*str != '\0') {
-		lcd_put_chr(*(str++));
+		lcd_write_chr(*(str++));
 	}
 }

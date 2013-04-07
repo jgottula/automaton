@@ -5,22 +5,15 @@
  */
 
 
-#include "debug.h"
+#include "debug/reset.h"
 
-
-noreturn void die(void) {
-	cli();
-	for ( ; ; );
-}
 
 noreturn void reset(void) {
-	cli();
 	wdt_enable(WDTO_15MS);
 	die();
 }
 
-
-void led_set(bool on) {
-	io_write(DDR(IO_DEBUG), IO_DEBUG_LED, IO_DEBUG_LED);
-	io_write(PORT(IO_DEBUG), IO_DEBUG_LED, (on ? IO_DEBUG_LED : 0));
+void reset_defuse(void) {
+	io_write(MCUSR, _BV(WDRF), 0);
+	wdt_disable();
 }

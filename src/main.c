@@ -6,26 +6,25 @@
 
 
 #include "std.h"
-#include "lib.h"
-#include "lcd.h"
-#include "uart.h"
+#include "debug/reset.h"
+#include "io/uart.h"
 
 
 noreturn void main(void) {
-	io_write(MCUSR, _BV(WDRF), 0);
-	wdt_disable();
-	
+	reset_defuse();
 	sei();
 	
-	led_set(false);
-	
-	uart_init();
+	/*uart_init();
 	uart_write_pstr("automaton: debug uart\n");
 	
+	uart_write_pstr("init hd44780\n");
 	lcd_init();
+	lcd_write_pstr("automaton\r\n");
 	
+	uart_write_pstr("init iso9141-2\n");
+	iso_init();
 	
-	
+	uart_write_pstr("input loop\n");
 	for ( ; ; ) {
 		char r;
 		if (uart_read_chr(&r)) {
@@ -34,7 +33,13 @@ noreturn void main(void) {
 				reset();
 			}
 		}
-	}
+		
+		uint8_t iso_r;
+		if (iso_read(&iso_r)) {
+			uart_write_hex8(iso_r);
+			lcd_write_hex8(iso_r);
+		}
+	}*/
 	
 	die();
 }

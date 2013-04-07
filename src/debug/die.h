@@ -5,12 +5,17 @@
  */
 
 
-#ifndef AUTOMATON_LIB_MACRO_H
-#define AUTOMATON_LIB_MACRO_H
+#ifndef AUTOMATON_DEBUG_DIE_H
+#define AUTOMATON_DEBUG_DIE_H
 
 
-#define _CONCAT(_a, _b) \
-	_a ## _b
+#include "std.h"
+
+
+static inline noreturn void die(void) {
+	cli();
+	for ( ; ; );
+}
 
 
 #endif

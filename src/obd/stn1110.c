@@ -5,14 +5,7 @@
  */
 
 
-#ifndef AUTOMATON_LIB_H
-#define AUTOMATON_LIB_H
+#include "obd/stn1110.h"
 
 
-#include "../lib/macro.h"
-#include "../lib/io.h"
-#include "../lib/delay.h"
-#include "../lib/debug.h"
 
-
-#endif

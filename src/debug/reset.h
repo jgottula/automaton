@@ -5,19 +5,16 @@
  */
 
 
-#ifndef AUTOMATON_ISO9141_2_H
-#define AUTOMATON_ISO9141_2_H
+#ifndef AUTOMATON_DEBUG_RESET_H
+#define AUTOMATON_DEBUG_RESET_H
 
 
 #include "std.h"
-#include "lib.h"
+#include "debug/die.h"
 
 
-void iso_init(void);
-
-void iso_write(uint8_t byte);
-
-bool iso_read(uint8_t *byte);
+noreturn void reset(void);
+void reset_defuse(void);
 
 
 #endif

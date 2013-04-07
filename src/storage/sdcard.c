@@ -5,15 +5,7 @@
  */
 
 
-#ifndef AUTOMATON_STN1110_H
-#define AUTOMATON_STN1110_H
-
-
-#include "std.h"
-#include "lib.h"
+#include "storage/sdcard.h"
 
 
 
-
-
-#endif

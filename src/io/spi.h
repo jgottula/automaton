@@ -5,18 +5,14 @@
  */
 
 
-#ifndef AUTOMATON_LIB_DEBUG_H
-#define AUTOMATON_LIB_DEBUG_H
+#ifndef AUTOMATON_IO_SPI_H
+#define AUTOMATON_IO_SPI_H
 
 
 #include "std.h"
-#include "lib.h"
 
 
-noreturn void die(void);
-noreturn void reset(void);
 
-void led_set(bool on);
 
 
 #endif

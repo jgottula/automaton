@@ -5,7 +5,14 @@
  */
 
 
-#include "stn1110.h"
+#ifndef AUTOMATON_OBD_STN1110_H
+#define AUTOMATON_OBD_STN1110_H
+
+
+#include "std.h"
 
 
 
+
+
+#endif
