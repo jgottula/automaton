@@ -8,6 +8,7 @@
 #include "std.h"
 #include "debug/reset.h"
 #include "io/uart.h"
+#include "debug/stdfile.h"
 #include "lcd/hd44780.h"
 
 
@@ -16,6 +17,9 @@ noreturn void main(void) {
 	sei();
 	
 	uart_init(UART_DEBUG, UART_DIV_115200, 100, 100);
+	stdfile_open();
+	
+	
 	uart_write_pstr(UART_DEBUG, "automaton: debug uart\n");
 	
 	uart_write_pstr(UART_DEBUG, "init hd44780\n");
