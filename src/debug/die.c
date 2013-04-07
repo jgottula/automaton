@@ -5,16 +5,13 @@
  */
 
 
-#include "debug/reset.h"
 #include "debug/die.h"
+#include "io/uart.h"
 
 
-noreturn void reset(void) {
-	wdt_enable(WDTO_15MS);
-	die();
-}
-
-void reset_defuse(void) {
-	io_write(MCUSR, _BV(WDRF), 0);
-	wdt_disable();
+noreturn void die(void) {
+	uart_flush(UART_DEBUG, 100);
+	
+	cli();
+	for ( ; ; );
 }

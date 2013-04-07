@@ -10,7 +10,6 @@
 
 
 #include "std.h"
-#include "debug/die.h"
 
 
 noreturn void reset(void);

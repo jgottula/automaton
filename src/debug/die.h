@@ -12,10 +12,7 @@
 #include "std.h"
 
 
-static inline noreturn void die(void) {
-	cli();
-	for ( ; ; );
-}
+noreturn void die(void);
 
 
 #endif
