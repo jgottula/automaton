@@ -10,6 +10,7 @@
 
 
 /* standard library */
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -29,6 +30,7 @@
 
 /* this project */
 #include "common/macro.h"
+#include "debug/assert.h"
 #include "io/io.h"
 
 
