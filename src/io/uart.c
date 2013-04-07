@@ -7,6 +7,7 @@
 
 #include "io/uart.h"
 #include "algo/fifo.h"
+#include "time/alarm.h"
 
 
 enum uart_state {
@@ -165,9 +166,28 @@ void uart_stop(uint8_t dev) {
 	}
 }
 
-/* atomic: flush the uart's tx buffer; a timeout of zero will wait forever */
-void uart_flush(uint8_t dev, uint16_t timeout_ms) {
-	// TODO: wait for TX-complete (not just fifo empty)
+/* atomic: flush the uart's tx buffer; a timeout of zero will wait forever;
+ * returns false on timeout */
+bool uart_flush(uint8_t dev, uint16_t timeout_ms) {
+	volatile struct uart *uart = uarts + dev;
+	
+	if (timeout_ms != 0) {
+		alarm_set(timeout_ms);
+	}
+	
+	for ( ; ; ) {
+		_delay_us(1);
+		
+		/* wait for tx to completely finish */
+		if (!(uart->state & (UART_ST_TX_ACTIVE | UART_ST_TX_WAIT))) {
+			alarm_unset();
+			return true;
+		}
+		
+		if (timeout_ms != 0 && alarm_check()) {
+			return false;
+		}
+	}
 }
 
 

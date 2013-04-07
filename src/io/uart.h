@@ -46,7 +46,7 @@ void uart_init(uint8_t dev, uint16_t divisor, uint16_t timeout_tx_ms,
 	uint16_t timeout_rx_ms);
 void uart_stop(uint8_t dev);
 
-void uart_flush(uint8_t dev, uint16_t timeout_ms);
+bool uart_flush(uint8_t dev, uint16_t timeout_ms);
 
 void uart_write_chr(uint8_t dev, char chr);
 void uart_write_str(uint8_t dev, const char *str);
