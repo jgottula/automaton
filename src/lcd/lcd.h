@@ -29,6 +29,7 @@ void lcd_goto_x(uint8_t x);
 void lcd_goto_y(uint8_t y);
 
 void lcd_write(char chr);
+char lcd_read(void);
 
 
 #endif
