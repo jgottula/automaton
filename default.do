@@ -13,7 +13,7 @@ TARGET_BASE=$2
 OUTPUT=$3
 
 
-CC="ccache avr-gcc"
+CC="avr-gcc"
 AS="avr-as"
 LD="avr-ld"
 NM="avr-nm"
