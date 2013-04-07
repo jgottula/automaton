@@ -14,6 +14,8 @@ static struct {
 	uint8_t y;
 } lcd_cur;
 
+FILE *lcd = NULL;
+
 
 static void lcd_bus_mode_input(void) {
 	io_write(DDR(IO_LCD_BUS), IO_LCD_BUS_ALL, 0);
@@ -140,6 +142,14 @@ static void lcd_set_cur(void) {
 }
 
 
+static int lcd_file_put(char c, FILE *f) {
+	(void)f;
+	
+	lcd_write_chr(c);
+	return 0;
+}
+
+
 void lcd_init(void) {
 	io_write(DDR(IO_LCD_CTRL), IO_LCD_CTRL_ALL, IO_LCD_CTRL_ALL);
 	io_write(DDR(IO_LCD_BUS), IO_LCD_BUS_ALL, IO_LCD_BUS_ALL);
@@ -160,6 +170,8 @@ void lcd_init(void) {
 	
 	lcd_cur.x = 0;
 	lcd_cur.y = 0;
+	
+	lcd = fdevopen(lcd_file_put, NULL);
 }
 
 
@@ -198,17 +210,5 @@ void lcd_write_chr(char chr) {
 			lcd_cur.y = 0;
 		}
 		lcd_set_cur();
-	}
-}
-
-void lcd_write_str(const char *str) {
-	while (*str != '\0') {
-		lcd_write_chr(*(str++));
-	}
-}
-
-void lcd_write_pstr_(const __flash char *str) {
-	while (*str != '\0') {
-		lcd_write_chr(*(str++));
 	}
 }

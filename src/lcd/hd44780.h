@@ -47,6 +47,9 @@ enum lcd_bus_bit {
 };
 
 
+extern FILE *lcd;
+
+
 void lcd_init(void);
 
 void lcd_goto_xy(uint8_t x, uint8_t y);
@@ -54,12 +57,6 @@ void lcd_goto_x(uint8_t x);
 void lcd_goto_y(uint8_t y);
 
 void lcd_write_chr(char chr);
-void lcd_write_str(const char *str);
-void lcd_write_pstr_(const __flash char *str);
-
-
-#define lcd_write_pstr(_str) \
-	lcd_write_pstr_(PSTR(_str))
 
 
 #endif
