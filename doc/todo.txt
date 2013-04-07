@@ -2,14 +2,30 @@ automaton
 todo list
 
 
-- implement a smaller/simpler printf()
-- assert (with file/line; not ##)
-  - how to pool strings (for filename?)
-- go to sleep when waiting for things to happen
-- fix random characters on LCD at startup: pull down E line?
+hd44780:
+- fix random characters at startup: pull-down resistor on E line?
+- implement timeout for hd44780_busy_wait
+- use 4-bit bus
+
+stdio:
+- implement a smaller/simpler vfprintf(); override?
+
+power:
+- use sleep instead of spinning or _delay_xx
+- go to 3.3 volts
+
+hardware:
+- use leds everywhere
+  - power
+  - tx/rx on each UART
+  - tx/rx on each OBD interface
+  - r/w on SDcard
+  - sck on SPI bus
+  - buttons?
 
 test:
 - time/alarm
 - algo/fifo
 - io/uart
 - io/spi
+- lcd/hd44780
