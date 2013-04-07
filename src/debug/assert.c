@@ -11,7 +11,7 @@
 
 
 noreturn void assert_fail(const __flash char *file, uint16_t line) {
-	printf_P(PSTR("assertion failed: %S:%" PRIu16), file, line);
+	printf_P(PSTR("assertion failed: %S:%" PRIu16 "\n"), file, line);
 	
 #if ASSERT_FAIL_RESET
 	reset();
