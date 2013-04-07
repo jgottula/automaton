@@ -56,7 +56,7 @@ All hardware is subject to change as project requirements shift.
 - Microcontroller: Atmel ATmega324A @ 20MHz (32KB flash; 2KB SRAM)
 - OBD transceiver: OBD Solutions STN1110
 - Real-time clock: TBD
-- GPS Module: TBD
+- GPS module: TBD
 - Debug UART: FTDI FT230X (TBD)
 - LCD: 4x20 HD44780
 
