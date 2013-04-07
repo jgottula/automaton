@@ -12,7 +12,10 @@
 #include "std.h"
 
 
+extern FILE *stn1110;
 
+
+void stn1110_init(void);
 
 
 #endif
