@@ -50,7 +50,7 @@ const struct lcd_state state_init PROGMEM = {
 FILE *lcd = NULL;
 
 
-static void lcd_send_addr(void) {
+static void lcd_send_ddaddr(void) {
 	hd44780_set_ddaddr(state.addr);
 }
 
@@ -65,7 +65,7 @@ static void lcd_set_cur(void) {
 	}
 	
 	state.addr = new_addr;
-	lcd_send_addr();
+	lcd_send_ddaddr();
 }
 
 
@@ -83,6 +83,26 @@ void lcd_init(void) {
 	memcpy_P(&state, &state_init, sizeof(state));
 	
 	lcd = fdevopen(lcd_file_put, NULL);
+}
+
+
+void lcd_custom_store(uint8_t code, const uint8_t data[static 8]) {
+	code &= 0x07;
+	
+	hd44780_set_cgaddr(code * 8);
+	hd44780_write(8, data);
+	
+	/* restore the previous ddram address */
+	lcd_send_ddaddr();
+}
+
+void lcd_custom_load(uint8_t code, uint8_t data[static 8]) {
+	code &= 0x07;
+	
+	hd44780_read_cgram(code * 8, 8, data);
+	
+	/* restore the previous ddram address */
+	lcd_send_ddaddr();
 }
 
 
