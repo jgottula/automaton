@@ -2,17 +2,11 @@ automaton
 todo list
 
 
-- easy support for printf and similar functions
-  - look at avr-libc <stdio.h> documentation, specifically fdevopen()
-  - look at vfprintf() docs for info on how to choose printf() implementation
-  - reimplement a simpler printf() if it's too big
+- implement a smaller/simpler printf()
 - assert (with file/line; not ##)
   - how to pool strings (for filename?)
 - go to sleep when waiting for things to happen
-- use uart_flush()
-  - flush in uart_stop()? with timeout?
-  - die() and reset() should probably flush the uart(s), with timeout
-    - or: have printf(), assert(), etc write synchronously
+- fix random characters on UART at startup: pull down E line?
 
 test:
 - time/alarm
