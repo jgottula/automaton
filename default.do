@@ -37,7 +37,7 @@ CFLAGS_DEBUG=(-ggdb)
 CFLAGS_OPT=(-Os -flto -fuse-linker-plugin -fwhole-program -mcall-prologues \
 	-mrelax -mstrict-X -fmerge-all-constants -ffast-math)
 CFLAGS_WARN=(-Wall -Wextra -Waddr-space-convert -Wno-unused-function)
-CFLAGS_ETC=(-fno-diagnostics-show-caret)
+CFLAGS_ETC=(-fno-diagnostics-show-caret -pipe)
 
 CFLAGS="-std=gnu11 ${CFLAGS_CPU[@]} ${CFLAGS_DEBUG[@]} ${CFLAGS_OPT[@]} \
 ${CFLAGS_WARN[@]} ${CFLAGS_ETC[@]}"
