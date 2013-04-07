@@ -19,8 +19,7 @@ noreturn void main(void) {
 	uart_init(UART_DEBUG, UART_DIV_115200, 100, 100);
 	stdfile_open();
 	
-	
-	uart_write_pstr(UART_DEBUG, "automaton: debug uart\n");
+	printf_P(PSTR("automaton: debug uart\n"));
 	
 	uart_write_pstr(UART_DEBUG, "init hd44780\n");
 	lcd_init();
