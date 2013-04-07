@@ -36,7 +36,7 @@ CFLAGS_CPU=("-mmcu=$MCU" -fpack-struct -ffreestanding)
 CFLAGS_DEBUG=(-ggdb)
 CFLAGS_OPT=(-Os -flto -fuse-linker-plugin -fwhole-program -mcall-prologues \
 	-mrelax -mstrict-X)
-CFLAGS_WARN=(-Wall -Wextra -Wno-unused-function)
+CFLAGS_WARN=(-Wall -Wextra -Waddr-space-convert -Wno-unused-function)
 CFLAGS_ETC=(-fno-diagnostics-show-caret)
 
 CFLAGS="-std=gnu11 ${CFLAGS_CPU[@]} ${CFLAGS_DEBUG[@]} ${CFLAGS_OPT[@]} \
