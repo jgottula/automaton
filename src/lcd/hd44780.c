@@ -9,6 +9,12 @@
 #include "time/delay.h"
 
 
+/* private: allow the address counter time to increment (beyond busy flag) */
+static void hd44780_delay_for_addr_incr(void) {
+	_delay_us(4);
+}
+
+
 /* private: set the lcd bus to input mode with pull-ups */
 static void hd44780_bus_mode_input(void) {
 	io_write(DDR(IO_LCD_BUS), IO_LCD_BUS_ALL, 0);
@@ -61,10 +67,43 @@ static void hd44780_raw_write_data(uint8_t data) {
 	hd44780_raw_write_cycle(IO_LCD_CTRL_RS, data);
 }
 
+/* private: perform a read cycle with RS unset (address) */
+static uint8_t hd44780_raw_read_addr(void) {
+	return hd44780_raw_read_cycle(0);
+}
+
+/* private: perform a read cycle with RS set (data) */
+static uint8_t hd44780_raw_read_data(void) {
+	return hd44780_raw_read_cycle(IO_LCD_CTRL_RS);
+}
+
 
 /* private: continuously poll the busy flag until it clears */
 static void hd44780_busy_wait(void) {
-	while ((hd44780_raw_read_cycle(0) & HD44780_IBIT_BF) != 0);
+	while ((hd44780_raw_read_addr() & HD44780_IBIT_BF) != 0);
+}
+
+
+/* private: write multiple data */
+static void hd44780_write_multi(uint8_t len, const uint8_t data[static len]) {
+	/* we assume that the address counter is set to increment */
+	for (uint8_t i = 0; i < len; ++i) {
+		hd44780_busy_wait();
+		hd44780_delay_for_addr_incr();
+		
+		hd44780_raw_write_data(data[i]);
+	}
+}
+
+/* private: read multiple data (explicitly set addr immediately before this!) */
+static void hd44780_read_multi(uint8_t len, uint8_t data[static len]) {
+	/* we assume that the address counter is set to increment */
+	for (uint8_t i = 0; i < len; ++i) {
+		hd44780_busy_wait();
+		hd44780_delay_for_addr_incr();
+		
+		data[i] = hd44780_raw_read_data();
+	}
 }
 
 
@@ -139,27 +178,31 @@ void hd44780_init(uint8_t func_set, uint8_t onoff, uint8_t ent_mode) {
 }
 
 
-/* public: read data from cgram or ddram */
-uint8_t hd44780_read_data(void) {
-	hd44780_busy_wait();
+/* public: read data from cgram */
+void hd44780_read_cgram(uint8_t addr, uint8_t len, uint8_t data[static len]) {
+	/* datasheet: must explicitly set address before data reads */
+	hd44780_instr_cgram_addr(addr);
 	
-	uint8_t data = hd44780_raw_read_cycle(IO_LCD_CTRL_RS);
-	_delay_us(4);
-	return data;
+	hd44780_read_multi(len, data);
+}
+
+/* public: read data from ddram */
+void hd44780_read_ddram(uint8_t addr, uint8_t len, uint8_t data[static len]) {
+	/* datasheet: must explicitly set address before data reads */
+	hd44780_instr_ddram_addr(addr);
+	
+	hd44780_read_multi(len, data);
 }
 
 /* public: write data to cgram or ddram */
-void hd44780_write_data(uint8_t data) {
-	hd44780_busy_wait();
-	
-	hd44780_raw_write_data(data);
-	_delay_us(4);
+void hd44780_write(uint8_t len, const uint8_t data[static len]) {
+	hd44780_write_multi(len, data);
 }
 
 
 /* public: get the current address */
 uint8_t hd44780_get_addr(void) {
-	return (hd44780_raw_read_cycle(0) & ~HD44780_IBIT_BF);
+	return (hd44780_raw_read_addr() & ~HD44780_IBIT_BF);
 }
 
 /* public: set the address (within cgram) */

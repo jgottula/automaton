@@ -91,8 +91,9 @@ enum hd44780_param {
 
 void hd44780_init(uint8_t func_set, uint8_t onoff, uint8_t ent_mode);
 
-uint8_t hd44780_read_data(void);
-void hd44780_write_data(uint8_t data);
+void hd44780_read_cgram(uint8_t addr, uint8_t len, uint8_t data[static len]);
+void hd44780_read_ddram(uint8_t addr, uint8_t len, uint8_t data[static len]);
+void hd44780_write(uint8_t len, const uint8_t data[static len]);
 
 uint8_t hd44780_get_addr(void);
 void hd44780_set_cgaddr(uint8_t addr);
