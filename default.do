@@ -52,11 +52,12 @@ OUT_BIN="out/$PROJ_NAME.bin"
 OUT_HEX="out/$PROJ_NAME.hex"
 OUT_MAP="out/$PROJ_NAME.map"
 OUT_DUMP="out/$PROJ_NAME.dump"
+OUT_LST="out/$PROJ_NAME.lst"
 
 
 case "$TARGET" in
 all)
-	redo-ifchange $OUT_ELF $OUT_BIN $OUT_HEX $OUT_MAP $OUT_DUMP
+	redo-ifchange $OUT_ELF $OUT_BIN $OUT_HEX $OUT_MAP $OUT_DUMP $OUT_LST
 	;;
 $OUT_ELF)
 	redo-ifchange $OBJECTS
@@ -76,7 +77,11 @@ $OUT_MAP)
 	;;
 $OUT_DUMP)
 	redo-ifchange $OUT_ELF
-	$OBJDUMP -aCdfhpS $OUT_ELF >$OUTPUT
+	$OBJDUMP -aCdfhp $OUT_ELF >$OUTPUT
+	;;
+$OUT_LST)
+	redo-ifchange $OUT_ELF
+	$OBJDUMP -CdS -j '.text' $OUT_ELF >$OUTPUT
 	;;
 *.o)
 	$CC $CFLAGS_COMPILE -o${TARGET//.o/.dep} -MM -MG ${TARGET//.o/.c}
