@@ -112,7 +112,7 @@ void lcd_write(char chr) {
 		return;
 	}
 	
-	hd44780_write_data(chr);
+	hd44780_write(1, (const uint8_t *)&chr);
 	
 	/* handle cursor wrapping */
 	if (++state.cur.x == LCD_COLS) {
