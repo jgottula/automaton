@@ -124,7 +124,7 @@ ISR(USART1_TX_vect) {
 
 
 /* atomic: write a byte to the tx fifo and prime the pump if necessary */
-static bool uart_write_byte(uint8_t dev, uint8_t byte) {
+static bool uart_write_raw(uint8_t dev, uint8_t byte) {
 	/* non-volatile */
 	struct uart *uart = (struct uart *)uarts + dev;
 	
@@ -151,7 +151,7 @@ static bool uart_write_byte(uint8_t dev, uint8_t byte) {
 }
 
 /* atomic: read a byte from the rx fifo if possible */
-static bool uart_read_byte(uint8_t dev, uint8_t *byte) {
+static bool uart_read_raw(uint8_t dev, uint8_t *byte) {
 	/* non-volatile */
 	struct uart *uart = (struct uart *)uarts + dev;
 	
@@ -236,19 +236,19 @@ bool uart_flush(uint8_t dev, uint16_t timeout_ms) {
 
 /* nonatomic: write a character to the uart; optionally converts \n to \r\n;
  * returns false on failure */
-bool uart_write_chr(uint8_t dev, char chr) {
+bool uart_write(uint8_t dev, char chr) {
 #if UART_LF_TO_CRLF
 	if (chr == '\n') {
-		if (!uart_write_chr(dev, '\r')) {
+		if (!uart_write(dev, '\r')) {
 			return false;
 		}
 	}
 #endif
 	
-	return uart_write_byte(dev, chr);
+	return uart_write_raw(dev, chr);
 }
 
 /* nonatomic: read a character from the uart; returns false on failure */
-bool uart_read_chr(uint8_t dev, char *chr) {
-	return uart_read_byte(dev, (uint8_t *)chr);
+bool uart_read(uint8_t dev, char *chr) {
+	return uart_read_raw(dev, (uint8_t *)chr);
 }

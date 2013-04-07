@@ -13,7 +13,7 @@ static int stdin_get(FILE *f) {
 	(void)f;
 	
 	char c;
-	if (uart_read_chr(UART_DEBUG, &c)) {
+	if (uart_read(UART_DEBUG, &c)) {
 		return (int)c;
 	} else {
 		return _FDEV_ERR;
@@ -23,7 +23,7 @@ static int stdin_get(FILE *f) {
 static int stdout_put(char c, FILE *f) {
 	(void)f;
 	
-	if (uart_write_chr(UART_DEBUG, c)) {
+	if (uart_write(UART_DEBUG, c)) {
 		return 0;
 	} else {
 		return _FDEV_ERR;
