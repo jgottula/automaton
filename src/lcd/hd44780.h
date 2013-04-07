@@ -48,8 +48,8 @@ enum hd44780_instr_bit {
 
 enum hd44780_param {
 	/* entry mode: address increment/decrement */
-	HD44780_ADDR_INCR = 0,
-	HD44780_ADDR_DECR = HD44780_IBIT_ID,
+	HD44780_ADDR_DECR = 0,
+	HD44780_ADDR_INCR = HD44780_IBIT_ID,
 	
 	/* entry mode: display shift */
 	HD44780_SHIFT_DISABLE = 0,
