@@ -97,7 +97,6 @@ static void uart_int_tx(struct uart *uart) {
 }
 
 
-#warning check how much code is generated for these interrupt handler stubs
 ISR(USART0_RX_vect) {
 	uart_int_rx((struct uart *)uarts + 0);
 }
