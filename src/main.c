@@ -6,9 +6,11 @@
 
 
 #include "std.h"
+#include "debug/die.h"
 #include "debug/reset.h"
-#include "io/uart.h"
 #include "debug/stdfile.h"
+#include "io/spi.h"
+#include "io/uart.h"
 #include "lcd/hd44780.h"
 
 
@@ -21,9 +23,16 @@ noreturn void main(void) {
 	
 	printf_P(PSTR("automaton: debug uart\n"));
 	
-	uart_write_pstr(UART_DEBUG, "init hd44780\n");
+	printf_P(PSTR("init hd44780\n"));
 	lcd_init();
-	lcd_write_pstr("automaton\r\n");
+	fprintf_P(lcd, PSTR("AUTOmaton\r\n"));
+	
+	printf_P(PSTR("init spi\n"));
+	spi_init();
+	
+	
+	
+	printf_P(PSTR("done\n"));
 	
 	/*uart_write_pstr(UART_DEBUG, "init iso9141-2\n");
 	iso_init();*/
