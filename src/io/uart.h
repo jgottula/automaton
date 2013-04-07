@@ -56,8 +56,8 @@ bool uart_read_chr(uint8_t dev, char *chr);
 size_t uart_read_str(uint8_t dev, char *str, size_t max_len);
 
 
-#define uart_write_pstr(_str) \
-	uart_write_pstr_func(PSTR(_str))
+#define uart_write_pstr(_dev, _str) \
+	uart_write_pstr_func(_dev, PSTR(_str))
 
 
 #endif
