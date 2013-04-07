@@ -15,10 +15,20 @@ static volatile bool     alarm_ring;
 static volatile uint16_t alarm_count;
 
 
+static void alarm_internal_unset(void) {
+	TCCR1B = 0;
+	TIMSK1 = 0;
+	
+	alarm_count = 0;
+	alarm_armed = false;
+}
+
+
 ISR(TIMER1_COMPA_vect) {
 	if (++alarm_count == alarm_target) {
 		alarm_ring = true;
-		alarm_unset();
+		
+		alarm_internal_unset();
 	}
 }
 
@@ -48,11 +58,7 @@ void alarm_set(uint16_t delay_ms) {
 /* unset the alarm */
 void alarm_unset(void) {
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-		TCCR1B = 0;
-		TIMSK1 = 0;
-		
-		alarm_count = 0;
-		alarm_armed = false;
+		alarm_internal_unset();
 	}
 }
 
