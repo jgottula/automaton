@@ -48,11 +48,11 @@ void uart_stop(uint8_t dev);
 
 bool uart_flush(uint8_t dev, uint16_t timeout_ms);
 
-void uart_write_chr(uint8_t dev, char chr);
-void uart_write_str(uint8_t dev, const char *str);
-void uart_write_pstr_(uint8_t dev, const __flash char *str);
+size_t uart_write_chr(uint8_t dev, char chr);
+size_t uart_write_str(uint8_t dev, const char *str);
+size_t uart_write_pstr_(uint8_t dev, const __flash char *str);
 
-bool uart_read_chr(uint8_t dev, char *chr);
+size_t uart_read_chr(uint8_t dev, char *chr);
 size_t uart_read_str(uint8_t dev, char *str, size_t max_len);
 
 
