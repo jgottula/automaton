@@ -12,6 +12,7 @@
 /* standard library */
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdnoreturn.h>
 #include <stdlib.h>
 #include <string.h>
