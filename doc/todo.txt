@@ -6,9 +6,10 @@ todo list
 - assert (with file/line; not ##)
   - how to pool strings (for filename?)
 - go to sleep when waiting for things to happen
-- fix random characters on UART at startup: pull down E line?
+- fix random characters on LCD at startup: pull down E line?
 
 test:
 - time/alarm
 - algo/fifo
 - io/uart
+- io/spi
