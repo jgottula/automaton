@@ -50,22 +50,29 @@ const struct lcd_state state_init PROGMEM = {
 FILE *lcd = NULL;
 
 
+static void lcd_send_addr(void) {
+	hd44780_set_ddaddr(state.addr);
+}
+
+
+_Static_assert(LCD_ROWS == 4 && LCD_COLS == 20, "lcd cursor assumptions wrong");
 static void lcd_set_cur(void) {
-	/*uint8_t new_addr = lcd_cur.x;
-	if ((lcd_cur.y % 2) == 0) {
-		new_addr += (lcd_cur.y * 10);
+	uint8_t new_addr = state.cur.x;
+	if ((state.cur.y % 2) == 0) {
+		new_addr += (state.cur.y * 10);
 	} else {
-		new_addr += 64 + ((lcd_cur.y - 1) * 10);
+		new_addr += 64 + ((state.cur.y - 1) * 10);
 	}
 	
-	hd44780_set_ddaddr(new_addr);*/
+	state.addr = new_addr;
+	lcd_send_addr();
 }
 
 
 static int lcd_file_put(char c, FILE *f) {
 	(void)f;
 	
-	lcd_write_chr(c);
+	lcd_write(c);
 	return 0;
 }
 
@@ -80,41 +87,39 @@ void lcd_init(void) {
 
 
 void lcd_goto_xy(uint8_t x, uint8_t y) {
-	/*lcd_cur.x = (x % 20);
-	lcd_cur.y = (y % 4);
-	lcd_set_cur();*/
+	state.cur.x = (x % LCD_COLS);
+	state.cur.y = (y % LCD_ROWS);
+	lcd_set_cur();
 }
 
 void lcd_goto_x(uint8_t x) {
-	/*lcd_cur.x = (x % 20);
-	lcd_set_cur();*/
+	state.cur.x = (x % LCD_COLS);
+	lcd_set_cur();
 }
 
 void lcd_goto_y(uint8_t y) {
-	/*lcd_cur.y = (y % 4);
-	lcd_set_cur();*/
+	state.cur.y = (y % LCD_ROWS);
+	lcd_set_cur();
 }
 
 
-void lcd_write_chr(char chr) {
-#if 0
+void lcd_write(char chr) {
 	if (chr == '\r') {
 		lcd_goto_x(0);
 		return;
 	} else if (chr == '\n') {
-		lcd_goto_y(lcd_cur.y + 1);
+		lcd_goto_y(state.cur.y + 1);
 		return;
 	}
 	
-	lcd_write_data(chr);
+	hd44780_write_data(chr);
 	
 	/* handle cursor wrapping */
-	if (++lcd_cur.x == 20) {
-		lcd_cur.x = 0;
-		if (++lcd_cur.y == 4) {
-			lcd_cur.y = 0;
+	if (++state.cur.x == LCD_COLS) {
+		state.cur.x = 0;
+		if (++state.cur.y == LCD_ROWS) {
+			state.cur.y = 0;
 		}
 		lcd_set_cur();
 	}
-#endif
 }
