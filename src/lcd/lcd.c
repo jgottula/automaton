@@ -50,13 +50,17 @@ const struct lcd_state state_init PROGMEM = {
 FILE *lcd = NULL;
 
 
+/* set the hd44780 addr to what we have locally */
 static void lcd_send_ddaddr(void) {
 	hd44780_set_ddaddr(state.addr);
 }
 
 
-_Static_assert(LCD_ROWS == 4 && LCD_COLS == 20, "lcd cursor assumptions wrong");
-static void lcd_set_cur(void) {
+/* calculate the ddram addr based on changed state.cur.{x,y} */
+static void lcd_cur_set(void) {
+	_Static_assert(LCD_ROWS == 4 && LCD_COLS == 20,
+		"lcd cursor assumptions wrong");
+	
 	uint8_t new_addr = state.cur.x;
 	if ((state.cur.y % 2) == 0) {
 		new_addr += (state.cur.y * 10);
@@ -68,6 +72,7 @@ static void lcd_set_cur(void) {
 	lcd_send_ddaddr();
 }
 
+/* update local cursor values to match the hd44780's auto-increment activity */
 static void lcd_cur_adv(void) {
 	/* we assume that the address counter is set to increment */
 	if (++state.cur.x == LCD_COLS) {
@@ -80,12 +85,14 @@ static void lcd_cur_adv(void) {
 }
 
 
+/* stdio compatibility stub; reads from ddram */
 static int lcd_file_get(FILE *f) {
 	(void)f;
 	
 	return lcd_read();
 }
 
+/* stdio compatibility stub; writes to ddram */
 static int lcd_file_put(char c, FILE *f) {
 	(void)f;
 	
@@ -94,6 +101,7 @@ static int lcd_file_put(char c, FILE *f) {
 }
 
 
+/* initialize the lcd using the initial parameters */
 void lcd_init(void) {
 	hd44780_init(LCD_INIT_FUNC_SET, LCD_INIT_ONOFF, LCD_INIT_ENT_MODE);
 	
@@ -103,6 +111,7 @@ void lcd_init(void) {
 }
 
 
+/* store a 5x8 character in cgram */
 void lcd_custom_store(uint8_t code, const uint8_t data[static 8]) {
 	code &= 0x07;
 	
@@ -113,6 +122,7 @@ void lcd_custom_store(uint8_t code, const uint8_t data[static 8]) {
 	lcd_send_ddaddr();
 }
 
+/* load a 5x8 character from cgram */
 void lcd_custom_load(uint8_t code, uint8_t data[static 8]) {
 	code &= 0x07;
 	
@@ -123,23 +133,27 @@ void lcd_custom_load(uint8_t code, uint8_t data[static 8]) {
 }
 
 
+/* set the cursor position */
 void lcd_goto_xy(uint8_t x, uint8_t y) {
 	state.cur.x = (x % LCD_COLS);
 	state.cur.y = (y % LCD_ROWS);
 	lcd_cur_set();
 }
 
+/* set the cursor position (x only) */
 void lcd_goto_x(uint8_t x) {
 	state.cur.x = (x % LCD_COLS);
 	lcd_cur_set();
 }
 
+/* set the cursor position (y only) */
 void lcd_goto_y(uint8_t y) {
 	state.cur.y = (y % LCD_ROWS);
 	lcd_cur_set();
 }
 
 
+/* write a character to ddram; update cursor based on \r and \n */
 void lcd_write(char chr) {
 	if (chr == '\r') {
 		lcd_goto_x(0);
@@ -154,6 +168,7 @@ void lcd_write(char chr) {
 	lcd_cur_adv();
 }
 
+/* read a character from ddram */
 char lcd_read(void) {
 	char chr;
 	hd44780_read_ddram(state.addr, 1, (uint8_t *)&chr);
