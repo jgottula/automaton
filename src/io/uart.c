@@ -235,77 +235,20 @@ bool uart_flush(uint8_t dev, uint16_t timeout_ms) {
 
 
 /* nonatomic: write a character to the uart; optionally converts \n to \r\n;
- * returns the number of characters written */
-size_t uart_write_chr(uint8_t dev, char chr) {
-	size_t c_written = 0;
-	
+ * returns false on failure */
+bool uart_write_chr(uint8_t dev, char chr) {
 #if UART_LF_TO_CRLF
 	if (chr == '\n') {
-		if (uart_write_chr(dev, '\r')) {
-			++c_written;
-		} else {
-			return c_written;
+		if (!uart_write_chr(dev, '\r')) {
+			return false;
 		}
 	}
 #endif
 	
-	c_written += uart_write_byte(dev, chr);
-	return c_written;
+	return uart_write_byte(dev, chr);
 }
 
-/* nonatomic: write a string to the uart; returns the number of characters
- * written */
-size_t uart_write_str(uint8_t dev, const char *str) {
-	size_t c_written = 0;
-	
-	while (*str != '\0') {
-		if (!uart_write_chr(dev, *(str++))) {
-			break;
-		}
-		
-		++c_written;
-	}
-	
-	return c_written;
-}
-
-/* nonatomic: write a flash string to the uart; returns the number of characters
- * written */
-size_t uart_write_pstr_(uint8_t dev, const __flash char *str) {
-	size_t c_written = 0;
-	
-	while (*str != '\0') {
-		if (!uart_write_chr(dev, *(str++))) {
-			break;
-		}
-		
-		++c_written;
-	}
-	
-	return c_written;
-}
-
-
-/* nonatomic: read a character from the uart; returns the number of characters
- * written */
-size_t uart_read_chr(uint8_t dev, char *chr) {
+/* nonatomic: read a character from the uart; returns false on failure */
+bool uart_read_chr(uint8_t dev, char *chr) {
 	return uart_read_byte(dev, (uint8_t *)chr);
-}
-
-/* nonatomic: read a string from the uart; reads less than max_len characters
- * and null-terminates the result; returns the number of characters read */
-size_t uart_read_str(uint8_t dev, char *str, size_t max_len) {
-	size_t c_read = 0;
-	
-	while (--max_len != 0) {
-		if (!uart_read_chr(dev, str)) {
-			break;
-		}
-		
-		++str;
-		++c_read;
-	}
-	
-	*str = '\0';
-	return c_read;
 }
