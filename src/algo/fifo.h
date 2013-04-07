@@ -26,15 +26,6 @@ struct fifo {
 };
 
 
-static inline uint8_t fifo_count(volatile struct fifo *fifo) {
-	return fifo->len;
-}
-
-static inline uint8_t fifo_free(volatile struct fifo *fifo) {
-	return (FIFO_SIZE - fifo->len);
-}
-
-
 void fifo_init(volatile struct fifo *fifo);
 
 bool fifo_push(volatile struct fifo *fifo, uint8_t val);

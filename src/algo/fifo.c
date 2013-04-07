@@ -9,6 +9,17 @@
 #include "time/alarm.h"
 
 
+/* nonatomic: get number of values in fifo */
+static inline uint8_t fifo_count(volatile struct fifo *fifo) {
+	return fifo->len;
+}
+
+/* nonatomic: get number of free spaces in fifo */
+static inline uint8_t fifo_free(volatile struct fifo *fifo) {
+	return (FIFO_SIZE - fifo->len);
+}
+
+
 /* nonatomic: push without any checks whatsoever */
 static void fifo_internal_push(volatile struct fifo *fifo, uint8_t val) {
 	fifo->data[fifo->i_push] = val;
