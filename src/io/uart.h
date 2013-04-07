@@ -15,7 +15,7 @@
 #define UART_LF_TO_CRLF 1
 
 
-enum uart_id {
+enum uart_num {
 	UART_DEBUG   = 0,
 	UART_STN1110 = 1,
 };

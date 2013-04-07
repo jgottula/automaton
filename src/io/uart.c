@@ -56,32 +56,71 @@ static volatile struct uart uarts[2] = {
 };
 
 
+/* nonatomic: pop a byte from the tx fifo and transmit it; does no checking */
+static void uart_tx_from_fifo(struct uart *uart) {
+	uint8_t byte;
+	if (fifo_pop(&uart->fifo_tx, &byte)) {
+		*uart->udr = byte;
+	}
+}
+
+/* nonatomic: receive a byte and push it to the rx fifo; does no checking */
+static void uart_rx_to_fifo(struct uart *uart) {
+	uint8_t byte = *uart->udr;
+	fifo_push_force(&uart->fifo_rx, byte);
+}
+
+
+/* atomic: common rx interrupt handler */
+static void uart_int_rx(struct uart *uart) {
+	// TODO: check for UCSRnB->DORn (data overrun) before reading UDRn
+	
+	uart_rx_to_fifo(uart);
+}
+
+/* atomic: common udre interrupt handler */
+static void uart_int_udre(struct uart *uart) {
+	uart_tx_from_fifo(uart);
+	
+	if (fifo_count(&uart->fifo_tx) == 0) {
+		uart->state &= ~UART_ST_TX_ACTIVE;
+		
+		io_write(*uart->ucsr_b, _BV(TXCIE0), _BV(TXCIE0));
+		uart->state |= UART_ST_TX_WAIT;
+	}
+}
+
+/* atomic: common tx interrupt handler */
+static void uart_int_tx(struct uart *uart) {
+	io_write(*uart->ucsr_b, _BV(TXCIE0), 0);
+	uart->state &= ~UART_ST_TX_WAIT;
+}
+
+
+#warning check how much code is generated for these interrupt handler stubs
 ISR(USART0_RX_vect) {
-	// check for UCSRnB->DORn (data overrun) before reading UDRn
+	uart_int_rx((struct uart *)uarts + 0);
 }
 
 ISR(USART0_UDRE_vect) {
-	// load the next character into the UDR
-	// do the appropriate things if the fifo is empty
-	
-	// if the fifo is empty, enable the TX-complete interrupt
-	// set the state flag for this
+	uart_int_udre((struct uart *)uarts + 0);
 }
 
 ISR(USART0_TX_vect) {
-	// disable this interrupt vector
-	// set the state flag for this
+	uart_int_tx((struct uart *)uarts + 0);
 }
 
 
-/* nonatomic:  */
-static void uart_tx_from_fifo(volatile struct uart *uart) {
-	// set UART_ST_TX_ACTIVE
+ISR(USART1_RX_vect) {
+	uart_int_rx((struct uart *)uarts + 1);
 }
 
-/* nonatomic:  */
-static void uart_rx_to_fifo(volatile struct uart *uart) {
-	
+ISR(USART1_UDRE_vect) {
+	uart_int_udre((struct uart *)uarts + 1);
+}
+
+ISR(USART1_TX_vect) {
+	uart_int_tx((struct uart *)uarts + 1);
 }
 
 
@@ -103,6 +142,7 @@ static void uart_write_byte(uint8_t dev, uint8_t byte) {
 			/* prime the pump */
 			if (result && !(uart->state & UART_ST_TX_ACTIVE)) {
 				uart_tx_from_fifo(uart);
+				uart->state |= UART_ST_TX_ACTIVE;
 			}
 		}
 	}
@@ -162,6 +202,7 @@ void uart_stop(uint8_t dev) {
 	
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 		uart->state = 0;
+		
 		*uart->ucsr_b = 0;
 	}
 }
