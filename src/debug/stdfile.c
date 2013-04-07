@@ -10,6 +10,8 @@
 
 
 static int stdin_get(FILE *f) {
+	(void)f;
+	
 	char c;
 	if (uart_read_chr(UART_DEBUG, &c) != 0) {
 		return (int)c;
@@ -19,6 +21,8 @@ static int stdin_get(FILE *f) {
 }
 
 static int stdout_put(char c, FILE *f) {
+	(void)f;
+	
 	if (uart_write_chr(UART_DEBUG, c) != 0) {
 		return 0;
 	} else {
