@@ -35,7 +35,7 @@ LIBS=()
 CFLAGS_CPU=("-mmcu=$MCU" -fpack-struct -ffreestanding)
 CFLAGS_DEBUG=(-ggdb)
 CFLAGS_OPT=(-Os -flto -fuse-linker-plugin -fwhole-program -mcall-prologues \
-	-mrelax -mstrict-X -fmerge-all-constants)
+	-mrelax -mstrict-X -fmerge-all-constants -ffast-math)
 CFLAGS_WARN=(-Wall -Wextra -Waddr-space-convert -Wno-unused-function)
 CFLAGS_ETC=(-fno-diagnostics-show-caret)
 
