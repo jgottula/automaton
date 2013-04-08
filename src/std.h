@@ -28,10 +28,11 @@
 #include <util/delay.h>
 
 
-/* this project */
+/* project: common headers */
 #include "common/macro.h"
 #include "debug/assert.h"
 #include "io/io.h"
+#include "io/led.h"
 
 
 #endif

@@ -30,6 +30,7 @@
 #define IO_SPI      B
 #define IO_LCD_BUS  C
 #define IO_LCD_CTRL D
+#define IO_LED      D
 
 
 /*enum io_port_a {
@@ -53,6 +54,9 @@ enum io_port_c {
 };
 
 enum io_port_d {
+	IO_LED_0   = _BV(PD4),
+	IO_LED_ALL = IO_LED_0,
+	
 	IO_LCD_CTRL_E   = _BV(PD5),
 	IO_LCD_CTRL_RW  = _BV(PD6),
 	IO_LCD_CTRL_RS  = _BV(PD7),
