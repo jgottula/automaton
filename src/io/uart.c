@@ -23,8 +23,8 @@ struct uart {
 	uint16_t timeout_tx_ms;
 	uint16_t timeout_rx_ms;
 	
-	struct fifo fifo_rx;
 	struct fifo fifo_tx;
+	struct fifo fifo_rx;
 	
 	volatile uint8_t  *const ucsr_a;
 	volatile uint8_t  *const ucsr_b;
