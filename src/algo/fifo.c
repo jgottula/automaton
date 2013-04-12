@@ -47,7 +47,7 @@ bool fifo_push(volatile struct fifo *fifo, uint8_t val) {
 	
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 		if (fifo_free(fifo) != 0) {
-			fifo_internal_push(fifo, val);
+			fifo_internal_push((struct fifo *)fifo, val);
 			result = true;
 		}
 	}
@@ -80,16 +80,17 @@ bool fifo_push_wait(volatile struct fifo *fifo, uint8_t val,
 		}
 	}
 }
+#endif
 
 /* atomic: forcefully push a value onto a fifo; eats oldest values if full */
 void fifo_push_force(volatile struct fifo *fifo, uint8_t val) {
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 		if (fifo_free(fifo) == 0) {
 			/* throw away oldest value */
-			(void)fifo_internal_pop(fifo);
+			(void)fifo_internal_pop((struct fifo *)fifo);
 		}
 		
-		fifo_internal_push(fifo, val);
+		fifo_internal_push((struct fifo *)fifo, val);
 	}
 }
 
@@ -100,7 +101,7 @@ bool fifo_pop(volatile struct fifo *fifo, uint8_t *out) {
 	
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 		if (fifo_count(fifo) != 0) {
-			*out = fifo_internal_pop(fifo);
+			*out = fifo_internal_pop((struct fifo *)fifo);
 			result = true;
 		}
 	}
