@@ -39,6 +39,12 @@ enum spi_divisor {
 };
 _Static_assert(F_CPU == 20000000UL, "SPI clock dividers are wrong");
 
+enum spi_devices {
+	SPI_DS1302_MODE   = SPI_MODE_2,
+	SPI_DS1302_ENDIAN = SPI_LSB_FIRST,
+	SPI_DS1302_DIV    = SPI_DIV_1_25M,
+};
+
 
 void spi_init(void);
 
