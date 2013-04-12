@@ -5,6 +5,13 @@
  */
 
 
+/* print debugging information to the lcd (warning: lcd code not int-safe) */
+#define UART_DEBUG_FIFO 1
+
+/* count interrupts */
+#define UART_DEBUG_INT_COUNT 0
+
+
 #include "io/uart.h"
 #include "algo/fifo.h"
 #include "time/alarm.h"
@@ -55,6 +62,53 @@ static volatile struct uart uarts[2] = {
 	},
 };
 
+#if UART_DEBUG_INT_COUNT
+volatile uint16_t uart_int_count[2][3] = {
+	{ 0, 0, 0 },
+	{ 0, 0, 0 },
+};
+#endif
+
+
+#if UART_DEBUG_FIFO
+#include "lcd/lcd.h"
+
+/* nonatomic: print fifo information to the lcd */
+static void uart_debug_fifo_common(const struct fifo *fifo) {
+	/* length and indexes */
+	fprintf_P(lcd, PSTR("len%02u push%02u pop%02u\r\n"),
+		fifo->len, fifo->i_push, fifo->i_pop);
+	
+	/* data contents */
+	uint8_t i = FIFO_SIZE;
+	const uint8_t *d = fifo->data;
+	while (i-- != 0) {
+		fputc(*(d++), lcd);
+	}
+	fputc('\n', lcd);
+	
+	/* index pointers */
+	lcd_goto_x(fifo->i_push);
+	fputc('^', lcd);
+	lcd_goto_x(fifo->i_pop);
+	fputc('^', lcd);
+}
+
+/* nonatomic: print tx fifo information to the lcd */
+static void uart_debug_fifo_tx(const struct uart *uart) {
+	lcd_clear();
+	fprintf_P(lcd, PSTR("uarts[%" PRIu8 "]->fifo_tx:\r\n"), uart - uarts);
+	uart_debug_fifo_common(&uart->fifo_tx);
+}
+
+/* nonatomic: print rx fifo information to the lcd */
+static void uart_debug_fifo_rx(const struct uart *uart) {
+	lcd_clear();
+	fprintf_P(lcd, PSTR("uarts[%" PRIu8 "]->fifo_rx:\r\n"), uart - uarts);
+	uart_debug_fifo_common(&uart->fifo_rx);
+}
+#endif
+
 
 /* nonatomic: pop a byte from the tx fifo and transmit it; does no checking */
 static void uart_tx_from_fifo(struct uart *uart) {
@@ -62,12 +116,20 @@ static void uart_tx_from_fifo(struct uart *uart) {
 	if (fifo_pop(&uart->fifo_tx, &byte)) {
 		*uart->udr = byte;
 	}
+	
+#if UART_DEBUG_FIFO
+	uart_debug_fifo_tx(uart);
+#endif
 }
 
 /* nonatomic: receive a byte and push it to the rx fifo; does no checking */
 static void uart_rx_to_fifo(struct uart *uart) {
 	uint8_t byte = *uart->udr;
 	fifo_push_force(&uart->fifo_rx, byte);
+	
+#if UART_DEBUG_FIFO
+	uart_debug_fifo_rx(uart);
+#endif
 }
 
 
@@ -101,27 +163,51 @@ static void uart_int_tx(struct uart *uart) {
 
 ISR(USART0_RX_vect) {
 	uart_int_rx((struct uart *)uarts + 0);
+	
+#if UART_DEBUG_INT_COUNT
+	++uart_int_count[0][0];
+#endif
 }
 
 ISR(USART0_UDRE_vect) {
 	uart_int_udre((struct uart *)uarts + 0);
+	
+#if UART_DEBUG_INT_COUNT
+	++uart_int_count[0][1];
+#endif
 }
 
 ISR(USART0_TX_vect) {
 	uart_int_tx((struct uart *)uarts + 0);
+	
+#if UART_DEBUG_INT_COUNT
+	++uart_int_count[0][2];
+#endif
 }
 
 
 ISR(USART1_RX_vect) {
 	uart_int_rx((struct uart *)uarts + 1);
+	
+#if UART_DEBUG_INT_COUNT
+	++uart_int_count[1][0];
+#endif
 }
 
 ISR(USART1_UDRE_vect) {
 	uart_int_udre((struct uart *)uarts + 1);
+	
+#if UART_DEBUG_INT_COUNT
+	++uart_int_count[1][1];
+#endif
 }
 
 ISR(USART1_TX_vect) {
 	uart_int_tx((struct uart *)uarts + 1);
+	
+#if UART_DEBUG_INT_COUNT
+	++uart_int_count[1][2];
+#endif
 }
 
 
@@ -152,6 +238,12 @@ static bool uart_write_raw(uint8_t dev, uint8_t byte) {
 				io_write(*uart->ucsr_b, _BV(UDRIE0), _BV(UDRIE0));
 			}
 		}
+		
+#if UART_DEBUG_FIFO
+		if (result) {
+			uart_debug_fifo_tx(uart);
+		}
+#endif
 	}
 	
 	return result;
@@ -173,6 +265,12 @@ static bool uart_read_raw(uint8_t dev, uint8_t *byte) {
 				result = fifo_pop(&uart->fifo_rx, byte);
 			}
 		}
+		
+#if UART_DEBUG_FIFO
+		if (result) {
+			uart_debug_fifo_rx(uart);
+		}
+#endif
 	}
 	
 	return result;
