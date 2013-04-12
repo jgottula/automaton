@@ -2,10 +2,29 @@ automaton
 todo list
 
 
+storage:
+- replace fat32 with something that won't explode if the power goes out
+- my idea: append-only filesystem for logging:
+  - two superblocks, updated alternately, with revision number and checksum
+  - use most recent version that is valid
+  - superblock says what the latest valid block is
+  - to append a block: do the write, then update the superblock
+  - worst case, lose the latest block only
+
+time:
+- add profiling interface
+  - if we use TIMER1, then function trees with alarms can't be profiled
+
+uart:
+- udre interrupt is using tons of cpu time!
+
 hd44780:
-- fix random characters at startup: pull-down resistor on E line?
 - implement timeout for hd44780_busy_wait
 - use 4-bit bus
+
+lcd:
+- make friendly functions to manipulate individual bits of param state
+- custom font api
 
 stdio:
 - implement a smaller/simpler vfprintf(); override?
