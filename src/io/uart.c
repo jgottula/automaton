@@ -6,7 +6,7 @@
 
 
 /* print debugging information to the lcd (warning: lcd code not int-safe) */
-#define UART_DEBUG_FIFO 1
+#define UART_DEBUG_FIFO 0
 
 /* count interrupts */
 #define UART_DEBUG_INT_COUNT 0
