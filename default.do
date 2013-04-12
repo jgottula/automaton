@@ -45,7 +45,7 @@ CFLAGS_COMPILE="$CFLAGS ${DEFINES[@]/#/-D} ${INC_DIRS[@]/#/-I}"
 CFLAGS_LINK="$CFLAGS ${LIB_DIRS[@]/#/-L} ${LIBS[@]/#/-l}"
 
 
-SOURCES=$(find src -type f -iname '*.c')
+SOURCES=$(find src -type f -iname "*.c")
 OBJECTS=${SOURCES//.c/.o}
 
 OUT_ELF="out/$PROJ_NAME.elf"
@@ -95,8 +95,8 @@ $OUT_LST)
 	;;
 clean)
 	rm -rf $(find out -type f)
-	rm -rf $(find src -type f -iname *.o)
-	rm -rf $(find src -type f -iname *.dep)
+	rm -rf $(find src -type f -iname "*.o")
+	rm -rf $(find src -type f -iname "*.dep")
 	;;
 load)
 	redo-ifchange $OUT_HEX
