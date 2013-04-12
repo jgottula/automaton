@@ -24,6 +24,8 @@ void lcd_init(void);
 void lcd_custom_store(uint8_t code, const uint8_t data[static 8]);
 void lcd_custom_load(uint8_t code, uint8_t data[static 8]);
 
+void lcd_clear(void);
+
 void lcd_goto_xy(uint8_t x, uint8_t y);
 void lcd_goto_x(uint8_t x);
 void lcd_goto_y(uint8_t y);

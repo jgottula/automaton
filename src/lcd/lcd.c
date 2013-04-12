@@ -133,6 +133,13 @@ void lcd_custom_load(uint8_t code, uint8_t data[static 8]) {
 }
 
 
+/* clear the screen and return the cursor to home */
+void lcd_clear(void) {
+	lcd_goto_xy(0, 0);
+	hd44780_clear();
+}
+
+
 /* set the cursor position */
 void lcd_goto_xy(uint8_t x, uint8_t y) {
 	state.cur.x = (x % LCD_COLS);
