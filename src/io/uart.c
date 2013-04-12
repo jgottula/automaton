@@ -96,14 +96,14 @@ static void uart_debug_fifo_common(const struct fifo *fifo) {
 
 /* nonatomic: print tx fifo information to the lcd */
 static void uart_debug_fifo_tx(const struct uart *uart) {
-	lcd_clear();
+	lcd_goto_xy(0, 0);
 	fprintf_P(lcd, PSTR("uarts[%" PRIu8 "]->fifo_tx:\r\n"), uart - uarts);
 	uart_debug_fifo_common(&uart->fifo_tx);
 }
 
 /* nonatomic: print rx fifo information to the lcd */
 static void uart_debug_fifo_rx(const struct uart *uart) {
-	lcd_clear();
+	lcd_goto_xy(0, 0);
 	fprintf_P(lcd, PSTR("uarts[%" PRIu8 "]->fifo_rx:\r\n"), uart - uarts);
 	uart_debug_fifo_common(&uart->fifo_rx);
 }
