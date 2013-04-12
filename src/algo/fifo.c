@@ -10,25 +10,25 @@
 
 
 /* nonatomic: push without any checks whatsoever */
-static void fifo_internal_push(volatile struct fifo *fifo, uint8_t val) {
-	fifo->data[fifo->i_push] = val;
-	
-	++fifo->i_push;
-	fifo->i_push %= FIFO_SIZE;
-	
-	++fifo->len;
+static void fifo_internal_push(struct fifo *fifo, uint8_t val) {
+        fifo->data[fifo->i_push] = val;
+        
+        ++fifo->i_push;
+        fifo->i_push %= FIFO_SIZE;
+        
+        ++fifo->len;
 }
 
 /* nonatomic: pop without any checks whatsoever */
-static uint8_t fifo_internal_pop(volatile struct fifo *fifo) {
-	uint8_t val = fifo->data[fifo->i_pop];
-	
-	++fifo->i_pop;
-	fifo->i_pop %= FIFO_SIZE;
-	
-	--fifo->len;
-	
-	return val;
+static uint8_t fifo_internal_pop(struct fifo *fifo) {
+        uint8_t val = fifo->data[fifo->i_pop];
+        
+        ++fifo->i_pop;
+        fifo->i_pop %= FIFO_SIZE;
+        
+        --fifo->len;
+        
+        return val;
 }
 
 
