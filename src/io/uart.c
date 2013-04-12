@@ -213,6 +213,9 @@ void uart_stop(uint8_t dev) {
  * returns false on timeout */
 bool uart_flush(uint8_t dev, uint16_t timeout_ms) {
 	volatile struct uart *uart = uarts + dev;
+	if (!(uart->state & UART_ST_INIT)) {
+		return false;
+	}
 	
 	if (timeout_ms != 0) {
 		alarm_set(timeout_ms);
@@ -234,9 +237,25 @@ bool uart_flush(uint8_t dev, uint16_t timeout_ms) {
 }
 
 
+/* nonatomic: count the bytes waiting in the rx fifo */
+uint8_t uart_avail(uint8_t dev) {
+	volatile struct uart *uart = uarts + dev;
+	if (!(uart->state & UART_ST_INIT)) {
+		return 0;
+	}
+	
+	return uart->fifo_rx.len;
+}
+
+
 /* nonatomic: write a character to the uart; optionally converts \n to \r\n;
  * returns false on failure */
 bool uart_write(uint8_t dev, char chr) {
+	volatile struct uart *uart = uarts + dev;
+	if (!(uart->state & UART_ST_INIT)) {
+		return false;
+	}
+	
 #if UART_LF_TO_CRLF
 	if (chr == '\n') {
 		if (!uart_write(dev, '\r')) {
@@ -250,5 +269,10 @@ bool uart_write(uint8_t dev, char chr) {
 
 /* nonatomic: read a character from the uart; returns false on failure */
 bool uart_read(uint8_t dev, char *chr) {
+	volatile struct uart *uart = uarts + dev;
+	if (!(uart->state & UART_ST_INIT)) {
+		return false;
+	}
+	
 	return uart_read_raw(dev, (uint8_t *)chr);
 }
