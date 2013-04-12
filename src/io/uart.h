@@ -48,6 +48,8 @@ void uart_stop(uint8_t dev);
 
 bool uart_flush(uint8_t dev, uint16_t timeout_ms);
 
+uint8_t uart_avail(uint8_t dev);
+
 bool uart_write(uint8_t dev, char chr);
 bool uart_read(uint8_t dev, char *chr);
 
