@@ -80,7 +80,6 @@ bool fifo_push_wait(volatile struct fifo *fifo, uint8_t val,
 		}
 	}
 }
-#endif
 
 /* atomic: forcefully push a value onto a fifo; eats oldest values if full */
 void fifo_push_force(volatile struct fifo *fifo, uint8_t val) {
