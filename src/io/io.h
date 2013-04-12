@@ -40,8 +40,8 @@
 enum io_port_b {
 	/* warning: don't set PB4 as input, or spi master mode may be disabled */
 	IO_SPI_SS_SDCARD = _BV(PB3),
-	IO_SPI_SS_NULL   = _BV(PB4),
-	IO_SPI_SS_ALL    = IO_SPI_SS_SDCARD | IO_SPI_SS_NULL,
+	IO_SPI_SS_DS1302 = _BV(PB4),
+	IO_SPI_SS_ALL    = IO_SPI_SS_SDCARD | IO_SPI_SS_DS1302,
 	
 	IO_SPI_MOSI = _BV(PB5),
 	IO_SPI_MISO = _BV(PB6),
