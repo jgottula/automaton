@@ -8,6 +8,10 @@
 exec >&2
 
 
+# redo appears to be broken
+set -e
+
+
 TARGET=$1
 TARGET_BASE=$2
 OUTPUT=$3
