@@ -83,10 +83,12 @@ static void uart_int_udre(struct uart *uart) {
 	uart_tx_from_fifo(uart);
 	
 	if (fifo_count(&uart->fifo_tx) == 0) {
+		/* no longer in interrupt-driven mode; the last byte is still sending */
 		uart->state &= ~UART_ST_TX_ACTIVE;
-		
-		io_write(*uart->ucsr_b, _BV(TXCIE0), _BV(TXCIE0));
 		uart->state |= UART_ST_TX_WAIT;
+		
+		/* turn off the UDRE interrupt; turn on the TX interrupt */
+		io_write(*uart->ucsr_b, _BV(TXCIE0) | _BV(UDRIE0), _BV(TXCIE0));
 	}
 }
 
@@ -142,7 +144,12 @@ static bool uart_write_raw(uint8_t dev, uint8_t byte) {
 			/* prime the pump */
 			if (result && !(uart->state & UART_ST_TX_ACTIVE)) {
 				uart_tx_from_fifo(uart);
+				
+				/* now in interrupt-driven mode */
 				uart->state |= UART_ST_TX_ACTIVE;
+				
+				/* enable the UDRE interrupt */
+				io_write(*uart->ucsr_b, _BV(UDRIE0), _BV(UDRIE0));
 			}
 		}
 	}
@@ -189,7 +196,7 @@ void uart_init(uint8_t dev, uint16_t divisor, uint16_t timeout_tx_ms,
 		fifo_init(&uart->fifo_tx);
 		
 		*uart->ucsr_a = ((divisor & _BV(12)) ? _BV(U2X0) : 0);
-		*uart->ucsr_b = _BV(RXCIE0) | _BV(UDRIE0) | _BV(RXEN0) | _BV(TXEN0);
+		*uart->ucsr_b = _BV(RXCIE0) | _BV(RXEN0) | _BV(TXEN0);
 		*uart->ucsr_c = _BV(UCSZ01) | _BV(UCSZ00);
 		
 		*uart->ubrr = (divisor & (_BV(12) - 1));
