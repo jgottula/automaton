@@ -5,16 +5,16 @@
  */
 
 
+#include "io/uart.h"
+#include "algo/fifo.h"
+#include "time/alarm.h"
+
+
 /* print debugging information to the lcd (warning: lcd code not int-safe) */
 #define UART_DEBUG_FIFO 0
 
 /* count interrupts */
 #define UART_DEBUG_INT_COUNT 0
-
-
-#include "io/uart.h"
-#include "algo/fifo.h"
-#include "time/alarm.h"
 
 
 enum uart_state {
