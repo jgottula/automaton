@@ -142,16 +142,16 @@ static void uart_int_rx(struct uart *uart) {
 
 /* atomic: common udre interrupt handler */
 static void uart_int_udre(struct uart *uart) {
-	uart_tx_from_fifo(uart);
-	
-	if (fifo_count(&uart->fifo_tx) == 0) {
+	if (fifo_count(&uart->fifo_tx) == 1) {
 		/* no longer in interrupt-driven mode; the last byte is still sending */
 		uart->state &= ~UART_ST_TX_ACTIVE;
 		uart->state |= UART_ST_TX_WAIT;
 		
-		/* turn off the UDRE interrupt; turn on the TX interrupt */
+		/* enable the tx interrupt; disable the udre interrupt */
 		io_write(*uart->ucsr_b, _BV(TXCIE0) | _BV(UDRIE0), _BV(TXCIE0));
 	}
+	
+	uart_tx_from_fifo(uart);
 }
 
 /* atomic: common tx interrupt handler */
@@ -222,15 +222,13 @@ static bool uart_write_raw(uint8_t dev, uint8_t byte) {
 		if (uart->state & UART_ST_INIT) {
 			result = fifo_push_wait(&uart->fifo_tx, byte, uart->timeout_tx_ms);
 			
-			/* prime the pump */
 			if (result && !(uart->state & UART_ST_TX_ACTIVE)) {
-				uart_tx_from_fifo(uart);
-				
 				/* now in interrupt-driven mode */
 				uart->state |= UART_ST_TX_ACTIVE;
+				uart->state &= ~UART_ST_TX_WAIT;
 				
-				/* enable the UDRE interrupt */
-				io_write(*uart->ucsr_b, _BV(UDRIE0), _BV(UDRIE0));
+				/* disable the tx interrupt; enable the udre interrupt */
+				io_write(*uart->ucsr_b, _BV(TXCIE0) | _BV(UDRIE0), _BV(UDRIE0));
 			}
 		}
 		
