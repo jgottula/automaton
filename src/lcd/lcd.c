@@ -160,6 +160,22 @@ void lcd_goto_y(uint8_t y) {
 }
 
 
+/* adjust the cursor position */
+void lcd_rel_xy(int8_t dx, int8_t dy) {
+	lcd_goto_xy(state.cur.x + dx, state.cur.y + dy);
+}
+
+/* adjust the cursor position (x only) */
+void lcd_rel_x(int8_t dx) {
+	lcd_goto_x(state.cur.x + dx);
+}
+
+/* adjust the cursor position (y only) */
+void lcd_rel_y(int8_t dy) {
+	lcd_goto_y(state.cur.y + dy);
+}
+
+
 /* write a character to ddram; update cursor based on \r and \n */
 void lcd_write(char chr) {
 	if (chr == '\r') {
