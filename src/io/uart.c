@@ -19,7 +19,6 @@
 enum uart_state {
 	UART_ST_INIT      = _BV(0), // uart has been initialized
 	UART_ST_TX_ACTIVE = _BV(1), // interrupt-driven tx is ongoing
-	UART_ST_TX_WAIT   = _BV(2), // the last bit is still in the uart's tx buffer
 };
 
 
@@ -62,9 +61,9 @@ static volatile struct uart uarts[2] = {
 };
 
 #if UART_DEBUG_INT_COUNT
-volatile uint16_t uart_int_count[2][3] = {
-	{ 0, 0, 0 },
-	{ 0, 0, 0 },
+volatile uint16_t uart_int_count[2][2] = {
+	{ 0, 0, },
+	{ 0, 0, },
 };
 #endif
 
@@ -145,15 +144,13 @@ static void uart_int_udre(struct uart *uart) {
 #endif
 	
 	if (fifo_count(&uart->fifo_tx) == 1) {
-		/* no longer in interrupt-driven mode; the last byte is still sending */
+		/* no longer in interrupt-driven mode */
 		uart->state &= ~UART_ST_TX_ACTIVE;
-		uart->state |= UART_ST_TX_WAIT;
 		
-		/* enable the tx interrupt; disable the udre interrupt */
-		io_write(*uart->ucsr_b, _BV(TXCIE0) | _BV(UDRIE0), _BV(TXCIE0));
+		/* disable this interrupt */
+		io_write(*uart->ucsr_b, _BV(UDRIE0), 0);
 		
 #if UART_DEBUG_INT_FLAG
-		fputc('T', lcd);
 		fputc('u', lcd);
 #endif
 	}
@@ -162,24 +159,6 @@ static void uart_int_udre(struct uart *uart) {
 	
 #if UART_DEBUG_INT_FLAG
 	fputc(']', lcd);
-#endif
-}
-
-/* atomic: common tx interrupt handler */
-static void uart_int_tx(struct uart *uart) {
-#if UART_DEBUG_INT_FLAG
-	fputc('<', lcd);
-#endif
-	
-	/* no longer waiting */
-	uart->state &= ~UART_ST_TX_WAIT;
-	
-	/* disable the tx interrupt */
-	io_write(*uart->ucsr_b, _BV(TXCIE0), 0);
-	
-#if UART_DEBUG_INT_FLAG
-	fputc('t', lcd);
-	fputc('>', lcd);
 #endif
 }
 
@@ -200,14 +179,6 @@ ISR(USART0_UDRE_vect) {
 #endif
 }
 
-ISR(USART0_TX_vect) {
-	uart_int_tx((struct uart *)uarts + 0);
-	
-#if UART_DEBUG_INT_COUNT
-	++uart_int_count[0][2];
-#endif
-}
-
 
 ISR(USART1_RX_vect) {
 	uart_int_rx((struct uart *)uarts + 1);
@@ -222,14 +193,6 @@ ISR(USART1_UDRE_vect) {
 	
 #if UART_DEBUG_INT_COUNT
 	++uart_int_count[1][1];
-#endif
-}
-
-ISR(USART1_TX_vect) {
-	uart_int_tx((struct uart *)uarts + 1);
-	
-#if UART_DEBUG_INT_COUNT
-	++uart_int_count[1][2];
 #endif
 }
 
@@ -252,13 +215,11 @@ static bool uart_write_raw(uint8_t dev, uint8_t byte) {
 				
 				/* now in interrupt-driven mode */
 				uart->state |= UART_ST_TX_ACTIVE;
-				uart->state &= ~UART_ST_TX_WAIT;
 				
-				/* disable the tx interrupt; enable the udre interrupt */
-				io_write(*uart->ucsr_b, _BV(TXCIE0) | _BV(UDRIE0), _BV(UDRIE0));
+				/* enable the udre interrupt */
+				io_write(*uart->ucsr_b, _BV(UDRIE0), _BV(UDRIE0));
 				
 #if UART_DEBUG_INT_FLAG
-				fputc('t', lcd);
 				fputc('U', lcd);
 				fputc(')', lcd);
 #endif
@@ -351,7 +312,7 @@ bool uart_flush(uint8_t dev, uint16_t timeout_ms) {
 		_delay_us(1);
 		
 		/* wait for tx to completely finish */
-		if (!(uart->state & (UART_ST_TX_ACTIVE | UART_ST_TX_WAIT))) {
+		if (!(uart->state & UART_ST_TX_ACTIVE)) {
 			alarm_unset();
 			return true;
 		}
