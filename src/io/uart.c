@@ -268,7 +268,7 @@ static bool uart_read_raw(uint8_t dev, uint8_t *byte) {
 
 
 /* atomic: initialize uart with baudrate divisor and optional tx/rx timeouts; a
- * timeout of zero will give up immediately */
+ * timeout of zero will try forever */
 void uart_init(uint8_t dev, uint16_t divisor, uint16_t timeout_tx_ms,
 	uint16_t timeout_rx_ms) {
 	/* non-volatile */
