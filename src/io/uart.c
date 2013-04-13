@@ -137,9 +137,17 @@ static void uart_rx_to_fifo(struct uart *uart) {
 
 /* atomic: common rx interrupt handler */
 static void uart_int_rx(struct uart *uart) {
+#if UART_DEBUG_INT_FLAG
+	lcd_write('<');
+#endif
+	
 	// TODO: check for UCSRnB->DORn (data overrun) before reading UDRn
 	
 	uart_rx_to_fifo(uart);
+	
+#if UART_DEBUG_INT_FLAG
+	lcd_write('>');
+#endif
 }
 
 /* atomic: common udre interrupt handler */
@@ -250,7 +258,15 @@ static bool uart_read_raw(uint8_t dev, uint8_t *byte) {
 	
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 		if (uart->state & UART_ST_INIT) {
+#if UART_DEBUG_INT_FLAG
+			lcd_write('{');
+#endif
+			
 			result = fifo_pop_wait(&uart->fifo_rx, byte, uart->timeout_rx_ms);
+			
+#if UART_DEBUG_INT_FLAG
+			lcd_write('}');
+#endif
 		}
 		
 #if UART_DEBUG_FIFO
