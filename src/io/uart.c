@@ -79,7 +79,12 @@ static void uart_debug_fifo_common(const struct fifo *fifo) {
 	uint8_t i = FIFO_SIZE;
 	const uint8_t *d = fifo->data;
 	while (i-- != 0) {
-		fputc(*(d++), lcd);
+		char c = *(d++);
+		if (!isprint(c) || c == '\r' || c == '\n') {
+			c = '\xff';
+		}
+		
+		fputc(c, lcd);
 	}
 	fputc('\n', lcd);
 	
