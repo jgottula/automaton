@@ -145,7 +145,7 @@ static void uart_int_rx(struct uart *uart) {
 /* atomic: common udre interrupt handler */
 static void uart_int_udre(struct uart *uart) {
 #if UART_DEBUG_INT_FLAG
-	fputc('[', lcd);
+	lcd_write('[');
 #endif
 	
 	if (fifo_count(&uart->fifo_tx) == 1) {
@@ -156,14 +156,14 @@ static void uart_int_udre(struct uart *uart) {
 		io_write(*uart->ucsr_b, _BV(UDRIE0), 0);
 		
 #if UART_DEBUG_INT_FLAG
-		fputc('u', lcd);
+		lcd_write('u');
 #endif
 	}
 	
 	uart_tx_from_fifo(uart);
 	
 #if UART_DEBUG_INT_FLAG
-	fputc(']', lcd);
+	lcd_write(']');
 #endif
 }
 
@@ -215,7 +215,7 @@ static bool uart_write_raw(uint8_t dev, uint8_t byte) {
 			
 			if (result && !(uart->state & UART_ST_TX_ACTIVE)) {
 #if UART_DEBUG_INT_FLAG
-				fputc('(', lcd);
+				lcd_write('(');
 #endif
 				
 				/* now in interrupt-driven mode */
@@ -225,8 +225,8 @@ static bool uart_write_raw(uint8_t dev, uint8_t byte) {
 				io_write(*uart->ucsr_b, _BV(UDRIE0), _BV(UDRIE0));
 				
 #if UART_DEBUG_INT_FLAG
-				fputc('U', lcd);
-				fputc(')', lcd);
+				lcd_write('U');
+				lcd_write(')');
 #endif
 			}
 		}
