@@ -220,12 +220,7 @@ static bool uart_write_raw(uint8_t dev, uint8_t byte) {
 	
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 		if (uart->state & UART_ST_INIT) {
-			if (uart->timeout_tx_ms != 0) {
-				result = fifo_push_wait(&uart->fifo_tx, byte,
-					uart->timeout_tx_ms);
-			} else {
-				result = fifo_push(&uart->fifo_tx, byte);
-			}
+			result = fifo_push_wait(&uart->fifo_tx, byte, uart->timeout_tx_ms);
 			
 			/* prime the pump */
 			if (result && !(uart->state & UART_ST_TX_ACTIVE)) {
@@ -258,12 +253,7 @@ static bool uart_read_raw(uint8_t dev, uint8_t *byte) {
 	
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 		if (uart->state & UART_ST_INIT) {
-			if (uart->timeout_rx_ms != 0) {
-				result = fifo_pop_wait(&uart->fifo_rx, byte,
-					uart->timeout_rx_ms);
-			} else {
-				result = fifo_pop(&uart->fifo_rx, byte);
-			}
+			result = fifo_pop_wait(&uart->fifo_rx, byte, uart->timeout_rx_ms);
 		}
 		
 #if UART_DEBUG_FIFO
