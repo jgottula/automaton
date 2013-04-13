@@ -67,7 +67,9 @@ bool fifo_push_wait(volatile struct fifo *fifo, uint8_t val,
 		}
 		
 		for ( ; ; ) {
-			_delay_us(1);
+			NONATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+				_delay_us(1);
+			}
 			
 			if (fifo_push(fifo, val)) {
 				alarm_unset();
@@ -120,7 +122,9 @@ bool fifo_pop_wait(volatile struct fifo *fifo, uint8_t *out,
 		}
 		
 		for ( ; ; ) {
-			_delay_us(1);
+			NONATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+				_delay_us(1);
+			}
 			
 			if (fifo_pop(fifo, out)) {
 				alarm_unset();
