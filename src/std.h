@@ -10,6 +10,7 @@
 
 
 /* standard library */
+#include <ctype.h>
 #include <inttypes.h>
 #include <stdbool.h>
 #include <stdint.h>
