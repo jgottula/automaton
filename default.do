@@ -103,7 +103,7 @@ clean)
 	rm -rf $(find src -type f -iname "*.dep")
 	;;
 load)
-	redo-ifchange $OUT_HEX
+	redo all
 	
 	AVRDUDE_CMD="sudo avrdude -u -p ${MCU/atmega/m} -c usbasp -B 460800 \
 	-U flash:w:$OUT_HEX"
