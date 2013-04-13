@@ -7,6 +7,7 @@
 
 #include "io/uart.h"
 #include "algo/fifo.h"
+#include "lcd/lcd.h"
 #include "time/alarm.h"
 
 
@@ -71,8 +72,6 @@ volatile uint16_t uart_int_count[2][3] = {
 
 
 #if UART_DEBUG_FIFO
-#include "lcd/lcd.h"
-
 /* nonatomic: print fifo information to the lcd */
 static void uart_debug_fifo_common(const struct fifo *fifo) {
 	/* length and indexes */
@@ -114,6 +113,7 @@ static void uart_debug_fifo_rx(const struct uart *uart) {
 static void uart_tx_from_fifo(struct uart *uart) {
 	uint8_t byte;
 	if (fifo_pop(&uart->fifo_tx, &byte)) {
+		while (!(*uart->ucsr_a & _BV(UDRE0)));
 		*uart->udr = byte;
 	}
 	
