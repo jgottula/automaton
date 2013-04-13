@@ -11,11 +11,9 @@
 #include "time/alarm.h"
 
 
-/* print debugging information to the lcd (warning: lcd code not int-safe) */
-#define UART_DEBUG_FIFO 0
-
-/* count interrupts */
-#define UART_DEBUG_INT_COUNT 0
+#define UART_DEBUG_FIFO      0 // lcd: show fifo contents
+#define UART_DEBUG_INT_FLAG  0 // lcd: show interrupt flag changes
+#define UART_DEBUG_INT_COUNT 0 // count interrupt occurrences
 
 
 enum uart_state {
@@ -142,6 +140,10 @@ static void uart_int_rx(struct uart *uart) {
 
 /* atomic: common udre interrupt handler */
 static void uart_int_udre(struct uart *uart) {
+#if UART_DEBUG_INT_FLAG
+	fputc('[', lcd);
+#endif
+	
 	if (fifo_count(&uart->fifo_tx) == 1) {
 		/* no longer in interrupt-driven mode; the last byte is still sending */
 		uart->state &= ~UART_ST_TX_ACTIVE;
@@ -149,15 +151,36 @@ static void uart_int_udre(struct uart *uart) {
 		
 		/* enable the tx interrupt; disable the udre interrupt */
 		io_write(*uart->ucsr_b, _BV(TXCIE0) | _BV(UDRIE0), _BV(TXCIE0));
+		
+#if UART_DEBUG_INT_FLAG
+		fputc('T', lcd);
+		fputc('u', lcd);
+#endif
 	}
 	
 	uart_tx_from_fifo(uart);
+	
+#if UART_DEBUG_INT_FLAG
+	fputc(']', lcd);
+#endif
 }
 
 /* atomic: common tx interrupt handler */
 static void uart_int_tx(struct uart *uart) {
-	io_write(*uart->ucsr_b, _BV(TXCIE0), 0);
+#if UART_DEBUG_INT_FLAG
+	fputc('<', lcd);
+#endif
+	
+	/* no longer waiting */
 	uart->state &= ~UART_ST_TX_WAIT;
+	
+	/* disable the tx interrupt */
+	io_write(*uart->ucsr_b, _BV(TXCIE0), 0);
+	
+#if UART_DEBUG_INT_FLAG
+	fputc('t', lcd);
+	fputc('>', lcd);
+#endif
 }
 
 
@@ -223,12 +246,22 @@ static bool uart_write_raw(uint8_t dev, uint8_t byte) {
 			result = fifo_push_wait(&uart->fifo_tx, byte, uart->timeout_tx_ms);
 			
 			if (result && !(uart->state & UART_ST_TX_ACTIVE)) {
+#if UART_DEBUG_INT_FLAG
+				fputc('(', lcd);
+#endif
+				
 				/* now in interrupt-driven mode */
 				uart->state |= UART_ST_TX_ACTIVE;
 				uart->state &= ~UART_ST_TX_WAIT;
 				
 				/* disable the tx interrupt; enable the udre interrupt */
 				io_write(*uart->ucsr_b, _BV(TXCIE0) | _BV(UDRIE0), _BV(UDRIE0));
+				
+#if UART_DEBUG_INT_FLAG
+				fputc('t', lcd);
+				fputc('U', lcd);
+				fputc(')', lcd);
+#endif
 			}
 		}
 		
