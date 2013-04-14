@@ -36,7 +36,7 @@ INC_DIRS=(src)
 LIB_DIRS=()
 LIBS=()
 
-CFLAGS_CPU=("-mmcu=$MCU" -fpack-struct -ffreestanding)
+CFLAGS_CPU=("-mmcu=$MCU" -fpack-struct)
 CFLAGS_DEBUG=(-ggdb)
 CFLAGS_OPT=(-Os -flto -fuse-linker-plugin -fwhole-program -mcall-prologues \
 	-mrelax -mstrict-X -fmerge-all-constants -ffast-math)
