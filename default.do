@@ -1,8 +1,11 @@
 #!/bin/bash
+# 
 # automaton
 # (c) 2013 Justin Gottula
 # The source code of this project is distributed under the terms of the
 # simplified BSD license. See the LICENSE file for details.
+# 
+# main redo script
 
 
 exec >&2
@@ -24,30 +27,14 @@ NM="avr-nm"
 OBJCOPY="avr-objcopy"
 OBJDUMP="avr-objdump"
 
+# huge bug with avr-gcc 4.8:
+# section '.note.gnu.build-id' is placed at address zero and *included* in the
+# binary, and the entire executable (including the VECTOR TABLE!) is off by 0x24
+# bytes; something is screwed up with the linker script, located at:
+# /usr/lib/ldscripts/avr5.x
+
 
 PROJ_NAME="automaton"
-
-
-MCU="atmega324a"
-CPU_KHZ="20000"
-
-DEFINES=("F_CPU=${CPU_KHZ}000UL")
-INC_DIRS=(src)
-LIB_DIRS=()
-LIBS=()
-
-CFLAGS_CPU=("-mmcu=$MCU" -fpack-struct -funsigned-bitfields)
-CFLAGS_DEBUG=(-ggdb)
-CFLAGS_OPT=(-Os -flto -fuse-linker-plugin -fwhole-program -mcall-prologues \
-	-mrelax -mstrict-X -fmerge-all-constants -ffast-math -fno-jump-tables \
-	-fshort-enums)
-CFLAGS_WARN=(-Wall -Wextra -Waddr-space-convert -Wno-unused-function)
-CFLAGS_ETC=(-fno-diagnostics-show-caret -pipe)
-
-CFLAGS="-std=gnu11 ${CFLAGS_CPU[@]} ${CFLAGS_DEBUG[@]} ${CFLAGS_OPT[@]} \
-${CFLAGS_WARN[@]} ${CFLAGS_ETC[@]}"
-CFLAGS_COMPILE="$CFLAGS ${DEFINES[@]/#/-D} ${INC_DIRS[@]/#/-I}"
-CFLAGS_LINK="$CFLAGS ${LIB_DIRS[@]/#/-L} ${LIBS[@]/#/-l}"
 
 
 SOURCES=$(find src -type f -iname "*.c")
@@ -55,28 +42,63 @@ OBJECTS=${SOURCES//.c/.o}
 
 OUT_ELF="out/$PROJ_NAME.elf"
 OUT_BIN="out/$PROJ_NAME.bin"
-OUT_HEX="out/$PROJ_NAME.hex"
 OUT_MAP="out/$PROJ_NAME.map"
 OUT_DUMP="out/$PROJ_NAME.dump"
 OUT_LST="out/$PROJ_NAME.lst"
 
 
+# configuration files for mcu and programmer
+. cfg/atmega324a
+. cfg/dragon_jtag
+
+
+AVRDUDE_FLAGS=("${AVRDUDE_PART[@]/#/-p}" "${AVRDUDE_PROG[@]/#/-c}" \
+	"${AVRDUDE_PORT[@]/#/-P}" "${AVRDUDE_BITCLOCK[@]/#/-B}" \
+	"${AVRDUDE_BAUDRATE[@]/#/-b}" "${AVRDUDE_BANGDELAY[@]/#/-i}")
+
+AVRDUDE_FLAGS_LOAD=("${AVRDUDE_FLAGS[@]}" -u \
+	-Uflash:w:"$OUT_BIN":r)
+AVRDUDE_FLAGS_FUSE=("${AVRDUDE_FLAGS[@]}" -q \
+	-Ulfuse:w:"$AVRDUDE_LFUSE":m \
+	-Uhfuse:w:"$AVRDUDE_HFUSE":m \
+	-Uefuse:w:"$AVRDUDE_EFUSE":m)
+AVRDUDE_FLAGS_TERM=("${AVRDUDE_FLAGS[@]}" -t)
+
+
+DEFINES=("F_CPU=${CPU_KHZ}000UL")
+INC_DIRS=(src)
+LIB_DIRS=()
+LIBS=()
+
+CFLAGS_STD=(-std=gnu11)
+CFLAGS_CPU=("-mmcu=$MCU" -fpack-struct -funsigned-bitfields)
+CFLAGS_DEBUG=(-ggdb)
+CFLAGS_OPT=(-Os -flto -fuse-linker-plugin -fwhole-program -mcall-prologues \
+	-mrelax -mstrict-X -fmerge-all-constants -ffast-math -fno-jump-tables \
+	-fshort-enums -Wl,--gc-sections)
+CFLAGS_WARN=(-Wall -Wextra -Wno-unused-function)
+CFLAGS_ETC=(-pipe)
+
+CFLAGS=("${CFLAGS_STD[@]}" "${CFLAGS_CPU[@]}" "${CFLAGS_DEBUG[@]}" \
+	"${CFLAGS_OPT[@]}" "${CFLAGS_WARN[@]}" "${CFLAGS_ETC[@]}")
+CFLAGS_COMPILE=("${CFLAGS[@]}" "${DEFINES[@]/#/-D}" "${INC_DIRS[@]/#/-I}")
+CFLAGS_LINK=("${CFLAGS[@]}" "${LIB_DIRS[@]/#/-L}" "${LIBS[@]/#/-l}")
+
+
 case "$TARGET" in
 all)
-	redo-ifchange $OUT_ELF $OUT_BIN $OUT_HEX $OUT_MAP $OUT_DUMP $OUT_LST
+	redo-ifchange $OUT_ELF $OUT_BIN $OUT_MAP $OUT_DUMP $OUT_LST
 	;;
 $OUT_ELF)
 	redo-ifchange $OBJECTS
-	$CC $CFLAGS_LINK -o $OUTPUT $OBJECTS
+	$CC "${CFLAGS_LINK[@]}" -o$OUTPUT $OBJECTS
 	;;
 $OUT_BIN)
 	redo-ifchange $OUT_ELF
-	$OBJCOPY -O binary $OUT_ELF $OUTPUT
-	stat --printf='%n: %s bytes\n' $OUTPUT
-	;;
-$OUT_HEX)
-	redo-ifchange $OUT_ELF
-	$OBJCOPY -O ihex $OUT_ELF $OUTPUT
+	$OBJCOPY -Obinary -j.text -j.data $OUT_ELF $OUTPUT
+	
+	stat --printf="%n: %s bytes\n" $OUTPUT
+	md5sum $OUTPUT
 	;;
 $OUT_MAP)
 	redo-ifchange $OUT_ELF
@@ -88,15 +110,15 @@ $OUT_DUMP)
 	;;
 $OUT_LST)
 	redo-ifchange $OUT_ELF
-	$OBJDUMP -CdS -j '.text' $OUT_ELF >$OUTPUT
+	$OBJDUMP -CdS -j.text $OUT_ELF >$OUTPUT
 	;;
 *.o)
-	$CC $CFLAGS_COMPILE -o${TARGET//.o/.dep} -MM -MG ${TARGET//.o/.c}
+	$CC "${CFLAGS_COMPILE[@]}" -o${TARGET//.o/.dep} -MM -MG ${TARGET//.o/.c}
 	
 	read DEPS <${TARGET//.o/.dep}
 	redo-ifchange ${DEPS#*:}
 	
-	$CC $CFLAGS_COMPILE -o$OUTPUT -c ${TARGET//.o/.c}
+	$CC "${CFLAGS_COMPILE[@]}" -o$OUTPUT -c ${TARGET//.o/.c}
 	;;
 clean)
 	rm -rf $(find out -type f)
@@ -105,7 +127,16 @@ clean)
 	;;
 load)
 	redo all
-	sudo avrdude -u -p ${MCU/atmega/m} -c usbasp -B 460800 -U flash:w:$OUT_HEX
+	echo "sudo avrdude ${AVRDUDE_FLAGS_LOAD[@]}"
+	sudo avrdude "${AVRDUDE_FLAGS_LOAD[@]}"
+	;;
+fuse)
+	echo "sudo avrdude ${AVRDUDE_FLAGS_FUSE[@]}"
+	sudo avrdude "${AVRDUDE_FLAGS_FUSE[@]}"
+	;;
+term)
+	echo "sudo avrdude ${AVRDUDE_FLAGS_TERM[@]}"
+	sudo avrdude "${AVRDUDE_FLAGS_TERM[@]}"
 	;;
 *)
 	echo "unknown target '$TARGET'"
