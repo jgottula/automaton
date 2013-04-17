@@ -1,0 +1,18 @@
+# automaton
+# (c) 2013 Justin Gottula
+# The source code of this project is distributed under the terms of the
+# simplified BSD license. See the LICENSE file for details.
+# 
+# avrdude configuration for atmega324a
+
+
+MCU="atmega324a"
+
+CPU_KHZ="20000"
+
+
+AVRDUDE_PART=(m324a)
+
+AVRDUDE_LFUSE="0xff"
+AVRDUDE_HFUSE="0x17"
+AVRDUDE_EFUSE="0xfc"
