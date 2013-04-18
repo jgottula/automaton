@@ -13,7 +13,6 @@
 
 
 noreturn void reset(void);
-void reset_defuse(void);
 
 
 #endif

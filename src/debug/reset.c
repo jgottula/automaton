@@ -13,8 +13,3 @@ noreturn void reset(void) {
 	wdt_enable(WDTO_15MS);
 	die();
 }
-
-void reset_defuse(void) {
-	io_write(MCUSR, _BV(WDRF), 0);
-	wdt_disable();
-}
