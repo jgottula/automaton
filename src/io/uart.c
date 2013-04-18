@@ -356,21 +356,12 @@ uint8_t uart_avail(uint8_t dev) {
 }
 
 
-/* nonatomic: write a character to the uart; optionally converts \n to \r\n;
- * returns false on failure */
+/* nonatomic: write a character to the uart; returns false on failure */
 bool uart_write(uint8_t dev, char chr) {
 	volatile struct uart *uart = uarts + dev;
 	if (!(uart->state & UART_ST_INIT)) {
 		return false;
 	}
-	
-#if UART_LF_TO_CRLF
-	if (chr == '\n') {
-		if (!uart_write(dev, '\r')) {
-			return false;
-		}
-	}
-#endif
 	
 	return uart_write_raw(dev, chr);
 }

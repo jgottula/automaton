@@ -12,9 +12,6 @@
 #include "std.h"
 
 
-#define UART_LF_TO_CRLF 1
-
-
 enum uart_num {
 	UART_PC      = 0,
 	UART_STN1110 = 1,

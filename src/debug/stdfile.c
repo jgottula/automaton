@@ -23,6 +23,11 @@ static int stdin_get(FILE *f) {
 static int stdout_put(char c, FILE *f) {
 	(void)f;
 	
+	/* convert LF to CRLF */
+	if (c == '\n' && !uart_write(UART_PC, '\r')) {
+		return _FDEV_ERR;
+	}
+	
 	if (uart_write(UART_PC, c)) {
 		return 0;
 	} else {
