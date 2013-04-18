@@ -36,9 +36,10 @@
 enum io_port_a {
 	IO_LCD_BUS_ALL = _BV(PA0) | _BV(PA1) | _BV(PA2) | _BV(PA3),
 	
-	/* PB0: unused */
-	/* PB1: unused */
-	/* PB2: unused */
+	/* PA4: unused */
+	/* PA5: unused */
+	/* PA6: unused */
+	/* PA7: unused */
 };
 
 enum io_port_b {
