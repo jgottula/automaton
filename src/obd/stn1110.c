@@ -17,6 +17,10 @@ static int stn1110_file_get(FILE *f) {
 	
 	char c;
 	if (uart_read(UART_STN1110, &c)) {
+		if (c == '\r') {
+			c = '\n';
+		}
+		
 		return (int)c;
 	} else {
 		return _FDEV_ERR;
@@ -25,6 +29,10 @@ static int stn1110_file_get(FILE *f) {
 
 static int stn1110_file_put(char c, FILE *f) {
 	(void)f;
+	
+	if (c == '\n') {
+		c = '\r';
+	}
 	
 	if (uart_write(UART_STN1110, c)) {
 		return 0;
