@@ -35,7 +35,7 @@ static int stn1110_file_put(char c, FILE *f) {
 
 
 void stn1110_init(void) {
-	uart_init(UART_STN1110, UART_DIV_115200, 100, 100);
+	uart_init(UART_STN1110, UART_DIV_115200, 0, 0);
 	
 	stn1110 = fdevopen(stn1110_file_put, stn1110_file_get);
 }
