@@ -27,32 +27,57 @@ static void hd44780_bus_mode_output(void) {
 }
 
 
-/* private: put a byte on the bus, set/clear RS, and cycle E */
-static void hd44780_raw_write_cycle(uint8_t rs, uint8_t bus) {
+/* private: put a byte/nibble on the bus and cycle E */
+static void hd44780_raw_write_subcycle(uint8_t bus) {
 	io_write(PORT(IO_LCD_BUS), IO_LCD_BUS_ALL, bus);
 	
-	io_write(PORT(IO_LCD_CTRL), IO_LCD_CTRL_ALL, rs | IO_LCD_CTRL_E);
+	PORT(IO_LCD_CTRL) |= IO_LCD_CTRL_E;
 	delay_150ns();
 	
-	io_write(PORT(IO_LCD_CTRL), IO_LCD_CTRL_E, 0);
+	PORT(IO_LCD_CTRL) &= ~IO_LCD_CTRL_E;
 	delay_1200ns();
 }
 
-/* private: set/clear RS, cycle E, and get a byte from the bus */
-static uint8_t hd44780_raw_read_cycle(uint8_t rs) {
-	hd44780_bus_mode_input();
-	
-	io_write(PORT(IO_LCD_CTRL), IO_LCD_CTRL_ALL,
-		rs | IO_LCD_CTRL_RW | IO_LCD_CTRL_E);
+/* private: cycle E and get a byte from the bus */
+static uint8_t hd44780_raw_read_subcycle(void) {
+	PORT(IO_LCD_CTRL) |= IO_LCD_CTRL_E;
 	delay_150ns();
 	
 	uint8_t bus = io_read(PIN(IO_LCD_BUS), IO_LCD_BUS_ALL);
 	
-	io_write(PORT(IO_LCD_CTRL), IO_LCD_CTRL_E, 0);
+	PORT(IO_LCD_CTRL) &= ~IO_LCD_CTRL_E;
 	delay_1200ns();
 	
-	hd44780_bus_mode_output();
+	return bus;
+}
+
+
+/* private: set/clear RS, clear RW, and perform a read cycle */
+static void hd44780_raw_write_cycle(uint8_t rs, uint8_t bus) {
+	io_write(PORT(IO_LCD_CTRL), IO_LCD_CTRL_RS | IO_LCD_CTRL_RW, rs);
 	
+#if HD44780_BUS_WIDTH == 8
+	hd44780_raw_write_subcycle(bus);
+#elif HD44780_BUS_WIDTH == 4
+	hd44780_raw_write_subcycle(bus >> 4);
+	hd44780_raw_write_subcycle(bus);
+#endif
+}
+
+/* private: set/clear RS, set RW, and perform a write cycle */
+static uint8_t hd44780_raw_read_cycle(uint8_t rs) {
+	hd44780_bus_mode_input();
+	io_write(PORT(IO_LCD_CTRL), IO_LCD_CTRL_RS | IO_LCD_CTRL_RW,
+		rs | IO_LCD_CTRL_RW);
+	
+#if HD44780_BUS_WIDTH == 8
+	uint8_t bus = hd44780_raw_read_subcycle();
+#elif HD44780_BUS_WIDTH == 4
+	uint8_t bus = hd44780_raw_read_subcycle() << 4;
+	bus |= hd44780_raw_read_subcycle();
+#endif
+	
+	hd44780_bus_mode_output();
 	return bus;
 }
 

@@ -12,6 +12,11 @@
 #include "std.h"
 
 
+#define HD44780_BUS_WIDTH 4
+_Static_assert(HD44780_BUS_WIDTH == 4 || HD44780_BUS_WIDTH == 8,
+	"hd44780 bus must be 4-bit or 8-bit");
+
+
 enum hd44780_instr {
 	HD44780_INSTR_CLEAR      = 0,
 	HD44780_INSTR_HOME       = 1,
