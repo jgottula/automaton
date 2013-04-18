@@ -35,9 +35,17 @@
 
 enum io_port_a {
 	IO_LCD_BUS_ALL = _BV(PA0) | _BV(PA1) | _BV(PA2) | _BV(PA3),
+	
+	/* PB0: unused */
+	/* PB1: unused */
+	/* PB2: unused */
 };
 
 enum io_port_b {
+	/* PB0: unused */
+	/* PB1: unused */
+	/* PB2: unused */
+	
 	/* warning: don't set PB4 as input, or spi master mode may be disabled */
 	IO_SPI_SS_SDCARD = _BV(PB3),
 	IO_SPI_SS_DS1302 = _BV(PB4),
@@ -50,10 +58,15 @@ enum io_port_b {
 };
 
 /*enum io_port_c {
-	
+	PC[2345]: JTAG
 };*/
 
 enum io_port_d {
+	/* PD0: UART0 rx */
+	/* PD1: UART0 tx */
+	/* PD2: UART1 rx */
+	/* PD3: UART1 tx */
+	
 	IO_LED_0   = _BV(PD4),
 	IO_LED_ALL = IO_LED_0,
 	
