@@ -20,6 +20,8 @@ enum lcd_init_param {
 
 
 struct lcd_state {
+	bool init;
+	
 	uint8_t ent_mode;
 	uint8_t onoff;
 	uint8_t func_set;
@@ -35,6 +37,8 @@ struct lcd_state {
 
 struct lcd_state state;
 const struct lcd_state state_init PROGMEM = {
+	.init = false,
+	
 	.ent_mode = LCD_INIT_ENT_MODE,
 	.onoff    = LCD_INIT_ONOFF,
 	.func_set = LCD_INIT_FUNC_SET,
@@ -52,6 +56,10 @@ FILE *lcd = NULL;
 
 /* set the hd44780 addr to what we have locally */
 static void lcd_send_ddaddr(void) {
+	if (!state.init) {
+		return;
+	}
+	
 	hd44780_set_ddaddr(state.addr);
 }
 
@@ -105,14 +113,19 @@ static int lcd_file_put(char c, FILE *f) {
 void lcd_init(void) {
 	hd44780_init(LCD_INIT_FUNC_SET, LCD_INIT_ONOFF, LCD_INIT_ENT_MODE);
 	
-	memcpy_P(&state, &state_init, sizeof(state));
-	
 	lcd = fdevopen(lcd_file_put, lcd_file_get);
+	
+	memcpy_P(&state, &state_init, sizeof(state));
+	state.init = true;
 }
 
 
 /* store a 5x8 character in cgram */
 void lcd_custom_store(uint8_t code, const uint8_t data[static 8]) {
+	if (!state.init) {
+		return;
+	}
+	
 	code &= 0x07;
 	
 	hd44780_set_cgaddr(code * 8);
@@ -124,6 +137,10 @@ void lcd_custom_store(uint8_t code, const uint8_t data[static 8]) {
 
 /* load a 5x8 character from cgram */
 void lcd_custom_load(uint8_t code, uint8_t data[static 8]) {
+	if (!state.init) {
+		return;
+	}
+	
 	code &= 0x07;
 	
 	hd44780_read_cgram(code * 8, 8, data);
@@ -135,6 +152,10 @@ void lcd_custom_load(uint8_t code, uint8_t data[static 8]) {
 
 /* clear the screen and return the cursor to home */
 void lcd_clear(void) {
+	if (!state.init) {
+		return;
+	}
+	
 	lcd_goto_xy(0, 0);
 	hd44780_clear();
 }
@@ -178,6 +199,10 @@ void lcd_rel_y(int8_t dy) {
 
 /* write a character to ddram; update cursor based on \r and \n */
 void lcd_write(char chr) {
+	if (!state.init) {
+		return;
+	}
+	
 	if (chr == '\r') {
 		lcd_goto_x(0);
 		return;
@@ -193,6 +218,10 @@ void lcd_write(char chr) {
 
 /* read a character from ddram */
 char lcd_read(void) {
+	if (!state.init) {
+		return '\0';
+	}
+	
 	char chr;
 	hd44780_read_ddram(state.addr, 1, (uint8_t *)&chr);
 	
