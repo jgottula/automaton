@@ -32,6 +32,7 @@
 /* project: common headers */
 #include "common/macro.h"
 #include "debug/assert.h"
+#include "debug/break.h"
 #include "io/io.h"
 #include "io/led.h"
 
