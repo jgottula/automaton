@@ -32,11 +32,9 @@ static int stdout_put(char c, FILE *f) {
 
 
 void stdfile_open(void) {
-	(void)fdevopen(NULL, stdin_get);
-	(void)fdevopen(stdout_put, NULL);
+	(void)fdevopen(stdout_put, stdin_get);
 }
 
 void stdfile_close(void) {
-	fclose(stdout);
 	fclose(stdin);
 }
