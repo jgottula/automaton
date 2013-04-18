@@ -15,7 +15,10 @@
 
 
 noreturn void main(void) {
-	reset_defuse();
+	uint8_t mcusr = MCUSR;
+	MCUSR = 0;
+	
+	wdt_disable();
 	sei();
 	
 	uart_init(UART_DEBUG, UART_DIV_115200, 100, 100);
