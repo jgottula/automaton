@@ -27,12 +27,6 @@ NM="avr-nm"
 OBJCOPY="avr-objcopy"
 OBJDUMP="avr-objdump"
 
-# huge bug with avr-gcc 4.8:
-# section '.note.gnu.build-id' is placed at address zero and *included* in the
-# binary, and the entire executable (including the VECTOR TABLE!) is off by 0x24
-# bytes; something is screwed up with the linker script, located at:
-# /usr/lib/ldscripts/avr5.x
-
 
 PROJ_NAME="automaton"
 
@@ -76,7 +70,8 @@ CFLAGS_DEBUG=(-ggdb)
 CFLAGS_OPT=(-Os -flto -fuse-linker-plugin -fwhole-program -mcall-prologues \
 	-mrelax -mstrict-X -fmerge-all-constants -ffast-math -fno-jump-tables \
 	-fshort-enums -Wl,--gc-sections)
-CFLAGS_WARN=(-Wall -Wextra -Wno-unused-function)
+CFLAGS_WARN=(-Wall -Wextra -Waddr-space-convert -Wno-unused-function \
+	-fno-diagnostics-show-caret)
 CFLAGS_ETC=(-pipe)
 
 CFLAGS=("${CFLAGS_STD[@]}" "${CFLAGS_CPU[@]}" "${CFLAGS_DEBUG[@]}" \
