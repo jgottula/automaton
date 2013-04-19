@@ -20,15 +20,20 @@ TARGET_BASE=$2
 OUTPUT=$3
 
 
+PROJ_NAME="automaton"
+
+
+# configuration files for mcu and programmer
+CFG_MCU="atmega324a"
+CFG_PROG="dragon_jtag"
+
+
 CC="avr-gcc"
 AS="avr-as"
 LD="avr-ld"
 NM="avr-nm"
 OBJCOPY="avr-objcopy"
 OBJDUMP="avr-objdump"
-
-
-PROJ_NAME="automaton"
 
 
 SOURCES=$(find src -type f -iname "*.c")
@@ -41,9 +46,10 @@ OUT_DUMP="out/$PROJ_NAME.dump"
 OUT_LST="out/$PROJ_NAME.lst"
 
 
-# configuration files for mcu and programmer
-. cfg/atmega324a
-. cfg/dragon_jtag
+redo-ifchange "cfg/$CFG_MCU" "cfg/$CFG_PROG"
+
+. "cfg/$CFG_MCU"
+. "cfg/$CFG_PROG"
 
 
 AVRDUDE_FLAGS=("${AVRDUDE_PART[@]/#/-p}" "${AVRDUDE_PROG[@]/#/-c}" \
