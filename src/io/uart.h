@@ -20,6 +20,8 @@ enum uart_num {
 /* bit 12 is the double-speed bit */
 enum uart_divisor {
 #if F_CPU == 20000000UL
+	UART_DIV_600    = 2082,
+	UART_DIV_1200   = 1041,
 	UART_DIV_2400   = 520,
 	UART_DIV_4800   = 259,
 	UART_DIV_9600   = 129,
@@ -37,6 +39,9 @@ enum uart_divisor {
 	UART_DIV_500K   = _BV(12) | 4,
 	UART_DIV_2_50M  = _BV(12) | 0,
 #elif F_CPU == 10000000UL
+	UART_DIV_300    = 2082,
+	UART_DIV_600    = 1041,
+	UART_DIV_1200   = 520,
 	UART_DIV_2400   = 259,
 	UART_DIV_4800   = 129,
 	UART_DIV_9600   = 64,
