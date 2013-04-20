@@ -19,6 +19,7 @@ enum uart_num {
 
 /* bit 12 is the double-speed bit */
 enum uart_divisor {
+#if F_CPU == 20000000UL
 	UART_DIV_2400   = 520,
 	UART_DIV_4800   = 259,
 	UART_DIV_9600   = 129,
@@ -35,8 +36,24 @@ enum uart_divisor {
 	UART_DIV_230400 = _BV(12) | 21,
 	UART_DIV_500K   = _BV(12) | 4,
 	UART_DIV_2_50M  = _BV(12) | 0,
+#elif F_CPU == 10000000UL
+	UART_DIV_2400   = 259,
+	UART_DIV_4800   = 129,
+	UART_DIV_9600   = 64,
+	UART_DIV_14400  = 42,
+	UART_DIV_19200  = 32,
+	UART_DIV_28800  = 21,
+	UART_DIV_38400  = 15,
+	UART_DIV_57600  = 10,
+	UART_DIV_76800  = 7,
+	
+	UART_DIV_115200 = _BV(12) | 21,
+	UART_DIV_250K   = _BV(12) | 4,
+	UART_DIV_1_25M  = _BV(12) | 0,
+#else 
+#error UART baud rate divisors are wrong
+#endif
 };
-_Static_assert(F_CPU == 20000000UL, "UART baud rate divisors are wrong");
 
 
 void uart_init(uint8_t dev, uint16_t divisor, uint16_t timeout_tx_ms,
