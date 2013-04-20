@@ -10,7 +10,7 @@
 
 
 noreturn void die(void) {
-	uart_flush(UART_PC, 100);
+	uart_flush(UART_PC, 1000);
 	
 	cli();
 	_BREAK();
