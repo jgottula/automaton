@@ -113,9 +113,10 @@ static int lcd_file_put(char c, FILE *f) {
 void lcd_init(void) {
 	hd44780_init(LCD_INIT_FUNC_SET, LCD_INIT_ONOFF, LCD_INIT_ENT_MODE);
 	
+	memcpy_P(&state, &state_init, sizeof(state));
+	
 	lcd = fdevopen(lcd_file_put, lcd_file_get);
 	
-	memcpy_P(&state, &state_init, sizeof(state));
 	state.init = true;
 }
 
