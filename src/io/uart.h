@@ -47,7 +47,7 @@ enum uart_divisor {
 	UART_DIV_57600  = 10,
 	UART_DIV_76800  = 7,
 	
-	UART_DIV_115200 = _BV(12) | 21,
+	UART_DIV_115200 = _BV(12) | 10,
 	UART_DIV_250K   = _BV(12) | 4,
 	UART_DIV_1_25M  = _BV(12) | 0,
 #else 
