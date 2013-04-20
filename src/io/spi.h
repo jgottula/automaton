@@ -26,18 +26,26 @@ enum spi_endian {
 
 /* bit 7 is the double-speed bit */
 enum spi_divisor {
+#if F_CPU == 20000000UL
 	SPI_DIV_156K  = _BV(SPR1) | _BV(SPR0),
-	
 	SPI_DIV_312K  = _BV(SPR1),
-	SPI_DIV_625K  = _BV(7) | _BV(SPR1),
-	
+	SPI_DIV_625K  = _BV(SPR1) | _BV(7),
 	SPI_DIV_1_25M = _BV(SPR0),
-	SPI_DIV_2_5M  = _BV(7) | _BV(SPR0),
-	
+	SPI_DIV_2_5M  = _BV(SPR0) | _BV(7),
 	SPI_DIV_5M    = 0,
-	SPI_DIV_10M   = _BV(7) | 0,
+	SPI_DIV_10M   = 0 | _BV(7),
+#elif F_CPU == 10000000UL
+	SPI_DIV_78K   = _BV(SPR1) | _BV(SPR0),
+	SPI_DIV_156K  = _BV(SPR1),
+	SPI_DIV_312K  = _BV(SPR1) | _BV(7),
+	SPI_DIV_625M  = _BV(SPR0),
+	SPI_DIV_1_25M = _BV(SPR0) | _BV(7),
+	SPI_DIV_2_5M  = 0,
+	SPI_DIV_5M    = 0 | _BV(7),
+#else
+#error SPI clock dividers are wrong
+#endif
 };
-_Static_assert(F_CPU == 20000000UL, "SPI clock dividers are wrong");
 
 enum spi_devices {
 	SPI_DS1302_MODE   = SPI_MODE_2,
