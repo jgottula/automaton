@@ -23,7 +23,7 @@ OUTPUT=$3
 PROJ_NAME="automaton"
 
 
-# configuration files for mcu and programmer
+# configuration files for microcontroller and programmer
 CFG_MCU="atmega324a"
 CFG_PROG="dragon_jtag"
 
@@ -46,10 +46,9 @@ OUT_DUMP="out/$PROJ_NAME.dump"
 OUT_LST="out/$PROJ_NAME.lst"
 
 
-redo-ifchange "cfg/$CFG_MCU" "cfg/$CFG_PROG"
-
-. "cfg/$CFG_MCU"
-. "cfg/$CFG_PROG"
+CFG_FILES=("cfg/mcu/$CFG_MCU" "cfg/prog/$CFG_PROG")
+redo-ifchange "${CFG_FILES[@]}"
+source "${CFG_FILES[@]}"
 
 
 AVRDUDE_FLAGS=("${AVRDUDE_PART[@]/#/-p}" "${AVRDUDE_PROG[@]/#/-c}" \
