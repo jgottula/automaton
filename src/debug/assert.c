@@ -15,7 +15,7 @@ noreturn void assert_fail(const __flash char *file, uint16_t line) {
 	uart_flush(UART_PC, 1000);
 	
 	char buf[64];
-	snprintf_P(buf, sizeof(buf), PSTR("assertion failed: %S:%" PRIu16 "\n"),
+	snprintf_P(buf, sizeof(buf), PSTR("\nassertion failed: %S:%" PRIu16 "\n"),
 		file, line);
 	uart_direct_write(UART_PC, UART_DIV_115200, buf);
 	
