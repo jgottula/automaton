@@ -27,13 +27,22 @@ PROJ_NAME="automaton"
 CFG_MCU="atmega324a"
 CFG_PROG="dragon_jtag"
 
+CFG_FILES=("cfg/mcu/$CFG_MCU" "cfg/prog/$CFG_PROG")
+redo-ifchange "${CFG_FILES[@]}"
+for CFG_FILE in "${CFG_FILES[@]}"; do
+	source "$CFG_FILE"
+done
+
 
 CC="avr-gcc"
 AS="avr-as"
 LD="avr-ld"
+
 NM="avr-nm"
 OBJCOPY="avr-objcopy"
 OBJDUMP="avr-objdump"
+
+AVRDUDE="avrdude"
 
 
 SOURCES=$(find src -type f -iname "*.c")
@@ -44,24 +53,6 @@ OUT_BIN="out/$PROJ_NAME.bin"
 OUT_MAP="out/$PROJ_NAME.map"
 OUT_DUMP="out/$PROJ_NAME.dump"
 OUT_LST="out/$PROJ_NAME.lst"
-
-
-CFG_FILES=("cfg/mcu/$CFG_MCU" "cfg/prog/$CFG_PROG")
-redo-ifchange "${CFG_FILES[@]}"
-source "${CFG_FILES[@]}"
-
-
-AVRDUDE_FLAGS=("${AVRDUDE_PART[@]/#/-p}" "${AVRDUDE_PROG[@]/#/-c}" \
-	"${AVRDUDE_PORT[@]/#/-P}" "${AVRDUDE_BITCLOCK[@]/#/-B}" \
-	"${AVRDUDE_BAUDRATE[@]/#/-b}" "${AVRDUDE_BANGDELAY[@]/#/-i}")
-
-AVRDUDE_FLAGS_LOAD=("${AVRDUDE_FLAGS[@]}" -u \
-	-Uflash:w:"$OUT_BIN":r)
-AVRDUDE_FLAGS_FUSE=("${AVRDUDE_FLAGS[@]}" -q \
-	-Ulfuse:w:"$AVRDUDE_LFUSE":m \
-	-Uhfuse:w:"$AVRDUDE_HFUSE":m \
-	-Uefuse:w:"$AVRDUDE_EFUSE":m)
-AVRDUDE_FLAGS_TERM=("${AVRDUDE_FLAGS[@]}" -t)
 
 
 DEFINES=("F_CPU=${CPU_KHZ}000UL")
@@ -75,14 +66,26 @@ CFLAGS_DEBUG=(-ggdb)
 CFLAGS_OPT=(-Os -flto -fuse-linker-plugin -fwhole-program -mcall-prologues \
 	-mrelax -mstrict-X -fmerge-all-constants -ffast-math -fno-jump-tables \
 	-fshort-enums -Wl,--gc-sections)
-CFLAGS_WARN=(-Wall -Wextra -Waddr-space-convert -Wno-unused-function \
-	-fno-diagnostics-show-caret)
+CFLAGS_WARN=(-Wall -Wextra -Wno-unused-function)
 CFLAGS_ETC=(-pipe)
 
 CFLAGS=("${CFLAGS_STD[@]}" "${CFLAGS_CPU[@]}" "${CFLAGS_DEBUG[@]}" \
 	"${CFLAGS_OPT[@]}" "${CFLAGS_WARN[@]}" "${CFLAGS_ETC[@]}")
 CFLAGS_COMPILE=("${CFLAGS[@]}" "${DEFINES[@]/#/-D}" "${INC_DIRS[@]/#/-I}")
 CFLAGS_LINK=("${CFLAGS[@]}" "${LIB_DIRS[@]/#/-L}" "${LIBS[@]/#/-l}")
+
+
+AVRDUDE_FLAGS=("${AVRDUDE_PART[@]/#/-p}" "${AVRDUDE_PROG[@]/#/-c}" \
+	"${AVRDUDE_PORT[@]/#/-P}" "${AVRDUDE_BITCLOCK[@]/#/-B}" \
+	"${AVRDUDE_BAUDRATE[@]/#/-b}" "${AVRDUDE_BANGDELAY[@]/#/-i}")
+
+AVRDUDE_FLAGS_LOAD=("${AVRDUDE_FLAGS[@]}" -u \
+	-Uflash:w:"$OUT_BIN":r)
+AVRDUDE_FLAGS_FUSE=("${AVRDUDE_FLAGS[@]}" -q \
+	-Ulfuse:w:"$AVRDUDE_LFUSE":m \
+	-Uhfuse:w:"$AVRDUDE_HFUSE":m \
+	-Uefuse:w:"$AVRDUDE_EFUSE":m)
+AVRDUDE_FLAGS_TERM=("${AVRDUDE_FLAGS[@]}" -t)
 
 
 case "$TARGET" in
@@ -127,16 +130,16 @@ clean)
 	;;
 load)
 	redo all
-	echo "sudo avrdude ${AVRDUDE_FLAGS_LOAD[@]}"
-	sudo avrdude "${AVRDUDE_FLAGS_LOAD[@]}"
+	echo "sudo $AVRDUDE ${AVRDUDE_FLAGS_LOAD[@]}"
+	sudo $AVRDUDE "${AVRDUDE_FLAGS_LOAD[@]}"
 	;;
 fuse)
-	echo "sudo avrdude ${AVRDUDE_FLAGS_FUSE[@]}"
-	sudo avrdude "${AVRDUDE_FLAGS_FUSE[@]}"
+	echo "sudo $AVRDUDE ${AVRDUDE_FLAGS_FUSE[@]}"
+	sudo $AVRDUDE "${AVRDUDE_FLAGS_FUSE[@]}"
 	;;
 term)
-	echo "sudo avrdude ${AVRDUDE_FLAGS_TERM[@]}"
-	sudo avrdude "${AVRDUDE_FLAGS_TERM[@]}"
+	echo "sudo $AVRDUDE ${AVRDUDE_FLAGS_TERM[@]}"
+	sudo $AVRDUDE "${AVRDUDE_FLAGS_TERM[@]}"
 	;;
 *)
 	echo "unknown target '$TARGET'"
