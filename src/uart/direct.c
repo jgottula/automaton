@@ -40,6 +40,11 @@ static void uart_direct_init(uint8_t dev, uint16_t divisor) {
 }
 
 static void uart_direct_write_chr(uint8_t dev, char chr) {
+	/* convert LF to CRLF */
+	if (chr == '\n') {
+		uart_direct_write_chr(UART_PC, '\r');
+	}
+	
 	while (!((dev == 0 ? UCSR0A : UCSR1A) & _BV(UDRE0)));
 	
 	if (dev == 0) {
