@@ -2,6 +2,48 @@ automaton
 todo list
 
 
+clock/voltage:
+- run at 3.3V
+  - done
+    - switch crystal from 20MHz to 12MHz
+    - resolder FTDI: 3V out, 3V signal level
+    - change F_CPU
+    - rewire regulators
+    - LCD to 5V
+    - MCP2551 to 5V
+    - brownout detect level to 2.7
+    - remove 4050
+    - update time-based enums
+  - to do
+    - LED resistors
+
+alarm:
+- use the same timer for multiple alarms
+
+pc uart:
+- variadic logging function with log level parameter?
+- use ANSI colors for different log levels
+
+code:
+- handle all TODO's and #warning's
+- standard greppable comment for REMOVE ME etc
+
+timers:
+- if possible, create a generic 'millisecond' timer that debounce (et al) use
+
+debug:
+- in UART code, _BREAK() then die() on errors (eg: dev is neither 0 nor 1)
+
+avarice:
+- recompile with atmega324a support
+
+redo:
+- load: program the eeprom
+- *.o:  do .dep generation in one step (as in manual)
+- when avr-gcc-4.8 is fixed, add:
+  - -Waddr-space-convert
+  - -fno-diagnostics-show-caret
+
 button:
 - read up and get RC values for hw debounce
 
