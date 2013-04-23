@@ -6,7 +6,7 @@
 
 
 #include "obd/stn1110.h"
-#include "io/uart.h"
+#include "uart/uart.h"
 
 
 FILE *stn1110 = NULL;

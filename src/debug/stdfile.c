@@ -6,7 +6,7 @@
 
 
 #include "debug/stdfile.h"
-#include "io/uart.h"
+#include "uart/uart.h"
 
 
 static int stdin_get(FILE *f) {

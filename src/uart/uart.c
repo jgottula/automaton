@@ -5,7 +5,7 @@
  */
 
 
-#include "io/uart.h"
+#include "uart/uart.h"
 #include "algo/fifo.h"
 #include "lcd/lcd.h"
 #include "time/alarm.h"

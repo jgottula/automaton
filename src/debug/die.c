@@ -6,7 +6,7 @@
 
 
 #include "debug/die.h"
-#include "io/uart.h"
+#include "uart/uart.h"
 
 
 noreturn void die(void) {
