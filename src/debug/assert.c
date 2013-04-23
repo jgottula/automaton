@@ -8,10 +8,16 @@
 #include "debug/assert.h"
 #include "debug/die.h"
 #include "debug/reset.h"
+#include "uart/direct.h"
 
 
 noreturn void assert_fail(const __flash char *file, uint16_t line) {
-	printf_P(PSTR("assertion failed: %S:%" PRIu16 "\n"), file, line);
+	uart_flush(UART_PC, 1000);
+	
+	char buf[64];
+	snprintf_P(buf, sizeof(buf), PSTR("assertion failed: %S:%" PRIu16 "\n"),
+		file, line);
+	uart_direct_write(UART_PC, UART_DIV_115200, buf);
 	
 #if ASSERT_FAIL_RESET
 	reset();
