@@ -36,7 +36,7 @@ ISR(TIMER1_COMPA_vect) {
 /* set the alarm */
 void alarm_set(uint16_t delay_ms) {
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-		/* TODO: complain and die if the alarm is already armed */
+		assert(!alarm_armed);
 		
 		TCCR1A = 0;
 		TCCR1B = _BV(WGM12) | _BV(CS10);
