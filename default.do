@@ -66,7 +66,7 @@ CFLAGS_DEBUG=(-ggdb)
 CFLAGS_OPT=(-Os -flto -fuse-linker-plugin -fwhole-program -mcall-prologues \
 	-mrelax -mstrict-X -fmerge-all-constants -ffast-math -fno-jump-tables \
 	-fshort-enums -Wl,--gc-sections)
-CFLAGS_WARN=(-Wall -Wextra -Wno-unused-function)
+CFLAGS_WARN=(-Wall -Wextra -Wno-unused-function -fno-diagnostics-show-caret)
 CFLAGS_ETC=(-pipe)
 
 CFLAGS=("${CFLAGS_STD[@]}" "${CFLAGS_CPU[@]}" "${CFLAGS_DEBUG[@]}" \
