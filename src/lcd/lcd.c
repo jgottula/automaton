@@ -65,7 +65,7 @@ static void lcd_send_ddaddr(void) {
 
 
 /* calculate the ddram addr based on changed state.cur.{x,y} */
-static void lcd_cur_set(void) {
+static void lcd_cur_set(bool send) {
 	_Static_assert(LCD_ROWS == 4 && LCD_COLS == 20,
 		"lcd cursor assumptions wrong");
 	
@@ -77,7 +77,9 @@ static void lcd_cur_set(void) {
 	}
 	
 	state.addr = new_addr;
-	lcd_send_ddaddr();
+	if (send) {
+		lcd_send_ddaddr();
+	}
 }
 
 /* update local cursor values to match the hd44780's auto-increment activity */
@@ -89,7 +91,8 @@ static void lcd_cur_adv(void) {
 			state.cur.y = 0;
 		}
 	}
-	lcd_cur_set();
+	
+	lcd_cur_set(false);
 }
 
 
@@ -166,19 +169,19 @@ void lcd_clear(void) {
 void lcd_goto_xy(uint8_t x, uint8_t y) {
 	state.cur.x = (x % LCD_COLS);
 	state.cur.y = (y % LCD_ROWS);
-	lcd_cur_set();
+	lcd_cur_set(true);
 }
 
 /* set the cursor position (x only) */
 void lcd_goto_x(uint8_t x) {
 	state.cur.x = (x % LCD_COLS);
-	lcd_cur_set();
+	lcd_cur_set(true);
 }
 
 /* set the cursor position (y only) */
 void lcd_goto_y(uint8_t y) {
 	state.cur.y = (y % LCD_ROWS);
-	lcd_cur_set();
+	lcd_cur_set(true);
 }
 
 
