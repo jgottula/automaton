@@ -6,12 +6,20 @@
 
 
 #include "std.h"
+#include "button/button.h"
 #include "debug/die.h"
-#include "debug/reset.h"
 #include "debug/stdfile.h"
 #include "io/spi.h"
-#include "io/uart.h"
-#include "lcd/hd44780.h"
+#include "lcd/lcd.h"
+#include "obd/stn1110.h"
+#include "uart/direct.h"
+#include "uart/uart.h"
+#include "ui/ui.h"
+
+
+static void main_init(const char *pstr) {
+	printf_P(PSTR("main: init %S\n"), pstr);
+}
 
 
 noreturn void main(void) {
@@ -19,43 +27,32 @@ noreturn void main(void) {
 	MCUSR = 0;
 	
 	wdt_disable();
-	sei();
 	
-	uart_init(UART_DEBUG, UART_DIV_115200, 100, 100);
+	uart_direct_write_P(UART_PC, UART_DIV_115200,
+		PSTR("\n[[automaton][pc uart]]\n"));
+	
+	uart_init(UART_PC, UART_DIV_115200, 0, 0);
 	stdfile_open();
 	
-	printf_P(PSTR("automaton: debug uart\n"));
+	sei();
+	fputs_P(PSTR("main: uart ok\n"), stdout);
 	
-	printf_P(PSTR("init hd44780\n"));
+	main_init(PSTR("lcd"));
 	lcd_init();
-	fprintf_P(lcd, PSTR("AUTOmaton\r\n"));
+	/*fputs_P(PSTR("AUTOmaton\r\n"), lcd);*/
 	
-	printf_P(PSTR("init spi\n"));
+	main_init(PSTR("button"));
+	button_init();
+	
+	main_init(PSTR("spi"));
 	spi_init();
 	
+	main_init(PSTR("stn1110"));
+	stn1110_init();
 	
+	fputs_P(PSTR("main: init ok\n"), stdout);
 	
-	printf_P(PSTR("done\n"));
-	
-	/*uart_write_pstr(UART_DEBUG, "init iso9141-2\n");
-	iso_init();*/
-	
-	/*uart_write_pstr("input loop\n");
-	for ( ; ; ) {
-		char r;
-		if (uart_read_chr(&r)) {
-			switch (r) {
-			case '\x03':
-				reset();
-			}
-		}
-		
-		uint8_t iso_r;
-		if (iso_read(&iso_r)) {
-			uart_write_hex8(iso_r);
-			lcd_write_hex8(iso_r);
-		}
-	}*/
+	ui_loop();
 	
 	die();
 }
