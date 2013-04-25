@@ -88,8 +88,8 @@ static void lcd_cur_adv(void) {
 		if (++state.cur.y == LCD_ROWS) {
 			state.cur.y = 0;
 		}
-		lcd_cur_set();
 	}
+	lcd_cur_set();
 }
 
 
