@@ -17,5 +17,8 @@ extern FILE *stn1110;
 
 void stn1110_init(void);
 
+bool stn1110_at(const char *cmd, char *reply, size_t reply_max,
+	uint16_t timeout_ms);
+
 
 #endif
