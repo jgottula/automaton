@@ -147,6 +147,3 @@ bool button_event(struct button_event *out) {
 	/* type punning is legal for char type (8-bit) */
 	return fifo_pop(&buttons.events, (uint8_t *)out);
 }
-
-
-// TODO: test button code using uart and slowed-down timer0
