@@ -25,8 +25,8 @@ enum uart_state {
 struct uart {
 	uint8_t state;
 	
-	uint16_t timeout_tx_ms;
-	uint16_t timeout_rx_ms;
+	uint16_t timeout_tx;
+	uint16_t timeout_rx;
 	
 	struct fifo fifo_tx;
 	struct fifo fifo_rx;
@@ -39,7 +39,7 @@ struct uart {
 };
 
 
-static volatile struct uart uarts[2] = {
+static struct uart uarts[2] = {
 	{
 		.state = 0,
 		
@@ -212,14 +212,13 @@ ISR(USART1_UDRE_vect) {
 
 /* atomic: write a byte to the tx fifo and prime the pump if necessary */
 static bool uart_write_raw(uint8_t dev, uint8_t byte) {
-	/* non-volatile */
-	struct uart *uart = (struct uart *)uarts + dev;
+	struct uart *uart = uarts + dev;
 	
 	bool result = false;
 	
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 		if (uart->state & UART_ST_INIT) {
-			result = fifo_push_wait(&uart->fifo_tx, byte, uart->timeout_tx_ms);
+			result = fifo_push_wait(&uart->fifo_tx, byte, uart->timeout_tx);
 			
 			if (result && !(uart->state & UART_ST_TX_ACTIVE)) {
 #if UART_DEBUG_INT_FLAG
@@ -251,8 +250,7 @@ static bool uart_write_raw(uint8_t dev, uint8_t byte) {
 
 /* atomic: read a byte from the rx fifo if possible */
 static bool uart_read_raw(uint8_t dev, uint8_t *byte) {
-	/* non-volatile */
-	struct uart *uart = (struct uart *)uarts + dev;
+	struct uart *uart = uarts + dev;
 	
 	bool result = false;
 	
@@ -262,7 +260,7 @@ static bool uart_read_raw(uint8_t dev, uint8_t *byte) {
 			lcd_write('{');
 #endif
 			
-			result = fifo_pop_wait(&uart->fifo_rx, byte, uart->timeout_rx_ms);
+			result = fifo_pop_wait(&uart->fifo_rx, byte, uart->timeout_rx);
 			
 #if UART_DEBUG_INT_FLAG
 			lcd_write('}');
@@ -282,16 +280,15 @@ static bool uart_read_raw(uint8_t dev, uint8_t *byte) {
 
 /* atomic: initialize uart with baudrate divisor and optional tx/rx timeouts;
  * any previous state will be cleared; a timeout of zero will try forever */
-void uart_init(uint8_t dev, uint16_t divisor, uint16_t timeout_tx_ms,
-	uint16_t timeout_rx_ms) {
-	/* non-volatile */
-	struct uart *uart = (struct uart *)uarts + dev;
+void uart_init(uint8_t dev, uint16_t divisor, uint16_t timeout_tx,
+	uint16_t timeout_rx) {
+	struct uart *uart = uarts + dev;
 	
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 		uart->state = UART_ST_INIT;
 		
-		uart->timeout_tx_ms = timeout_tx_ms;
-		uart->timeout_rx_ms = timeout_rx_ms;
+		uart->timeout_tx = timeout_tx;
+		uart->timeout_rx = timeout_rx;
 		
 		fifo_init(&uart->fifo_rx);
 		fifo_init(&uart->fifo_tx);
@@ -307,39 +304,57 @@ void uart_init(uint8_t dev, uint16_t divisor, uint16_t timeout_tx_ms,
 /* atomic: disable uart completely; stops interrupts and makes future reads and
  * writes fail */
 void uart_stop(uint8_t dev) {
-	/* non-volatile */
-	struct uart *uart = (struct uart *)uarts + dev;
+	struct uart *uart = uarts + dev;
 	
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 		uart->state = 0;
 		
 		*uart->ucsr_b = 0;
 	}
+	
+	fifo_deinit(&uart->fifo_rx);
+	fifo_deinit(&uart->fifo_tx);
 }
+
 
 /* atomic: flush the uart's tx buffer; a timeout of zero will wait forever;
  * returns false on timeout */
-bool uart_flush(uint8_t dev, uint16_t timeout_ms) {
-	volatile struct uart *uart = uarts + dev;
+bool uart_flush(uint8_t dev, uint16_t timeout) {
+	struct uart *uart = uarts + dev;
 	if (!(uart->state & UART_ST_INIT)) {
 		return false;
 	}
 	
-	if (timeout_ms != 0) {
-		alarm_set(timeout_ms);
-	}
-	
-	for ( ; ; ) {
-		_delay_us(1);
+	if (timeout != 0) {
+		struct alarm alarm;
+		alarm_register(&alarm);
+		alarm_start(&alarm, timeout);
 		
-		/* wait for tx to completely finish */
-		if (!(uart->state & UART_ST_TX_ACTIVE)) {
-			alarm_unset();
-			return true;
+		bool result;
+		for ( ; ; ) {
+			/* wait for tx to completely finish */
+			if (!(uart->state & UART_ST_TX_ACTIVE)) {
+				result = true;
+				break;
+			}
+			
+			if (timeout != 0 && alarm_expired(&alarm)) {
+				result = false;
+				break;
+			}
+			
+			_delay_us(1);
 		}
 		
-		if (timeout_ms != 0 && alarm_check()) {
-			return false;
+		alarm_unregister(&alarm);
+		return result;
+	} else {
+		for ( ; ; ) {
+			if (!(uart->state & UART_ST_TX_ACTIVE)) {
+				return true;
+			}
+			
+			_delay_us(1);
 		}
 	}
 }
@@ -347,7 +362,7 @@ bool uart_flush(uint8_t dev, uint16_t timeout_ms) {
 
 /* nonatomic: count the bytes waiting in the rx fifo */
 uint8_t uart_avail(uint8_t dev) {
-	volatile struct uart *uart = uarts + dev;
+	struct uart *uart = uarts + dev;
 	if (!(uart->state & UART_ST_INIT)) {
 		return 0;
 	}
@@ -358,7 +373,7 @@ uint8_t uart_avail(uint8_t dev) {
 
 /* nonatomic: write a character to the uart; returns false on failure */
 bool uart_write(uint8_t dev, char chr) {
-	volatile struct uart *uart = uarts + dev;
+	struct uart *uart = uarts + dev;
 	if (!(uart->state & UART_ST_INIT)) {
 		return false;
 	}
@@ -368,7 +383,7 @@ bool uart_write(uint8_t dev, char chr) {
 
 /* nonatomic: read a character from the uart; returns false on failure */
 bool uart_read(uint8_t dev, char *chr) {
-	volatile struct uart *uart = uarts + dev;
+	struct uart *uart = uarts + dev;
 	if (!(uart->state & UART_ST_INIT)) {
 		return false;
 	}

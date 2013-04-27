@@ -61,11 +61,11 @@ enum uart_divisor {
 };
 
 
-void uart_init(uint8_t dev, uint16_t divisor, uint16_t timeout_tx_ms,
-	uint16_t timeout_rx_ms);
+void uart_init(uint8_t dev, uint16_t divisor, uint16_t timeout_tx,
+	uint16_t timeout_rx);
 void uart_stop(uint8_t dev);
 
-bool uart_flush(uint8_t dev, uint16_t timeout_ms);
+bool uart_flush(uint8_t dev, uint16_t timeout);
 
 uint8_t uart_avail(uint8_t dev);
 
