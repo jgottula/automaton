@@ -13,38 +13,6 @@
 static bool stn_init = false;
 static bool stn_echo = true;
 
-FILE *stn1110 = NULL;
-
-
-static int stn1110_file_get(FILE *f) {
-	(void)f;
-	
-	char c;
-	if (uart_read(UART_STN1110, &c)) {
-		if (c == '\r') {
-			c = '\n';
-		}
-		
-		return (int)c;
-	} else {
-		return _FDEV_ERR;
-	}
-}
-
-static int stn1110_file_put(char c, FILE *f) {
-	(void)f;
-	
-	if (c == '\n') {
-		c = '\r';
-	}
-	
-	if (uart_write(UART_STN1110, c)) {
-		return 0;
-	} else {
-		return _FDEV_ERR;
-	}
-}
-
 
 static void stn1110_eat_prompt(uint16_t timeout) {
 	// TODO: timeout
@@ -141,7 +109,6 @@ static void stn1110_baud_switch(void) {
 
 void stn1110_init(void) {
 	uart_init(UART_STN1110, UART_DIV_9600, 0, 0);
-	stn1110 = fdevopen(stn1110_file_put, stn1110_file_get);
 	
 	stn_echo = true;
 	

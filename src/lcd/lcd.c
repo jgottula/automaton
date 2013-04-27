@@ -51,8 +51,6 @@ const struct lcd_state state_init PROGMEM = {
 	},
 };
 
-FILE *lcd = NULL;
-
 
 /* set the hd44780 addr to what we have locally */
 static void lcd_send_ddaddr(void) {
@@ -98,29 +96,11 @@ static void lcd_cur_adv(void) {
 }
 
 
-/* stdio compatibility stub; reads from ddram */
-static int lcd_file_get(FILE *f) {
-	(void)f;
-	
-	return lcd_read();
-}
-
-/* stdio compatibility stub; writes to ddram */
-static int lcd_file_put(char c, FILE *f) {
-	(void)f;
-	
-	lcd_write(c);
-	return 0;
-}
-
-
 /* initialize the lcd using the initial parameters */
 void lcd_init(void) {
 	hd44780_init(LCD_INIT_FUNC_SET, LCD_INIT_ONOFF, LCD_INIT_ENT_MODE);
 	
 	memcpy_P(&state, &state_init, sizeof(state));
-	
-	lcd = fdevopen(lcd_file_put, lcd_file_get);
 	
 	state.init = true;
 }

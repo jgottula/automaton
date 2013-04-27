@@ -16,9 +16,6 @@
 #define LCD_COLS 20
 
 
-extern FILE *lcd;
-
-
 void lcd_init(void);
 
 void lcd_custom_store(uint8_t code, const uint8_t data[static 8]);
