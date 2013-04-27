@@ -23,7 +23,7 @@ static void _main_init(const char *pstr) {
 }
 
 
-noreturn void main(void) {
+int main(void) {
 	uint8_t mcusr = MCUSR;
 	MCUSR = 0;
 	
