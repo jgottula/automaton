@@ -18,6 +18,7 @@
 #include <stdnoreturn.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 
 /* avr-libc specific */
