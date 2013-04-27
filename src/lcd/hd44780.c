@@ -32,21 +32,21 @@ static void hd44780_raw_write_subcycle(uint8_t bus) {
 	IO_WRITE(PORT(IO_LCD_BUS), IO_LCD_BUS_ALL, bus);
 	
 	PORT(IO_LCD_CTRL) |= IO_LCD_CTRL_E;
-	delay_150ns();
+	DELAY_150NS();
 	
 	PORT(IO_LCD_CTRL) &= ~IO_LCD_CTRL_E;
-	delay_1200ns();
+	DELAY_1200NS();
 }
 
 /* private: cycle E and get a byte from the bus */
 static uint8_t hd44780_raw_read_subcycle(void) {
 	PORT(IO_LCD_CTRL) |= IO_LCD_CTRL_E;
-	delay_150ns();
+	DELAY_150NS();
 	
 	uint8_t bus = IO_READ(PIN(IO_LCD_BUS), IO_LCD_BUS_ALL);
 	
 	PORT(IO_LCD_CTRL) &= ~IO_LCD_CTRL_E;
-	delay_1200ns();
+	DELAY_1200NS();
 	
 	return bus;
 }
