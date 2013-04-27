@@ -6,32 +6,61 @@
 
 
 #include "obd/stn1110.h"
+#include "time/alarm.h"
 #include "uart/uart.h"
 
 
-// TODO: make a state struct
-static bool stn_init = false;
-static bool stn_echo = true;
+static struct {
+	struct {
+		bool init : 1;
+		bool echo : 1;
+	};
+	
+	struct alarm alarm;
+} stn_state = {
+	.init = false,
+	.echo = true,
+};
 
 
-static void stn1110_eat_prompt(uint16_t timeout) {
-	// TODO: timeout
+/* send incoming characters to the bit bucket until the prompt character;
+ * timeout of zero will wait forever */
+static void _stn1110_eat_prompt(uint16_t timeout) {
+	if (timeout != 0) {
+		alarm_start(&stn_state.alarm, timeout);
+	}
 	
 	while (!uart_avail(UART_STN1110) || fgetc(stn1110) != '>') {
 		_delay_us(1);
+		
+		if (timeout != 0 && alarm_expired(&stn_state.alarm)) {
+			break;
+		}
 	}
+	
+	alarm_stop(&stn_state.alarm);
 }
 
-static void stn1110_eat_line(uint16_t timeout) {
-	// TODO: timeout
+/* send incoming characters to the bit bucket until the newline character;
+ * timeout of zero will wait forever */
+static void _stn1110_eat_line(uint16_t timeout) {
+	if (timeout != 0) {
+		alarm_start(&stn_state.alarm, timeout);
+	}
 	
 	while (!uart_avail(UART_STN1110) || fgetc(stn1110) != '\n') {
 		_delay_us(1);
+		
+		if (timeout != 0 && alarm_expired(&stn_state.alarm)) {
+			break;
+		}
 	}
+	
+	alarm_stop(&stn_state.alarm);
 }
 
 
-static bool stn1110_cmd(const char *cmd) {
+static bool _stn1110_cmd(const char *cmd) {
 	// TODO: log all commands sent and responses received to the PC uart
 	// TODO: non-PSTR version
 	// TODO: timeout
@@ -44,7 +73,7 @@ static bool stn1110_cmd(const char *cmd) {
 	char buf[64];
 	uint8_t len = 0;
 	
-	bool echo    = !stn_echo;
+	bool echo    = !stn_state.echo;
 	bool newline = false;
 	bool prompt  = false;
 	do {
@@ -81,15 +110,15 @@ static bool stn1110_cmd(const char *cmd) {
 	fprintf_P(stdout, PSTR("buf: |%s|\n"), buf);
 	
 	if (strcmp_P(buf, PSTR("OK")) == 0) {
-		fputs_P(PSTR("stn1110_cmd: TRUE\n"), stdout);
+		fputs_P(PSTR("_stn1110_cmd: TRUE\n"), stdout);
 		return true;
 	} else {
-		fputs_P(PSTR("stn1110_cmd: FALSE\n"), stdout);
+		fputs_P(PSTR("_stn1110_cmd: FALSE\n"), stdout);
 		return false;
 	}
 	
 	// should never be reached?!
-		fputs_P(PSTR("stn1110_cmd: FALSE (!!)\n"), stdout);
+		fputs_P(PSTR("_stn1110_cmd: FALSE (!!)\n"), stdout);
 	return false;
 	
 	// TODO: use global 'stn1110_error' errno-type variable?
@@ -98,11 +127,11 @@ static bool stn1110_cmd(const char *cmd) {
 }
 
 
-static void stn1110_echo_off(void) {
+static void _stn1110_echo_off(void) {
 	
 }
 
-static void stn1110_baud_switch(void) {
+static void _stn1110_baud_switch(void) {
 	// see page 60 of the ELM327 manual for the procedure
 }
 
@@ -110,30 +139,42 @@ static void stn1110_baud_switch(void) {
 void stn1110_init(void) {
 	uart_init(UART_STN1110, UART_DIV_9600, 0, 0);
 	
-	stn_echo = true;
+	alarm_register(&stn_state.alarm);
+	
+	stn_state.echo = true;
 	
 	/* reboot the stn1110 if it's already up */
 	fputs_P(PSTR("atz"), stn1110);
 	
 	/* wait for the prompt */
-	stn1110_eat_prompt(0);
-	//_delay_ms(1000);
+	_stn1110_eat_prompt(1000);
 	
 	/* disable echo */
-	stn1110_cmd(PSTR("at e 0")); // TODO: use pstr
-	stn_echo = false;
+	_stn1110_cmd(PSTR("at e 0")); // TODO: use pstr
+	stn_state.echo = false;
+	// TODO: call _stn1110_echo_off
 	
 	/* increase baud rate */
-	/*if (stn1110_cmd(PSTR("st sbr 115200"))) { // TODO: use pstr
+	/*if (_stn1110_cmd(PSTR("st sbr 115200"))) { // TODO: use pstr
 		uart_flush(UART_STN1110, 0);
 		uart_init(UART_STN1110, UART_DIV_115200, 0, 0);
 	}*/
+	// TODO: call _stn1110_baud_switch
 	
-	stn_init = true;
+	stn_state.init = true;
+}
+
+void stn1110_deinit(void) {
+	stn_state.init = false;
+	
+	// TODO: flush?
+	uart_stop(UART_STN1110);
+	
+	alarm_unregister(&stn_state.alarm);
 }
 
 
 bool stn1110_at(const char *cmd, char *reply, size_t reply_max,
 	uint16_t timeout) {
-	// send 'at' first, then call stn1110_cmd
+	// send 'at' first, then call _stn1110_cmd
 }
