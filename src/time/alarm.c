@@ -8,12 +8,12 @@
 #include "time/alarm.h"
 
 
-static struct alarm *first = NULL;
+static struct alarm *alarms = NULL;
 
 
 /* call from timer ISR so alarms will tick */
 void alarm_tick(void) {
-	struct alarm *this = first;
+	struct alarm *this = alarms;
 	while (this != NULL) {
 		if (this->ticking) {
 			if (--this->ticks == 0) {
@@ -32,15 +32,15 @@ void alarm_register(struct alarm *alarm) {
 	alarm->ticking = false;
 	alarm->expired = false;
 	
-	alarm->next = first;
+	alarm->next = alarms;
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-		first = alarm;
+		alarms = alarm;
 	}
 }
 
 /* removes an alarm from the linked list of registered alarms */
 void alarm_unregister(struct alarm *alarm) {
-	struct alarm *this = first, **prev_next = first;
+	struct alarm *this = alarms, **prev_next = &alarms;
 	while (this != NULL) {
 		if (this == alarm) {
 			ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
