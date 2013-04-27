@@ -12,7 +12,7 @@
 #include "std.h"
 
 
-#define _BREAK() \
+#define BREAK() \
 	__asm__ __volatile__( \
 		"\nbreak" \
 		: \

@@ -13,6 +13,6 @@ noreturn void die(void) {
 	uart_flush(UART_PC, 1000);
 	
 	cli();
-	_BREAK();
+	BREAK();
 	for ( ; ; );
 }
