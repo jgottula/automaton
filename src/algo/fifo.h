@@ -10,6 +10,7 @@
 
 
 #include "std.h"
+#include "time/alarm.h"
 
 
 /* cannot exceed 256; power of two is preferred (AND instead of MOD) */
@@ -19,34 +20,35 @@
 struct fifo {
 	uint8_t data[FIFO_SIZE];
 	
-	uint8_t len;
+	volatile uint8_t len;
 	
-	uint8_t i_push;
-	uint8_t i_pop;
+	volatile uint8_t i_push;
+	volatile uint8_t i_pop;
+	
+	struct alarm alarm;
 };
 
 
 /* nonatomic: get number of values in fifo */
-static inline uint8_t fifo_count(const volatile struct fifo *fifo) {
+static inline uint8_t fifo_count(const struct fifo *fifo) {
 	return fifo->len;
 }
 
 /* nonatomic: get number of free spaces in fifo */
-static inline uint8_t fifo_free(const volatile struct fifo *fifo) {
+static inline uint8_t fifo_free(const struct fifo *fifo) {
 	return (FIFO_SIZE - fifo->len);
 }
 
 
-void fifo_init(volatile struct fifo *fifo);
+void fifo_init(struct fifo *fifo);
+void fifo_deinit(struct fifo *fifo);
 
-bool fifo_push(volatile struct fifo *fifo, uint8_t val);
-bool fifo_push_wait(volatile struct fifo *fifo, uint8_t val,
-	uint16_t timeout_ms);
-void fifo_push_force(volatile struct fifo *fifo, uint8_t val);
+bool fifo_push(struct fifo *fifo, uint8_t val);
+bool fifo_push_wait(struct fifo *fifo, uint8_t val, uint16_t timeout);
+void fifo_push_force(struct fifo *fifo, uint8_t val);
 
-bool fifo_pop(volatile struct fifo *fifo, uint8_t *out);
-bool fifo_pop_wait(volatile struct fifo *fifo, uint8_t *out,
-	uint16_t timeout_ms);
+bool fifo_pop(struct fifo *fifo, uint8_t *out);
+bool fifo_pop_wait(struct fifo *fifo, uint8_t *out, uint16_t timeout);
 
 
 #endif

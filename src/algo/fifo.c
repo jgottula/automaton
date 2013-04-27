@@ -6,7 +6,6 @@
 
 
 #include "algo/fifo.h"
-#include "time/alarm.h"
 
 
 /* nonatomic: push without any checks whatsoever */
@@ -32,17 +31,24 @@ static uint8_t fifo_internal_pop(struct fifo *fifo) {
 }
 
 
-/* nonatomic: initialize fifo values */
-void fifo_init(volatile struct fifo *fifo) {
+/* nonatomic: initialize fifo */
+void fifo_init(struct fifo *fifo) {
 	fifo->len = 0;
 	
 	fifo->i_push = 0;
 	fifo->i_pop = 0;
+	
+	alarm_register(&fifo->alarm);
+}
+
+/* nonatomic: deinitialize fifo */
+void fifo_deinit(struct fifo *fifo) {
+	alarm_unregister(&fifo->alarm);
 }
 
 
 /* atomic: try to push a value onto a fifo; returns false if full */
-bool fifo_push(volatile struct fifo *fifo, uint8_t val) {
+bool fifo_push(struct fifo *fifo, uint8_t val) {
 	bool result = false;
 	
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
@@ -57,13 +63,12 @@ bool fifo_push(volatile struct fifo *fifo, uint8_t val) {
 
 /* atomic: push a value onto a fifo and wait until successful; returns false on
  * timeout; a timeout of zero will wait forever */
-bool fifo_push_wait(volatile struct fifo *fifo, uint8_t val,
-	uint16_t timeout_ms) {
+bool fifo_push_wait(struct fifo *fifo, uint8_t val, uint16_t timeout) {
 	if (fifo_push(fifo, val)) {
 		return true;
 	} else {
-		if (timeout_ms != 0) {
-			alarm_set(timeout_ms);
+		if (timeout != 0) {
+			alarm_start(&fifo->alarm, timeout);
 		}
 		
 		for ( ; ; ) {
@@ -72,11 +77,11 @@ bool fifo_push_wait(volatile struct fifo *fifo, uint8_t val,
 			}
 			
 			if (fifo_push(fifo, val)) {
-				alarm_unset();
+				alarm_stop(&fifo->alarm);
 				return true;
 			}
 			
-			if (timeout_ms != 0 && alarm_check()) {
+			if (timeout != 0 && alarm_expired(&fifo->alarm)) {
 				return false;
 			}
 		}
@@ -84,7 +89,7 @@ bool fifo_push_wait(volatile struct fifo *fifo, uint8_t val,
 }
 
 /* atomic: forcefully push a value onto a fifo; eats oldest values if full */
-void fifo_push_force(volatile struct fifo *fifo, uint8_t val) {
+void fifo_push_force(struct fifo *fifo, uint8_t val) {
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 		if (fifo_free(fifo) == 0) {
 			/* throw away oldest value */
@@ -97,7 +102,7 @@ void fifo_push_force(volatile struct fifo *fifo, uint8_t val) {
 
 
 /* atomic: try to pop a value off of a fifo; returns false if empty */
-bool fifo_pop(volatile struct fifo *fifo, uint8_t *out) {
+bool fifo_pop(struct fifo *fifo, uint8_t *out) {
 	bool result = false;
 	
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
@@ -112,13 +117,12 @@ bool fifo_pop(volatile struct fifo *fifo, uint8_t *out) {
 
 /* atomic: pop a value off of a fifo and wait until successful; returns false on
  * timeout; a timeout of zero will wait forever */
-bool fifo_pop_wait(volatile struct fifo *fifo, uint8_t *out,
-	uint16_t timeout_ms) {
+bool fifo_pop_wait(struct fifo *fifo, uint8_t *out, uint16_t timeout) {
 	if (fifo_pop(fifo, out)) {
 		return true;
 	} else {
-		if (timeout_ms != 0) {
-			alarm_set(timeout_ms);
+		if (timeout != 0) {
+			alarm_start(&fifo->alarm, timeout);
 		}
 		
 		for ( ; ; ) {
@@ -127,11 +131,11 @@ bool fifo_pop_wait(volatile struct fifo *fifo, uint8_t *out,
 			}
 			
 			if (fifo_pop(fifo, out)) {
-				alarm_unset();
+				alarm_stop(&fifo->alarm);
 				return true;
 			}
 			
-			if (timeout_ms != 0 && alarm_check()) {
+			if (timeout != 0 && alarm_expired(&fifo->alarm)) {
 				return false;
 			}
 		}
