@@ -57,14 +57,12 @@ static void hd44780_raw_write_cycle(uint8_t rs, uint8_t bus) {
 	IO_WRITE(PORT(IO_LCD_CTRL), IO_LCD_CTRL_RS | IO_LCD_CTRL_RW, rs);
 	DELAY_NSEC(60); // t_AS
 	
-	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 #if HD44780_BUS_WIDTH == 8
-		hd44780_raw_write_subcycle(bus);
+	hd44780_raw_write_subcycle(bus);
 #elif HD44780_BUS_WIDTH == 4
-		hd44780_raw_write_subcycle(bus >> 4);
-		hd44780_raw_write_subcycle(bus);
+	hd44780_raw_write_subcycle(bus >> 4);
+	hd44780_raw_write_subcycle(bus);
 #endif
-	}
 }
 
 /* private: set/clear RS, set RW, and perform a write cycle */
@@ -74,15 +72,12 @@ static uint8_t hd44780_raw_read_cycle(uint8_t rs) {
 		rs | IO_LCD_CTRL_RW);
 	DELAY_NSEC(60); // t_AS
 	
-	uint8_t bus;
-	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 #if HD44780_BUS_WIDTH == 8
-		bus = hd44780_raw_read_subcycle();
+	uint8_t bus = hd44780_raw_read_subcycle();
 #elif HD44780_BUS_WIDTH == 4
-		bus = hd44780_raw_read_subcycle() << 4;
-		bus |= hd44780_raw_read_subcycle();
+	uint8_t bus = hd44780_raw_read_subcycle() << 4;
+	bus |= hd44780_raw_read_subcycle();
 #endif
-	}
 	
 	hd44780_bus_mode_output();
 	return bus;
