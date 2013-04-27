@@ -16,7 +16,7 @@
 #define ASSERT_FAIL_RESET 0
 
 
-#define assert(_expr) \
+#define ASSERT(_expr) \
 	if (!(_expr)) { \
 		assert_fail(PSTR(__FILE__), __LINE__); \
 	}

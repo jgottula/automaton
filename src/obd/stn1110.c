@@ -62,7 +62,7 @@ static bool stn1110_cmd(const char *cmd) {
 				if (!newline) {
 					if ((char)c != '\n') {
 						/* avoid overflows (including terminating NULL) */
-						assert(len < sizeof(buf) - 1);
+						ASSERT(len < sizeof(buf) - 1);
 						buf[len++] = (char)c;
 					} else {
 						newline = true;

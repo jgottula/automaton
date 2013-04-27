@@ -57,7 +57,7 @@ void alarm_unregister(struct alarm *alarm) {
 		this = this->next;
 	}
 	
-	assert(false);
+	ASSERT(false);
 }
 
 
