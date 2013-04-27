@@ -32,7 +32,7 @@ static struct {
 
 
 /* directly poll the buttons */
-static uint8_t button_poll(void) {
+static uint8_t _button_poll(void) {
 	return IO_READ(PIN(IO_BTN), IO_BTN_ALL);
 }
 
@@ -43,7 +43,7 @@ void button_timer0_hook(void) {
 		return;
 	}
 	
-	uint8_t poll = button_poll();
+	uint8_t poll = _button_poll();
 	uint8_t mask = IO_BTN_FIRST;
 	for (uint8_t i = 0; i < BTN_QTY; ++i) {
 		// TODO: move these into the if's as much as possible

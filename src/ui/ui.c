@@ -66,7 +66,7 @@ static const uint8_t custom_chars[][8] PROGMEM = {
 };
 
 
-static void ui_init_lcd(void) {
+static void _ui_init_lcd(void) {
 	uint8_t buf[8];
 	
 	for (uint8_t i = 0; i < 4; ++i) {
@@ -77,7 +77,7 @@ static void ui_init_lcd(void) {
 
 
 void ui_loop(void) {
-	ui_init_lcd();
+	_ui_init_lcd();
 	
 	alarm_set(1000);
 	

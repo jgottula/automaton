@@ -11,13 +11,14 @@
 #include "io/spi.h"
 #include "lcd/lcd.h"
 #include "obd/stn1110.h"
+#include "rtc/rtc.h"
 #include "time/timer0.h"
 #include "uart/direct.h"
 #include "uart/uart.h"
 #include "ui/ui.h"
 
 
-static void main_init(const char *pstr) {
+static void _main_init(const char *pstr) {
 	printf_P(PSTR("main: init %S\n"), pstr);
 }
 
@@ -41,22 +42,25 @@ noreturn void main(void) {
 	fputs_P(PSTR("main: uart ok\n"), stdout);
 	
 	
-	main_init(PSTR("lcd"));
+	_main_init(PSTR("lcd"));
 	lcd_init();
 	
-	main_init(PSTR("button"));
+	_main_init(PSTR("rtc"));
+	rtc_init();
+	
+	_main_init(PSTR("button"));
 	button_init();
 	
-	main_init(PSTR("spi"));
+	_main_init(PSTR("spi"));
 	spi_init();
 	
-	main_init(PSTR("stn1110"));
+	_main_init(PSTR("stn1110"));
 	stn1110_init();
 	
 	fputs_P(PSTR("main: init ok\n"), stdout);
 	
 	
-	ui_loop();
+	//ui_loop();
 	
 	
 	die();

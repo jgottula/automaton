@@ -70,7 +70,7 @@ volatile uint16_t uart_int_count[2][2] = {
 
 #if UART_DEBUG_FIFO
 /* nonatomic: print fifo information to the lcd */
-static void uart_debug_fifo_common(const struct fifo *fifo) {
+static void _uart_debug_fifo_common(const struct fifo *fifo) {
 	/* length and indexes */
 	fprintf_P(lcd, PSTR("len%02u push%02u pop%02u\r\n"),
 		fifo->len, fifo->i_push, fifo->i_pop);
@@ -96,23 +96,23 @@ static void uart_debug_fifo_common(const struct fifo *fifo) {
 }
 
 /* nonatomic: print tx fifo information to the lcd */
-static void uart_debug_fifo_tx(const struct uart *uart) {
+static void _uart_debug_fifo_tx(const struct uart *uart) {
 	lcd_clear();
 	fprintf_P(lcd, PSTR("uarts[%" PRIu8 "]->fifo_tx:\r\n"), uart - uarts);
-	uart_debug_fifo_common(&uart->fifo_tx);
+	_uart_debug_fifo_common(&uart->fifo_tx);
 }
 
 /* nonatomic: print rx fifo information to the lcd */
-static void uart_debug_fifo_rx(const struct uart *uart) {
+static void _uart_debug_fifo_rx(const struct uart *uart) {
 	lcd_clear();
 	fprintf_P(lcd, PSTR("uarts[%" PRIu8 "]->fifo_rx:\r\n"), uart - uarts);
-	uart_debug_fifo_common(&uart->fifo_rx);
+	_uart_debug_fifo_common(&uart->fifo_rx);
 }
 #endif
 
 
 /* nonatomic: pop a byte from the tx fifo and transmit it; does no checking */
-static void uart_tx_from_fifo(struct uart *uart) {
+static void _uart_tx_from_fifo(struct uart *uart) {
 	uint8_t byte;
 	if (fifo_pop(&uart->fifo_tx, &byte)) {
 		while (!(*uart->ucsr_a & _BV(UDRE0)));
@@ -120,30 +120,30 @@ static void uart_tx_from_fifo(struct uart *uart) {
 	}
 	
 #if UART_DEBUG_FIFO
-	uart_debug_fifo_tx(uart);
+	_uart_debug_fifo_tx(uart);
 #endif
 }
 
 /* nonatomic: receive a byte and push it to the rx fifo; does no checking */
-static void uart_rx_to_fifo(struct uart *uart) {
+static void _uart_rx_to_fifo(struct uart *uart) {
 	uint8_t byte = *uart->udr;
 	fifo_push_force(&uart->fifo_rx, byte);
 	
 #if UART_DEBUG_FIFO
-	uart_debug_fifo_rx(uart);
+	_uart_debug_fifo_rx(uart);
 #endif
 }
 
 
 /* atomic: common rx interrupt handler */
-static void uart_int_rx(struct uart *uart) {
+static void _uart_int_rx(struct uart *uart) {
 #if UART_DEBUG_INT_FLAG
 	lcd_write('<');
 #endif
 	
 	// TODO: check for UCSRnB->DORn (data overrun) before reading UDRn
 	
-	uart_rx_to_fifo(uart);
+	_uart_rx_to_fifo(uart);
 	
 #if UART_DEBUG_INT_FLAG
 	lcd_write('>');
@@ -151,7 +151,7 @@ static void uart_int_rx(struct uart *uart) {
 }
 
 /* atomic: common udre interrupt handler */
-static void uart_int_udre(struct uart *uart) {
+static void _uart_int_udre(struct uart *uart) {
 #if UART_DEBUG_INT_FLAG
 	lcd_write('[');
 #endif
@@ -168,7 +168,7 @@ static void uart_int_udre(struct uart *uart) {
 #endif
 	}
 	
-	uart_tx_from_fifo(uart);
+	_uart_tx_from_fifo(uart);
 	
 #if UART_DEBUG_INT_FLAG
 	lcd_write(']');
@@ -177,7 +177,7 @@ static void uart_int_udre(struct uart *uart) {
 
 
 ISR(USART0_RX_vect) {
-	uart_int_rx((struct uart *)uarts + 0);
+	_uart_int_rx((struct uart *)uarts + 0);
 	
 #if UART_DEBUG_INT_COUNT
 	++uart_int_count[0][0];
@@ -185,7 +185,7 @@ ISR(USART0_RX_vect) {
 }
 
 ISR(USART0_UDRE_vect) {
-	uart_int_udre((struct uart *)uarts + 0);
+	_uart_int_udre((struct uart *)uarts + 0);
 	
 #if UART_DEBUG_INT_COUNT
 	++uart_int_count[0][1];
@@ -194,7 +194,7 @@ ISR(USART0_UDRE_vect) {
 
 
 ISR(USART1_RX_vect) {
-	uart_int_rx((struct uart *)uarts + 1);
+	_uart_int_rx((struct uart *)uarts + 1);
 	
 #if UART_DEBUG_INT_COUNT
 	++uart_int_count[1][0];
@@ -202,7 +202,7 @@ ISR(USART1_RX_vect) {
 }
 
 ISR(USART1_UDRE_vect) {
-	uart_int_udre((struct uart *)uarts + 1);
+	_uart_int_udre((struct uart *)uarts + 1);
 	
 #if UART_DEBUG_INT_COUNT
 	++uart_int_count[1][1];
@@ -211,7 +211,7 @@ ISR(USART1_UDRE_vect) {
 
 
 /* atomic: write a byte to the tx fifo and prime the pump if necessary */
-static bool uart_write_raw(uint8_t dev, uint8_t byte) {
+static bool _uart_write(uint8_t dev, uint8_t byte) {
 	struct uart *uart = uarts + dev;
 	
 	bool result = false;
@@ -229,7 +229,7 @@ static bool uart_write_raw(uint8_t dev, uint8_t byte) {
 				uart->state |= UART_ST_TX_ACTIVE;
 				
 				/* enable the udre interrupt */
-				io_write(*uart->ucsr_b, _BV(UDRIE0), _BV(UDRIE0));
+				IO_WRITE(*uart->ucsr_b, _BV(UDRIE0), _BV(UDRIE0));
 				
 #if UART_DEBUG_INT_FLAG
 				lcd_write('U');
@@ -240,7 +240,7 @@ static bool uart_write_raw(uint8_t dev, uint8_t byte) {
 		
 #if UART_DEBUG_FIFO
 		if (result) {
-			uart_debug_fifo_tx(uart);
+			_uart_debug_fifo_tx(uart);
 		}
 #endif
 	}
@@ -249,7 +249,7 @@ static bool uart_write_raw(uint8_t dev, uint8_t byte) {
 }
 
 /* atomic: read a byte from the rx fifo if possible */
-static bool uart_read_raw(uint8_t dev, uint8_t *byte) {
+static bool _uart_read(uint8_t dev, uint8_t *byte) {
 	struct uart *uart = uarts + dev;
 	
 	bool result = false;
@@ -269,7 +269,7 @@ static bool uart_read_raw(uint8_t dev, uint8_t *byte) {
 		
 #if UART_DEBUG_FIFO
 		if (result) {
-			uart_debug_fifo_rx(uart);
+			_uart_debug_fifo_rx(uart);
 		}
 #endif
 	}
@@ -378,7 +378,7 @@ bool uart_write(uint8_t dev, char chr) {
 		return false;
 	}
 	
-	return uart_write_raw(dev, chr);
+	return _uart_write(dev, chr);
 }
 
 /* nonatomic: read a character from the uart; returns false on failure */
@@ -388,5 +388,5 @@ bool uart_read(uint8_t dev, char *chr) {
 		return false;
 	}
 	
-	return uart_read_raw(dev, (uint8_t *)chr);
+	return _uart_read(dev, (uint8_t *)chr);
 }

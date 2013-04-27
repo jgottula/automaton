@@ -8,7 +8,7 @@
 #include "uart/direct.h"
 
 
-static void uart_direct_init(uint8_t dev, uint16_t divisor) {
+static void _uart_direct_init(uint8_t dev, uint16_t divisor) {
 	uint8_t ucsr_a = ((divisor & _BV(12)) ? _BV(U2X0) : 0);
 	uint8_t ucsr_b = _BV(TXEN0);
 	uint8_t ucsr_c = _BV(UCSZ01) | _BV(UCSZ00);
@@ -40,10 +40,10 @@ static void uart_direct_init(uint8_t dev, uint16_t divisor) {
 }
 
 
-static void uart_direct_write(uint8_t dev, char chr) {
+static void _uart_direct_write(uint8_t dev, char chr) {
 	/* convert LF to CRLF */
 	if (chr == '\n') {
-		uart_direct_write(UART_PC, '\r');
+		_uart_direct_write(UART_PC, '\r');
 	}
 	
 	while (!((dev == 0 ? UCSR0A : UCSR1A) & _BV(UDRE0)));
@@ -55,7 +55,7 @@ static void uart_direct_write(uint8_t dev, char chr) {
 	}
 }
 
-static void uart_direct_flush(uint8_t dev) {
+static void _uart_direct_flush(uint8_t dev) {
 	while (!((dev == 0 ? UCSR0A : UCSR1A) & _BV(TXC0)));
 }
 
@@ -63,34 +63,34 @@ static void uart_direct_flush(uint8_t dev) {
 /* synchronously write to a uart; this disables uart interrupts and effectively
  * invalidates the normal (buffered) uart state */
 void uart_direct_write_chr(uint8_t dev, uint16_t divisor, char chr) {
-	uart_direct_init(dev, divisor);
+	_uart_direct_init(dev, divisor);
 	
-	uart_direct_write(dev, chr);
+	_uart_direct_write(dev, chr);
 	
-	uart_direct_flush(dev);
+	_uart_direct_flush(dev);
 }
 
 /* synchronously write to a uart; this disables uart interrupts and effectively
  * invalidates the normal (buffered) uart state */
 void uart_direct_write_str(uint8_t dev, uint16_t divisor, const char *str) {
-	uart_direct_init(dev, divisor);
+	_uart_direct_init(dev, divisor);
 	
 	while (*str != '\0') {
-		uart_direct_write(dev, *(str++));
+		_uart_direct_write(dev, *(str++));
 	}
 	
-	uart_direct_flush(dev);
+	_uart_direct_flush(dev);
 }
 
 /* synchronously write to a uart; this disables uart interrupts and effectively
  * invalidates the normal (buffered) uart state */
 void uart_direct_write_pstr(uint8_t dev, uint16_t divisor, const char *pstr) {
-	uart_direct_init(dev, divisor);
+	_uart_direct_init(dev, divisor);
 	
 	char c;
 	while ((c = pgm_read_byte(pstr++)) != '\0') {
-		uart_direct_write(dev, c);
+		_uart_direct_write(dev, c);
 	}
 	
-	uart_direct_flush(dev);
+	_uart_direct_flush(dev);
 }

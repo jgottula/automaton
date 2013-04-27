@@ -29,25 +29,20 @@ enum ds1302_addr_bit {
 };
 
 
-static void ds1302_bitbang_init(void) {
-	/* set CE and SCLK as outputs; set IO as input with no pull-up */
-	IO_WRITE(PORT(IO_RTC), IO_RTC_ALL, 0);
-	IO_WRITE(DDR(IO_RTC), IO_RTC_ALL, IO_RTC_CE | IO_RTC_SCLK);
-}
-
-
-static void ds1302_bitbang_io_input(void) {
+static void _ds1302_io_input(void) {
 	PORT(IO_RTC) |= IO_RTC_IO;
 	DDR(IO_RTC) &= ~IO_RTC_IO;
 }
 
-static void ds1302_bitbang_io_output(void) {
+static void _ds1302_io_output(void) {
 	DDR(IO_RTC) |= IO_RTC_IO;
 }
 
 
-static void ds1302_bitbang_write_cycle(uint8_t bus) {
-	ds1302_bitbang_io_output();
+static void _ds1302_write_cycle(uint8_t bus) {
+	_ds1302_io_output();
+	
+	//printf_P(PSTR("write cycle: 0x%02x\n"), bus);
 	
 	/* write data in lsb-first order */
 	for (uint8_t i = 8; i != 0; --i) {
@@ -61,21 +56,31 @@ static void ds1302_bitbang_write_cycle(uint8_t bus) {
 		PORT(IO_RTC) |= IO_RTC_SCLK;
 		DELAY_NSEC(1000); // t_CH t_CDH
 		
+		/*printf_P(PSTR("DDR: %02x "), DDR(IO_RTC));
+		printf_P(PSTR("PORT: %02x "), PORT(IO_RTC));
+		printf_P(PSTR("PIN: %02x\n"), PIN(IO_RTC));*/
+		
 		PORT(IO_RTC) &= ~IO_RTC_SCLK;
 		DELAY_NSEC(1000); // t_CL
 		
 		bus >>= 1;
 	}
 	
-	ds1302_bitbang_io_input();
+	_ds1302_io_input();
 }
 
-static uint8_t ds1302_bitbang_read_cycle(void) {
+static uint8_t _ds1302_read_cycle(void) {
 	uint8_t bus = 0;
+	
+	//printf_P(PSTR("read cycle\n"));
 	
 	/* read data in lsb-first order */
 	for (uint8_t i = 0; i < 8; ++i) {
 		bus >>= 1;
+		
+		/*printf_P(PSTR("DDR: %02x "), DDR(IO_RTC));
+		printf_P(PSTR("PORT: %02x "), PORT(IO_RTC));
+		printf_P(PSTR("PIN: %02x\n"), PIN(IO_RTC));*/
 		
 		DELAY_NSEC(800); // t_CDD
 		if (PIN(IO_RTC) & IO_RTC_IO) {
@@ -96,49 +101,50 @@ static uint8_t ds1302_bitbang_read_cycle(void) {
 }
 
 
-static void ds1302_bitbang_write(uint8_t addr, uint8_t data) {
+static void _ds1302_write(uint8_t addr, uint8_t data) {
 	PORT(IO_RTC) |= IO_RTC_CE;
 	_delay_us(4); // t_CC
 	
 	uint8_t cmd = ((addr & 0x2f) << 1) | DS1302_CBIT_ONE | DS1302_CBIT_WR;
-	ds1302_bitbang_write_cycle(cmd);
-	ds1302_bitbang_write_cycle(data);
+	_ds1302_write_cycle(cmd);
+	_ds1302_write_cycle(data);
 	
 	PORT(IO_RTC) &= ~IO_RTC_CE;
 	_delay_us(4); // t_CWH
 }
 
-static uint8_t ds1302_bitbang_read(uint8_t addr) {
+static uint8_t _ds1302_read(uint8_t addr) {
 	PORT(IO_RTC) |= IO_RTC_CE;
 	_delay_us(4); // t_CC
 	
 	uint8_t cmd = ((addr & 0x2f) << 1) | DS1302_CBIT_ONE | DS1302_CBIT_RD;
-	printf_P(PSTR("ds1302_bitbang_read: cmd 0x%02x\n"), cmd);
-	ds1302_bitbang_write_cycle(cmd);
+	_ds1302_write_cycle(cmd);
 	
-	return ds1302_bitbang_read_cycle();
+	return _ds1302_read_cycle();
 }
 
 
 void ds1302_init(void) {
-	ds1302_bitbang_init();
+	/* set CE and SCLK as outputs; set IO as input with no pull-up */
+	IO_WRITE(PORT(IO_RTC), IO_RTC_ALL, 0);
+	IO_WRITE(DDR(IO_RTC), IO_RTC_ALL, IO_RTC_CE | IO_RTC_SCLK);
 }
 
 
 void ds1302_ram_write(uint8_t addr, uint8_t data) {
-	ds1302_bitbang_write(addr | DS1302_ABIT_RAM, data);
+	_ds1302_write(addr | DS1302_ABIT_RAM, data);
 }
 
 void ds1302_ck_write(uint8_t addr, uint8_t data) {
-	ds1302_bitbang_write(addr | DS1302_ABIT_CK, data);
+	_ds1302_write(addr | DS1302_ABIT_CK, data);
 }
 
 uint8_t ds1302_ram_read(uint8_t addr) {
-	return ds1302_bitbang_read(addr | DS1302_ABIT_RAM);
+	return _ds1302_read(addr | DS1302_ABIT_RAM);
 }
 
 uint8_t ds1302_ck_read(uint8_t addr) {
-	return ds1302_bitbang_read(addr | DS1302_ABIT_CK);
+	return _ds1302_read(addr | DS1302_ABIT_CK);
 }
 
 

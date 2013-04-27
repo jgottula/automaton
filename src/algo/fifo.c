@@ -9,7 +9,7 @@
 
 
 /* nonatomic: push without any checks whatsoever */
-static void fifo_internal_push(struct fifo *fifo, uint8_t val) {
+static void _fifo_push(struct fifo *fifo, uint8_t val) {
 	fifo->data[fifo->i_push] = val;
 	
 	++fifo->i_push;
@@ -19,7 +19,7 @@ static void fifo_internal_push(struct fifo *fifo, uint8_t val) {
 }
 
 /* nonatomic: pop without any checks whatsoever */
-static uint8_t fifo_internal_pop(struct fifo *fifo) {
+static uint8_t _fifo_pop(struct fifo *fifo) {
 	uint8_t val = fifo->data[fifo->i_pop];
 	
 	++fifo->i_pop;
@@ -53,7 +53,7 @@ bool fifo_push(struct fifo *fifo, uint8_t val) {
 	
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 		if (fifo_free(fifo) != 0) {
-			fifo_internal_push((struct fifo *)fifo, val);
+			_fifo_push((struct fifo *)fifo, val);
 			result = true;
 		}
 	}
@@ -93,10 +93,10 @@ void fifo_push_force(struct fifo *fifo, uint8_t val) {
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 		if (fifo_free(fifo) == 0) {
 			/* throw away oldest value */
-			(void)fifo_internal_pop((struct fifo *)fifo);
+			(void)_fifo_pop((struct fifo *)fifo);
 		}
 		
-		fifo_internal_push((struct fifo *)fifo, val);
+		_fifo_push((struct fifo *)fifo, val);
 	}
 }
 
@@ -107,7 +107,7 @@ bool fifo_pop(struct fifo *fifo, uint8_t *out) {
 	
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 		if (fifo_count(fifo) != 0) {
-			*out = fifo_internal_pop((struct fifo *)fifo);
+			*out = _fifo_pop((struct fifo *)fifo);
 			result = true;
 		}
 	}

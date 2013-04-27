@@ -8,11 +8,11 @@
 #include "io/spi.h"
 
 
-static void spi_select(uint8_t slave) {
+static void _spi_select(uint8_t slave) {
 	IO_WRITE(PORT(IO_SPI), IO_SPI_SS_ALL, IO_SPI_SS_ALL ^ slave);
 }
 
-static void spi_deselect(void) {
+static void _spi_deselect(void) {
 	IO_WRITE(PORT(IO_SPI), IO_SPI_SS_ALL, IO_SPI_SS_ALL);
 }
 
@@ -33,11 +33,11 @@ void spi_begin(uint8_t slave, uint8_t settings) {
 	(void)SPSR;
 	(void)SPDR;
 	
-	spi_select(slave);
+	_spi_select(slave);
 }
 
 void spi_end(void) {
-	spi_deselect();
+	_spi_deselect();
 }
 
 
