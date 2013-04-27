@@ -26,7 +26,7 @@
 	CONCAT(PIN, _x)
 
 
-//#define IO_BTN      A
+#define IO_BTN      A
 #define IO_LCD_BUS  A
 #define IO_SPI      B
 #define IO_LCD_CTRL D
@@ -36,10 +36,13 @@
 enum io_port_a {
 	IO_LCD_BUS_ALL = _BV(PA0) | _BV(PA1) | _BV(PA2) | _BV(PA3),
 	
-	/* PA4: unused */
-	/* PA5: unused */
-	/* PA6: unused */
-	/* PA7: unused */
+	/* these must be contiguous */
+	IO_BTN_A     = _BV(PA4),
+	IO_BTN_B     = _BV(PA5),
+	IO_BTN_C     = _BV(PA6),
+	IO_BTN_D     = _BV(PA7),
+	IO_BTN_ALL   = IO_BTN_A | IO_BTN_B | IO_BTN_C | IO_BTN_D,
+	IO_BTN_FIRST = IO_BTN_A,
 };
 
 enum io_port_b {
