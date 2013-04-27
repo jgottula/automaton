@@ -26,9 +26,9 @@ enum button_timing {
 
 
 struct button_event {
-	uint8_t num    : 2; // button number
-	uint8_t down   : 1; // true if DOWN event
-	uint8_t repeat : 1; // true if not the first DOWN event
+	uint8_t num : 2; // button number
+	bool down   : 1; // true if DOWN event
+	bool repeat : 1; // true if not the first DOWN event
 };
 _Static_assert(BTN_QTY <= 4,
 	"not enough bits in the bitfield");

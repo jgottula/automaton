@@ -14,8 +14,8 @@
 
 struct alarm {
 	volatile struct {
-		uint8_t ticking : 1; // actively ticking
-		uint8_t expired : 1; // was ticking, now expired
+		bool ticking : 1; // actively ticking
+		bool expired : 1; // was ticking, now expired
 	};
 	
 	volatile uint16_t ticks;
