@@ -12,15 +12,12 @@
 #include "std.h"
 
 
-#if F_CPU == 20000000UL
-#define DELAY_150NS()  __builtin_avr_delay_cycles(2)
-#define DELAY_1200NS() __builtin_avr_delay_cycles(23)
-#elif F_CPU == 10000000UL
-#define DELAY_150NS()  __builtin_avr_delay_cycles(1)
-#define DELAY_1200NS() __builtin_avr_delay_cycles(11)
-#else
-#error delay cycle counts are wrong
-#endif
+/* nanoseconds in a cpu cycle */
+#define CYCLE_NSEC (1000000000ULL / F_CPU)
+
+/* delay for precisely the number of cycles necessary */
+#define DELAY_NSEC(_ns) \
+	__builtin_avr_delay_cycles(CEIL((_ns), CYCLE_NSEC) - 1)
 
 
 #endif
