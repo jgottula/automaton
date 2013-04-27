@@ -26,11 +26,12 @@
 	CONCAT(PIN, _x)
 
 
-#define IO_BTN      A
 #define IO_LCD_BUS  A
+#define IO_BTN      A
+#define IO_RTC      B
 #define IO_SPI      B
-#define IO_LCD_CTRL D
 #define IO_LED      D
+#define IO_LCD_CTRL D
 
 
 enum io_port_a {
@@ -46,14 +47,16 @@ enum io_port_a {
 };
 
 enum io_port_b {
-	/* PB0: unused */
-	/* PB1: unused */
-	/* PB2: unused */
+	IO_RTC_CE   = _BV(PB0),
+	IO_RTC_SCLK = _BV(PB1),
+	IO_RTC_IO   = _BV(PB2),
+	IO_RTC_ALL  = IO_RTC_CE | IO_RTC_SCLK | IO_RTC_IO,
+	
+	IO_SD_DETECT = _BV(PB3),
 	
 	/* warning: don't set PB4 as input, or spi master mode may be disabled */
-	IO_SPI_SS_SDCARD = _BV(PB3),
-	IO_SPI_SS_DS1302 = _BV(PB4),
-	IO_SPI_SS_ALL    = IO_SPI_SS_SDCARD | IO_SPI_SS_DS1302,
+	IO_SPI_SS_SDCARD = _BV(PB4),
+	IO_SPI_SS_ALL    = IO_SPI_SS_SDCARD,
 	
 	IO_SPI_MOSI = _BV(PB5),
 	IO_SPI_MISO = _BV(PB6),
@@ -61,9 +64,12 @@ enum io_port_b {
 	IO_SPI_ALL  = IO_SPI_MOSI | IO_SPI_MISO | IO_SPI_SCK,
 };
 
-/*enum io_port_c {
-	PC[2345]: JTAG
-};*/
+/*enum io_port_c {*/
+	/* PC2: JTAG */
+	/* PC3: JTAG */
+	/* PC4: JTAG */
+	/* PC5: JTAG */
+/*};*/
 
 enum io_port_d {
 	/* PD0: UART0 rx */
