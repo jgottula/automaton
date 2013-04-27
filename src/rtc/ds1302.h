@@ -32,5 +32,8 @@ void ds1302_ck_write(uint8_t addr, uint8_t val);
 uint8_t ds1302_ram_read(uint8_t addr);
 uint8_t ds1302_ck_read(uint8_t addr);
 
+void ds1302_ck_write_all(const uint8_t data[static 8]);
+void ds1302_ck_read_all(uint8_t data[static 8]);
+
 
 #endif

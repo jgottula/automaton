@@ -26,6 +26,9 @@ enum ds1302_addr_bit {
 	/* ram or clock/calendar */
 	DS1302_ABIT_RAM = _BV(5),
 	DS1302_ABIT_CK  = 0,
+	
+	/* burst mode addr */
+	DS1302_ABIT_BURST = 0x1f,
 };
 
 
@@ -94,7 +97,7 @@ static void _ds1302_write(uint8_t addr, uint8_t data) {
 	PORT(IO_RTC) |= IO_RTC_CE;
 	_delay_us(4); // t_CC
 	
-	uint8_t cmd = ((addr & 0x2f) << 1) | DS1302_CBIT_ONE | DS1302_CBIT_WR;
+	uint8_t cmd = DS1302_CBIT_ONE | ((addr & 0x2f) << 1) | DS1302_CBIT_WR;
 	_ds1302_write_cycle(cmd);
 	_ds1302_write_cycle(data);
 	
@@ -106,7 +109,7 @@ static uint8_t _ds1302_read(uint8_t addr) {
 	PORT(IO_RTC) |= IO_RTC_CE;
 	_delay_us(4); // t_CC
 	
-	uint8_t cmd = ((addr & 0x2f) << 1) | DS1302_CBIT_ONE | DS1302_CBIT_RD;
+	uint8_t cmd = DS1302_CBIT_ONE | ((addr & 0x2f) << 1) | DS1302_CBIT_RD;
 	_ds1302_write_cycle(cmd);
 	
 	uint8_t data = _ds1302_read_cycle();
@@ -117,10 +120,49 @@ static uint8_t _ds1302_read(uint8_t addr) {
 }
 
 
+static void _ds1302_burst_write(bool ram, uint8_t len,
+	const uint8_t data[static len]) {
+	PORT(IO_RTC) |= IO_RTC_CE;
+	_delay_us(4); // t_CC
+	
+	uint8_t addr = DS1302_ABIT_BURST | (ram ? DS1302_ABIT_RAM : DS1302_ABIT_CK);
+	uint8_t cmd =  DS1302_CBIT_ONE | (addr << 1) | DS1302_CBIT_WR;
+	_ds1302_write_cycle(cmd);
+	
+	do {
+		_ds1302_write_cycle(*(data++));
+	} while (--len != 0);
+	
+	PORT(IO_RTC) &= ~IO_RTC_CE;
+	_delay_us(4); // t_CWH
+}
+
+static void _ds1302_burst_read(bool ram, uint8_t len,
+	uint8_t data[static len]) {
+	PORT(IO_RTC) |= IO_RTC_CE;
+	_delay_us(4); // t_CC
+	
+	uint8_t addr = DS1302_ABIT_BURST | (ram ? DS1302_ABIT_RAM : DS1302_ABIT_CK);
+	uint8_t cmd =  DS1302_CBIT_ONE | (addr << 1) | DS1302_CBIT_RD;
+	_ds1302_write_cycle(cmd);
+	
+	do {
+		*(data++) = _ds1302_read_cycle();
+	} while (--len != 0);
+	
+	PORT(IO_RTC) &= ~IO_RTC_CE;
+	_delay_us(4); // t_CWH
+}
+
+
 void ds1302_init(void) {
 	/* set CE and SCLK as outputs; set IO as input with no pull-up */
 	IO_WRITE(PORT(IO_RTC), IO_RTC_ALL, 0);
 	IO_WRITE(DDR(IO_RTC), IO_RTC_ALL, IO_RTC_CE | IO_RTC_SCLK);
+	
+	// TODO: check CH bit
+	// TODO: check WP bit
+	// TODO: check 12/24 bit?
 }
 
 
@@ -141,4 +183,10 @@ uint8_t ds1302_ck_read(uint8_t addr) {
 }
 
 
-#warning TODO: burst mode
+void ds1302_ck_write_all(const uint8_t data[static 8]) {
+	_ds1302_burst_write(false, 8, data);
+}
+
+void ds1302_ck_read_all(uint8_t data[static 8]) {
+	_ds1302_burst_read(false, 8, data);
+}
