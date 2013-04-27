@@ -24,7 +24,7 @@ struct alarm {
 };
 
 
-void alarm_tick(void);
+void alarm_timer0_hook(void);
 
 void alarm_register(struct alarm *alarm);
 void alarm_unregister(struct alarm *alarm);

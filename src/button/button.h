@@ -36,7 +36,7 @@ _Static_assert(sizeof(struct button_event) == 1,
 	"struct button_event must be one byte to fit in a fifo");
 
 
-void button_update(void);
+void button_timer0_hook(void);
 
 void button_init(void);
 

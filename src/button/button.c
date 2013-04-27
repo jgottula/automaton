@@ -37,8 +37,8 @@ static uint8_t button_poll(void) {
 }
 
 
-/* call from ISR to check button states */
-void button_update(void) {
+/* call from timer0 ISR to check button states */
+void button_timer0_hook(void) {
 	if (!buttons.init) {
 		return;
 	}

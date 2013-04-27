@@ -17,9 +17,9 @@ static volatile uint16_t timer0_counter = 0;
 ISR(TIMER0_COMPA_vect) {
 	uint16_t counter = timer0_counter++;
 	
-	alarm_tick();
+	alarm_timer0_hook();
 	if (counter % 8 == 0) {
-		button_update();
+		button_timer0_hook();
 	}
 }
 
