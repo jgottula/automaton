@@ -43,8 +43,6 @@ static void _ds1302_io_output(void) {
 static void _ds1302_write_cycle(uint8_t bus) {
 	_ds1302_io_output();
 	
-	//printf_P(PSTR("write cycle: 0x%02x\n"), bus);
-	
 	/* write data in lsb-first order */
 	for (uint8_t i = 8; i != 0; --i) {
 		if (bus & _BV(0)) {
@@ -56,10 +54,6 @@ static void _ds1302_write_cycle(uint8_t bus) {
 		
 		PORT(IO_RTC) |= IO_RTC_SCLK;
 		DELAY_NSEC(1000); // t_CH t_CDH
-		
-		/*printf_P(PSTR("DDR: %02x "), DDR(IO_RTC));
-		printf_P(PSTR("PORT: %02x "), PORT(IO_RTC));
-		printf_P(PSTR("PIN: %02x\n"), PIN(IO_RTC));*/
 		
 		PORT(IO_RTC) &= ~IO_RTC_SCLK;
 		DELAY_NSEC(1000); // t_CL
@@ -73,15 +67,9 @@ static void _ds1302_write_cycle(uint8_t bus) {
 static uint8_t _ds1302_read_cycle(void) {
 	uint8_t bus = 0;
 	
-	//printf_P(PSTR("read cycle\n"));
-	
 	/* read data in lsb-first order */
 	for (uint8_t i = 0; i < 8; ++i) {
 		bus >>= 1;
-		
-		/*printf_P(PSTR("DDR: %02x "), DDR(IO_RTC));
-		printf_P(PSTR("PORT: %02x "), PORT(IO_RTC));
-		printf_P(PSTR("PIN: %02x\n"), PIN(IO_RTC));*/
 		
 		DELAY_NSEC(800); // t_CDD
 		if (PIN(IO_RTC) & IO_RTC_IO) {
