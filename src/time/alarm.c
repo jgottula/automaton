@@ -8,67 +8,104 @@
 #include "time/alarm.h"
 
 
-static uint16_t alarm_target;
-static volatile bool alarm_armed = false;
-
-static volatile bool     alarm_ring;
-static volatile uint16_t alarm_count;
+static struct alarm *first = NULL;
 
 
-static void alarm_internal_unset(void) {
-	TCCR1B = 0;
-	TIMSK1 = 0;
+/* call from timer ISR so alarms will tick */
+void alarm_tick(void) {
+	struct alarm *this = first;
+	while (this != NULL) {
+		if (this->ticking) {
+			if (--this->ticks == 0) {
+				this->ticking = false;
+				this->expired = true;
+			}
+		}
+		
+		this = this->next;
+	}
+}
+
+
+/* initializes an alarm and adds it to the linked list of registered alarms */
+void alarm_register(struct alarm *alarm) {
+	alarm->ticking = false;
+	alarm->expired = false;
 	
-	alarm_count = 0;
-	alarm_armed = false;
-}
-
-
-ISR(TIMER1_COMPA_vect) {
-	if (++alarm_count == alarm_target) {
-		alarm_ring = true;
-		
-		alarm_internal_unset();
-	}
-}
-
-
-/* set the alarm */
-void alarm_set(uint16_t delay_ms) {
+	alarm->next = first;
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-		assert(!alarm_armed);
-		
-		TCCR1A = 0;
-		TCCR1B = _BV(WGM12) | _BV(CS10);
-		TCCR1C = 0;
-		
-		TCNT1 = 0;
-		OCR1A = F_CPU / 1000;
-		
-		TIMSK1 = _BV(OCIE1A);
-		
-		alarm_count = 0;
-		alarm_ring  = false;
-		
-		alarm_target = delay_ms;
-		alarm_armed  = true;
+		first = alarm;
 	}
 }
 
-/* unset the alarm */
-void alarm_unset(void) {
-	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-		alarm_internal_unset();
+/* removes an alarm from the linked list of registered alarms */
+void alarm_unregister(struct alarm *alarm) {
+	struct alarm *this = first, **prev_next = first;
+	while (this != NULL) {
+		if (this == alarm) {
+			ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+				*prev_next = this->next;
+			}
+			return;
+		}
+		
+		prev_next = &this->next;
+		this = this->next;
 	}
+	
+	assert(false);
 }
 
 
-/* check if the alarm has expired */
-bool alarm_check(void) {
-	return alarm_ring;
+/* starts the alarm ticking with the requested duration (milliseconds) */
+void alarm_start(struct alarm *alarm, uint16_t duration) {
+	alarm->ticks = duration;
+	
+	alarm->ticking = true;
+	alarm->expired = false;
 }
 
-/* wait for the alarm to expire */
-void alarm_wait(void) {
-	while (!alarm_ring);
+/* stops the alarm from ticking */
+void alarm_stop(struct alarm *alarm) {
+	alarm->ticking = false;
 }
+
+
+/* is the alarm currently ticking? */
+bool alarm_ticking(struct alarm *alarm) {
+	return alarm->ticking;
+}
+
+/* has the alarm expired? */
+bool alarm_expired(struct alarm *alarm) {
+	return alarm->expired;
+}
+
+
+#if 0
+/* returns an alarm with the specified duration (milliseconds) */
+struct alarm *alarm_new(int16_t duration) {
+	struct alarm *alarm = malloc(sizeof(*alarm));
+	assert(alarm != NULL);
+	
+	alarm->epoch    = timer0_count32();
+	alarm->duration = duration;
+	
+	return alarm;
+}
+
+/* frees an alarm allocated earlier */
+void alarm_free(struct alarm *alarm) {
+	free(alarm);
+}
+
+
+bool alarm_expired(struct alarm *alarm) {
+	uint32_t now  = timer0_count32();
+	uint32_t when = alarm->epoch + alarm->duration;
+	
+	int32_t diff = (int32_t)(now - when);
+	
+	return (diff >= 0);
+}
+#endif

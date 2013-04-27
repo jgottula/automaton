@@ -12,11 +12,28 @@
 #include "std.h"
 
 
-void alarm_set(uint16_t delay_ms);
-void alarm_unset(void);
+struct alarm {
+	volatile struct {
+		uint8_t ticking : 1; // actively ticking
+		uint8_t expired : 1; // was ticking, now expired
+	};
+	
+	volatile uint16_t ticks;
+	
+	struct alarm *next;
+};
 
-bool alarm_check(void);
-void alarm_wait(void);
+
+void alarm_tick(void);
+
+void alarm_register(struct alarm *alarm);
+void alarm_unregister(struct alarm *alarm);
+
+void alarm_start(struct alarm *alarm, uint16_t duration);
+void alarm_stop(struct alarm *alarm);
+
+bool alarm_ticking(struct alarm *alarm);
+bool alarm_expired(struct alarm *alarm);
 
 
 #endif
