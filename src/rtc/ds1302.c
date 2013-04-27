@@ -79,14 +79,12 @@ static uint8_t _ds1302_read_cycle(void) {
 			bus |= _BV(7);
 		}
 		
-		/* 7 clock cycles for 8 bits */
-		if (i != 7) {
-			PORT(IO_RTC) |= IO_RTC_SCLK;
-			DELAY_NSEC(1000); // t_CH
-			
-			PORT(IO_RTC) &= ~IO_RTC_SCLK;
-			DELAY_NSEC(200); // t_CL (minus t_CDD)
-		}
+		/* eighth SCLK pulse is only actually necessary for burst reads */
+		PORT(IO_RTC) |= IO_RTC_SCLK;
+		DELAY_NSEC(1000); // t_CH
+		
+		PORT(IO_RTC) &= ~IO_RTC_SCLK;
+		DELAY_NSEC(200); // t_CL (minus t_CDD)
 	}
 	
 	return bus;
