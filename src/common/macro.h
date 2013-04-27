@@ -12,5 +12,10 @@
 #define CONCAT(_a, _b) \
 	_a ## _b
 
+#define CEIL(_num, _div) \
+	((_num) == 0 ? 0 : ((((_num) - 1) / (_div)) + 1))
+#define ROUND(_num, _div) \
+	((_num + (_div / 2)) / _div)
+
 
 #endif
