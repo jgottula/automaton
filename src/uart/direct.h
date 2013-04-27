@@ -13,8 +13,9 @@
 #include "uart/uart.h"
 
 
-void uart_direct_write(uint8_t dev, uint16_t divisor, const char *str);
-void uart_direct_write_P(uint8_t dev, uint16_t divisor, const char *pstr);
+void uart_direct_write_chr(uint8_t dev, uint16_t divisor, char chr);
+void uart_direct_write_str(uint8_t dev, uint16_t divisor, const char *str);
+void uart_direct_write_pstr(uint8_t dev, uint16_t divisor, const char *pstr);
 
 
 #endif

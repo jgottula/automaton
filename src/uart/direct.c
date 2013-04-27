@@ -39,10 +39,11 @@ static void uart_direct_init(uint8_t dev, uint16_t divisor) {
 	}
 }
 
-static void uart_direct_write_chr(uint8_t dev, char chr) {
+
+static void uart_direct_write(uint8_t dev, char chr) {
 	/* convert LF to CRLF */
 	if (chr == '\n') {
-		uart_direct_write_chr(UART_PC, '\r');
+		uart_direct_write(UART_PC, '\r');
 	}
 	
 	while (!((dev == 0 ? UCSR0A : UCSR1A) & _BV(UDRE0)));
@@ -54,24 +55,42 @@ static void uart_direct_write_chr(uint8_t dev, char chr) {
 	}
 }
 
+static void uart_direct_flush(uint8_t dev) {
+	while (!((dev == 0 ? UCSR0A : UCSR1A) & _BV(TXC0)));
+}
+
 
 /* synchronously write to a uart; this disables uart interrupts and effectively
  * invalidates the normal (buffered) uart state */
-void uart_direct_write(uint8_t dev, uint16_t divisor, const char *str) {
+void uart_direct_write_chr(uint8_t dev, uint16_t divisor, char chr) {
 	uart_direct_init(dev, divisor);
 	
-	while (*str != '\0') {
-		uart_direct_write_chr(dev, *(str++));
-	}
+	uart_direct_write(dev, chr);
+	
+	uart_direct_flush(dev);
 }
 
 /* synchronously write to a uart; this disables uart interrupts and effectively
  * invalidates the normal (buffered) uart state */
-void uart_direct_write_P(uint8_t dev, uint16_t divisor, const char *pstr) {
+void uart_direct_write_str(uint8_t dev, uint16_t divisor, const char *str) {
+	uart_direct_init(dev, divisor);
+	
+	while (*str != '\0') {
+		uart_direct_write(dev, *(str++));
+	}
+	
+	uart_direct_flush(dev);
+}
+
+/* synchronously write to a uart; this disables uart interrupts and effectively
+ * invalidates the normal (buffered) uart state */
+void uart_direct_write_pstr(uint8_t dev, uint16_t divisor, const char *pstr) {
 	uart_direct_init(dev, divisor);
 	
 	char c;
 	while ((c = pgm_read_byte(pstr++)) != '\0') {
-		uart_direct_write_chr(dev, c);
+		uart_direct_write(dev, c);
 	}
+	
+	uart_direct_flush(dev);
 }
