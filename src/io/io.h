@@ -19,11 +19,11 @@
 
 
 #define DDR(_x) \
-	_CONCAT(DDR, _x)
+	CONCAT(DDR, _x)
 #define PORT(_x) \
-	_CONCAT(PORT, _x)
+	CONCAT(PORT, _x)
 #define PIN(_x) \
-	_CONCAT(PIN, _x)
+	CONCAT(PIN, _x)
 
 
 //#define IO_BTN      A

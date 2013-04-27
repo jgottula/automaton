@@ -9,7 +9,7 @@
 #define AUTOMATON_COMMON_MACRO_H
 
 
-#define _CONCAT(_a, _b) \
+#define CONCAT(_a, _b) \
 	_a ## _b
 
 
