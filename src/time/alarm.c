@@ -69,7 +69,7 @@ void alarm_start(struct alarm *alarm, uint16_t duration) {
 	alarm->expired = false;
 }
 
-/* stops the alarm from ticking */
+/* stops the alarm from ticking; this reduces the ISR execution time */
 void alarm_stop(struct alarm *alarm) {
 	alarm->ticking = false;
 }
