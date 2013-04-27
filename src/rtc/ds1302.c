@@ -30,8 +30,9 @@ enum ds1302_addr_bit {
 
 
 static void _ds1302_io_input(void) {
-	PORT(IO_RTC) |= IO_RTC_IO;
-	DDR(IO_RTC) &= ~IO_RTC_IO;
+	/* input without pullups */
+	PORT(IO_RTC) &= ~IO_RTC_IO;
+	DDR(IO_RTC)  &= ~IO_RTC_IO;
 }
 
 static void _ds1302_io_output(void) {
