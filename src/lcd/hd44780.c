@@ -11,7 +11,7 @@
 
 /* private: allow the address counter time to increment (beyond busy flag) */
 static void hd44780_delay_for_addr_incr(void) {
-	_delay_us(4);
+	_delay_us(4); // t_ADD
 }
 
 
@@ -32,21 +32,21 @@ static void hd44780_raw_write_subcycle(uint8_t bus) {
 	IO_WRITE(PORT(IO_LCD_BUS), IO_LCD_BUS_ALL, bus);
 	
 	PORT(IO_LCD_CTRL) |= IO_LCD_CTRL_E;
-	DELAY_NSEC(150);
+	DELAY_NSEC(450); // PW_EH t_DSW
 	
 	PORT(IO_LCD_CTRL) &= ~IO_LCD_CTRL_E;
-	DELAY_NSEC(1200);
+	DELAY_NSEC(550); // t_cycE
 }
 
 /* private: cycle E and get a byte from the bus */
 static uint8_t hd44780_raw_read_subcycle(void) {
 	PORT(IO_LCD_CTRL) |= IO_LCD_CTRL_E;
-	DELAY_NSEC(150);
+	DELAY_NSEC(450); // PW_EH t_DDR
 	
 	uint8_t bus = IO_READ(PIN(IO_LCD_BUS), IO_LCD_BUS_ALL);
 	
 	PORT(IO_LCD_CTRL) &= ~IO_LCD_CTRL_E;
-	DELAY_NSEC(1200);
+	DELAY_NSEC(550); // t_cycE
 	
 	return bus;
 }
@@ -55,6 +55,7 @@ static uint8_t hd44780_raw_read_subcycle(void) {
 /* private: set/clear RS, clear RW, and perform a read cycle */
 static void hd44780_raw_write_cycle(uint8_t rs, uint8_t bus) {
 	IO_WRITE(PORT(IO_LCD_CTRL), IO_LCD_CTRL_RS | IO_LCD_CTRL_RW, rs);
+	DELAY_NSEC(60); // t_AS
 	
 #if HD44780_BUS_WIDTH == 8
 	hd44780_raw_write_subcycle(bus);
@@ -69,6 +70,7 @@ static uint8_t hd44780_raw_read_cycle(uint8_t rs) {
 	hd44780_bus_mode_input();
 	IO_WRITE(PORT(IO_LCD_CTRL), IO_LCD_CTRL_RS | IO_LCD_CTRL_RW,
 		rs | IO_LCD_CTRL_RW);
+	DELAY_NSEC(60); // t_AS
 	
 #if HD44780_BUS_WIDTH == 8
 	uint8_t bus = hd44780_raw_read_subcycle();
