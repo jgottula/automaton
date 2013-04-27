@@ -121,7 +121,11 @@ static uint8_t _ds1302_read(uint8_t addr) {
 	uint8_t cmd = ((addr & 0x2f) << 1) | DS1302_CBIT_ONE | DS1302_CBIT_RD;
 	_ds1302_write_cycle(cmd);
 	
-	return _ds1302_read_cycle();
+	uint8_t data = _ds1302_read_cycle();
+	
+	PORT(IO_RTC) &= ~IO_RTC_CE;
+	_delay_us(4); // t_CWH
+	return data;
 }
 
 
