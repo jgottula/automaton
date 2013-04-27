@@ -46,6 +46,10 @@ void alarm_unregister(struct alarm *alarm) {
 			ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 				*prev_next = this->next;
 			}
+			
+			alarm->ticking = false;
+			alarm->expired = false;
+			
 			return;
 		}
 		
