@@ -161,7 +161,7 @@ static void uart_int_udre(struct uart *uart) {
 		uart->state &= ~UART_ST_TX_ACTIVE;
 		
 		/* disable this interrupt */
-		io_write(*uart->ucsr_b, _BV(UDRIE0), 0);
+		IO_WRITE(*uart->ucsr_b, _BV(UDRIE0), 0);
 		
 #if UART_DEBUG_INT_FLAG
 		lcd_write('u');

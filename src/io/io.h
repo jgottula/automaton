@@ -12,9 +12,9 @@
 #include "std.h"
 
 
-#define io_read(_reg, _mask) \
+#define IO_READ(_reg, _mask) \
 	(_reg & _mask)
-#define io_write(_reg, _mask, _val) \
+#define IO_WRITE(_reg, _mask, _val) \
 	(_reg) = (((_reg) & ~(_mask)) | ((_val) & (_mask)))
 
 

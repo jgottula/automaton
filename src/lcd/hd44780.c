@@ -17,19 +17,19 @@ static void hd44780_delay_for_addr_incr(void) {
 
 /* private: set the lcd bus to input mode with pull-ups */
 static void hd44780_bus_mode_input(void) {
-	io_write(PORT(IO_LCD_BUS), IO_LCD_BUS_ALL, IO_LCD_BUS_ALL);
-	io_write(DDR(IO_LCD_BUS), IO_LCD_BUS_ALL, 0);
+	IO_WRITE(PORT(IO_LCD_BUS), IO_LCD_BUS_ALL, IO_LCD_BUS_ALL);
+	IO_WRITE(DDR(IO_LCD_BUS), IO_LCD_BUS_ALL, 0);
 }
 
 /* private: set the lcd bus to output mode */
 static void hd44780_bus_mode_output(void) {
-	io_write(DDR(IO_LCD_BUS), IO_LCD_BUS_ALL, IO_LCD_BUS_ALL);
+	IO_WRITE(DDR(IO_LCD_BUS), IO_LCD_BUS_ALL, IO_LCD_BUS_ALL);
 }
 
 
 /* private: put a byte/nibble on the bus and cycle E */
 static void hd44780_raw_write_subcycle(uint8_t bus) {
-	io_write(PORT(IO_LCD_BUS), IO_LCD_BUS_ALL, bus);
+	IO_WRITE(PORT(IO_LCD_BUS), IO_LCD_BUS_ALL, bus);
 	
 	PORT(IO_LCD_CTRL) |= IO_LCD_CTRL_E;
 	delay_150ns();
@@ -43,7 +43,7 @@ static uint8_t hd44780_raw_read_subcycle(void) {
 	PORT(IO_LCD_CTRL) |= IO_LCD_CTRL_E;
 	delay_150ns();
 	
-	uint8_t bus = io_read(PIN(IO_LCD_BUS), IO_LCD_BUS_ALL);
+	uint8_t bus = IO_READ(PIN(IO_LCD_BUS), IO_LCD_BUS_ALL);
 	
 	PORT(IO_LCD_CTRL) &= ~IO_LCD_CTRL_E;
 	delay_1200ns();
@@ -54,7 +54,7 @@ static uint8_t hd44780_raw_read_subcycle(void) {
 
 /* private: set/clear RS, clear RW, and perform a read cycle */
 static void hd44780_raw_write_cycle(uint8_t rs, uint8_t bus) {
-	io_write(PORT(IO_LCD_CTRL), IO_LCD_CTRL_RS | IO_LCD_CTRL_RW, rs);
+	IO_WRITE(PORT(IO_LCD_CTRL), IO_LCD_CTRL_RS | IO_LCD_CTRL_RW, rs);
 	
 #if HD44780_BUS_WIDTH == 8
 	hd44780_raw_write_subcycle(bus);
@@ -67,7 +67,7 @@ static void hd44780_raw_write_cycle(uint8_t rs, uint8_t bus) {
 /* private: set/clear RS, set RW, and perform a write cycle */
 static uint8_t hd44780_raw_read_cycle(uint8_t rs) {
 	hd44780_bus_mode_input();
-	io_write(PORT(IO_LCD_CTRL), IO_LCD_CTRL_RS | IO_LCD_CTRL_RW,
+	IO_WRITE(PORT(IO_LCD_CTRL), IO_LCD_CTRL_RS | IO_LCD_CTRL_RW,
 		rs | IO_LCD_CTRL_RW);
 	
 #if HD44780_BUS_WIDTH == 8
@@ -183,8 +183,8 @@ static void hd44780_instr_ddram_addr(uint8_t addr) {
 
 /* public: perform the initialization sequence specified in the datasheet */
 void hd44780_init(uint8_t func_set, uint8_t onoff, uint8_t ent_mode) {
-	io_write(DDR(IO_LCD_CTRL), IO_LCD_CTRL_ALL, IO_LCD_CTRL_ALL);
-	io_write(DDR(IO_LCD_BUS), IO_LCD_BUS_ALL, IO_LCD_BUS_ALL);
+	IO_WRITE(DDR(IO_LCD_CTRL), IO_LCD_CTRL_ALL, IO_LCD_CTRL_ALL);
+	IO_WRITE(DDR(IO_LCD_BUS), IO_LCD_BUS_ALL, IO_LCD_BUS_ALL);
 	
 	_delay_ms(40);
 	hd44780_raw_write_instr(_BV(HD44780_INSTR_FUNC_SET) | func_set);

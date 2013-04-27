@@ -33,7 +33,7 @@ static struct {
 
 /* directly poll the buttons */
 static uint8_t button_poll(void) {
-	return io_read(PIN(IO_BTN), IO_BTN_ALL);
+	return IO_READ(PIN(IO_BTN), IO_BTN_ALL);
 }
 
 
@@ -119,8 +119,8 @@ void button_init(void) {
 		}
 		
 		/* set all as inputs with pull-up resistors */
-		io_write(PORT(IO_BTN), IO_BTN_ALL, IO_BTN_ALL);
-		io_write(DDR(IO_BTN), IO_BTN_ALL, 0);
+		IO_WRITE(PORT(IO_BTN), IO_BTN_ALL, IO_BTN_ALL);
+		IO_WRITE(DDR(IO_BTN), IO_BTN_ALL, 0);
 		
 		fifo_init(&buttons.events);
 		

@@ -9,18 +9,18 @@
 
 
 static void spi_select(uint8_t slave) {
-	io_write(PORT(IO_SPI), IO_SPI_SS_ALL, IO_SPI_SS_ALL ^ slave);
+	IO_WRITE(PORT(IO_SPI), IO_SPI_SS_ALL, IO_SPI_SS_ALL ^ slave);
 }
 
 static void spi_deselect(void) {
-	io_write(PORT(IO_SPI), IO_SPI_SS_ALL, IO_SPI_SS_ALL);
+	IO_WRITE(PORT(IO_SPI), IO_SPI_SS_ALL, IO_SPI_SS_ALL);
 }
 
 
 void spi_init(void) {
 	/* all output except MISO; all high, plus pullups on MISO */
-	io_write(PORT(IO_SPI), IO_SPI_ALL | IO_SPI_SS_ALL, IO_SPI_SS_ALL);
-	io_write(DDR(IO_SPI), IO_SPI_ALL | IO_SPI_SS_ALL,
+	IO_WRITE(PORT(IO_SPI), IO_SPI_ALL | IO_SPI_SS_ALL, IO_SPI_SS_ALL);
+	IO_WRITE(DDR(IO_SPI), IO_SPI_ALL | IO_SPI_SS_ALL,
 		(IO_SPI_ALL ^ IO_SPI_MISO) | IO_SPI_SS_ALL);
 }
 
