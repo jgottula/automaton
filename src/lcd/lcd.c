@@ -19,7 +19,7 @@ enum lcd_init_param {
 };
 
 
-struct lcd_state {
+struct state {
 	bool init;
 	
 	uint8_t ent_mode;
@@ -35,8 +35,8 @@ struct lcd_state {
 };
 
 
-struct lcd_state state;
-const struct lcd_state state_init PROGMEM = {
+struct state lcd_state;
+const struct state lcd_state_init PROGMEM = {
 	.init = false,
 	
 	.ent_mode = LCD_INIT_ENT_MODE,
@@ -54,27 +54,27 @@ const struct lcd_state state_init PROGMEM = {
 
 /* set the hd44780 addr to what we have locally */
 static void lcd_send_ddaddr(void) {
-	if (!state.init) {
+	if (!lcd_state.init) {
 		return;
 	}
 	
-	hd44780_set_ddaddr(state.addr);
+	hd44780_set_ddaddr(lcd_state.addr);
 }
 
 
-/* calculate the ddram addr based on changed state.cur.{x,y} */
+/* calculate the ddram addr based on changed lcd_state.cur.{x,y} */
 static void lcd_cur_set(bool send) {
 	_Static_assert(LCD_ROWS == 4 && LCD_COLS == 20,
 		"lcd cursor assumptions wrong");
 	
-	uint8_t new_addr = state.cur.x;
-	if ((state.cur.y % 2) == 0) {
-		new_addr += (state.cur.y * 10);
+	uint8_t new_addr = lcd_state.cur.x;
+	if ((lcd_state.cur.y % 2) == 0) {
+		new_addr += (lcd_state.cur.y * 10);
 	} else {
-		new_addr += 64 + ((state.cur.y - 1) * 10);
+		new_addr += 64 + ((lcd_state.cur.y - 1) * 10);
 	}
 	
-	state.addr = new_addr;
+	lcd_state.addr = new_addr;
 	if (send) {
 		lcd_send_ddaddr();
 	}
@@ -83,10 +83,10 @@ static void lcd_cur_set(bool send) {
 /* update local cursor values to match the hd44780's auto-increment activity */
 static void lcd_cur_adv(void) {
 	/* we assume that the address counter is set to increment */
-	if (++state.cur.x == LCD_COLS) {
-		state.cur.x = 0;
-		if (++state.cur.y == LCD_ROWS) {
-			state.cur.y = 0;
+	if (++lcd_state.cur.x == LCD_COLS) {
+		lcd_state.cur.x = 0;
+		if (++lcd_state.cur.y == LCD_ROWS) {
+			lcd_state.cur.y = 0;
 		}
 		
 		lcd_cur_set(true);
@@ -100,15 +100,15 @@ static void lcd_cur_adv(void) {
 void lcd_init(void) {
 	hd44780_init(LCD_INIT_FUNC_SET, LCD_INIT_ONOFF, LCD_INIT_ENT_MODE);
 	
-	memcpy_P(&state, &state_init, sizeof(state));
+	memcpy_P(&lcd_state, &lcd_state_init, sizeof(lcd_state));
 	
-	state.init = true;
+	lcd_state.init = true;
 }
 
 
 /* store a 5x8 character in cgram */
 void lcd_custom_store(uint8_t code, const uint8_t data[static 8]) {
-	if (!state.init) {
+	if (!lcd_state.init) {
 		return;
 	}
 	
@@ -123,7 +123,7 @@ void lcd_custom_store(uint8_t code, const uint8_t data[static 8]) {
 
 /* load a 5x8 character from cgram */
 void lcd_custom_load(uint8_t code, uint8_t data[static 8]) {
-	if (!state.init) {
+	if (!lcd_state.init) {
 		return;
 	}
 	
@@ -138,7 +138,7 @@ void lcd_custom_load(uint8_t code, uint8_t data[static 8]) {
 
 /* clear the screen and return the cursor to home */
 void lcd_clear(void) {
-	if (!state.init) {
+	if (!lcd_state.init) {
 		return;
 	}
 	
@@ -149,43 +149,43 @@ void lcd_clear(void) {
 
 /* set the cursor position */
 void lcd_goto_xy(uint8_t x, uint8_t y) {
-	state.cur.x = (x % LCD_COLS);
-	state.cur.y = (y % LCD_ROWS);
+	lcd_state.cur.x = (x % LCD_COLS);
+	lcd_state.cur.y = (y % LCD_ROWS);
 	lcd_cur_set(true);
 }
 
 /* set the cursor position (x only) */
 void lcd_goto_x(uint8_t x) {
-	state.cur.x = (x % LCD_COLS);
+	lcd_state.cur.x = (x % LCD_COLS);
 	lcd_cur_set(true);
 }
 
 /* set the cursor position (y only) */
 void lcd_goto_y(uint8_t y) {
-	state.cur.y = (y % LCD_ROWS);
+	lcd_state.cur.y = (y % LCD_ROWS);
 	lcd_cur_set(true);
 }
 
 
 /* adjust the cursor position */
 void lcd_rel_xy(int8_t dx, int8_t dy) {
-	lcd_goto_xy(state.cur.x + dx, state.cur.y + dy);
+	lcd_goto_xy(lcd_state.cur.x + dx, lcd_state.cur.y + dy);
 }
 
 /* adjust the cursor position (x only) */
 void lcd_rel_x(int8_t dx) {
-	lcd_goto_x(state.cur.x + dx);
+	lcd_goto_x(lcd_state.cur.x + dx);
 }
 
 /* adjust the cursor position (y only) */
 void lcd_rel_y(int8_t dy) {
-	lcd_goto_y(state.cur.y + dy);
+	lcd_goto_y(lcd_state.cur.y + dy);
 }
 
 
 /* write a character to ddram; update cursor based on \r and \n */
 void lcd_write(char chr) {
-	if (!state.init) {
+	if (!lcd_state.init) {
 		return;
 	}
 	
@@ -193,7 +193,7 @@ void lcd_write(char chr) {
 		lcd_goto_x(0);
 		return;
 	} else if (chr == '\n') {
-		lcd_goto_y(state.cur.y + 1);
+		lcd_goto_y(lcd_state.cur.y + 1);
 		return;
 	}
 	
@@ -204,12 +204,12 @@ void lcd_write(char chr) {
 
 /* read a character from ddram */
 char lcd_read(void) {
-	if (!state.init) {
+	if (!lcd_state.init) {
 		return '\0';
 	}
 	
 	char chr;
-	hd44780_read_ddram(state.addr, 1, (uint8_t *)&chr);
+	hd44780_read_ddram(lcd_state.addr, 1, (uint8_t *)&chr);
 	
 	lcd_cur_adv();
 	return chr;
