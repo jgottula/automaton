@@ -119,8 +119,8 @@ void button_init(void) {
 		}
 		
 		/* set all as inputs with pull-up resistors */
-		io_write(DDR(IO_BTN), IO_BTN_ALL, 0);
 		io_write(PORT(IO_BTN), IO_BTN_ALL, IO_BTN_ALL);
+		io_write(DDR(IO_BTN), IO_BTN_ALL, 0);
 		
 		fifo_init(&buttons.events);
 		
