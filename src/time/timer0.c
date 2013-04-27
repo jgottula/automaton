@@ -6,17 +6,21 @@
 
 
 #include "time/timer0.h"
+#include "button/button.h"
 #include "time/alarm.h"
 
 
-static uint16_t timer0_counter = 0;
+static volatile uint16_t timer0_counter = 0;
 
 
 
 ISR(TIMER0_COMPA_vect) {
-	++timer0_counter;
+	uint16_t counter = timer0_counter++;
 	
 	alarm_tick();
+	if (counter % 8 == 0) {
+		button_update();
+	}
 }
 
 
