@@ -8,10 +8,10 @@
 #include "std.h"
 #include "button/button.h"
 #include "debug/die.h"
-#include "debug/stdfile.h"
 #include "io/spi.h"
 #include "lcd/lcd.h"
 #include "obd/stn1110.h"
+#include "time/timer0.h"
 #include "uart/direct.h"
 #include "uart/uart.h"
 #include "ui/ui.h"
@@ -28,8 +28,11 @@ noreturn void main(void) {
 	
 	wdt_disable();
 	
-	uart_direct_write_P(UART_PC, UART_DIV_115200,
+	uart_direct_write_pstr(UART_PC, UART_DIV_115200,
 		PSTR("\n[[automaton][pc uart]]\n"));
+	
+	
+	timer0_start();
 	
 	uart_init(UART_PC, UART_DIV_115200, 0, 0);
 	stdfile_open();
@@ -37,9 +40,9 @@ noreturn void main(void) {
 	sei();
 	fputs_P(PSTR("main: uart ok\n"), stdout);
 	
+	
 	main_init(PSTR("lcd"));
 	lcd_init();
-	/*fputs_P(PSTR("AUTOmaton\r\n"), lcd);*/
 	
 	main_init(PSTR("button"));
 	button_init();
@@ -52,7 +55,9 @@ noreturn void main(void) {
 	
 	fputs_P(PSTR("main: init ok\n"), stdout);
 	
+	
 	ui_loop();
+	
 	
 	die();
 }
