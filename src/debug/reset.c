@@ -9,7 +9,20 @@
 #include "debug/die.h"
 
 
+uint8_t mcusr;
+
+
 noreturn void reset(void) {
 	wdt_enable(WDTO_15MS);
 	die();
+}
+
+
+void reset_defuse(void) {
+	/* store reason for last reset */
+	mcusr = MCUSR;
+	MCUSR = 0;
+	
+	/* prevent reset loop caused by watchdog timer */
+	wdt_disable();
 }

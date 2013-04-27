@@ -8,6 +8,7 @@
 #include "std.h"
 #include "button/button.h"
 #include "debug/die.h"
+#include "debug/reset.h"
 #include "io/spi.h"
 #include "lcd/lcd.h"
 #include "obd/stn1110.h"
@@ -24,10 +25,8 @@ static void _main_init(const char *pstr) {
 
 
 int main(void) {
-	uint8_t mcusr = MCUSR;
-	MCUSR = 0;
+	reset_defuse();
 	
-	wdt_disable();
 	
 	uart_direct_write_pstr(UART_PC, UART_DIV_115200,
 		PSTR("\n[[automaton][pc uart]]\n"));

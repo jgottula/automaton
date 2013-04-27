@@ -12,7 +12,12 @@
 #include "std.h"
 
 
+extern uint8_t mcusr;
+
+
 noreturn void reset(void);
+
+void reset_defuse(void);
 
 
 #endif
