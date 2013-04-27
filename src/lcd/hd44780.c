@@ -114,23 +114,23 @@ static void _hd44780_busy_wait(void) {
 /* private: write multiple data */
 static void _hd44780_write_multi(uint8_t len, const uint8_t data[static len]) {
 	/* we assume that the address counter is set to increment */
-	for (uint8_t i = 0; i < len; ++i) {
+	do {
 		_hd44780_busy_wait();
 		_hd44780_addr_incr_delay();
 		
-		_hd44780_write_data(data[i]);
-	}
+		_hd44780_write_data(*(data++));
+	} while (--len != 0);
 }
 
 /* private: read multiple data (explicitly set addr immediately before this!) */
 static void _hd44780_read_multi(uint8_t len, uint8_t data[static len]) {
 	/* we assume that the address counter is set to increment */
-	for (uint8_t i = 0; i < len; ++i) {
+	do {
 		_hd44780_busy_wait();
 		_hd44780_addr_incr_delay();
 		
-		data[i] = _hd44780_read_data();
-	}
+		*(data++) = _hd44780_read_data();
+	} while (--len != 0);
 }
 
 
