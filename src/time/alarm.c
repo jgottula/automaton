@@ -80,32 +80,3 @@ bool alarm_ticking(struct alarm *alarm) {
 bool alarm_expired(struct alarm *alarm) {
 	return alarm->expired;
 }
-
-
-#if 0
-/* returns an alarm with the specified duration (milliseconds) */
-struct alarm *alarm_new(int16_t duration) {
-	struct alarm *alarm = malloc(sizeof(*alarm));
-	assert(alarm != NULL);
-	
-	alarm->epoch    = timer0_count32();
-	alarm->duration = duration;
-	
-	return alarm;
-}
-
-/* frees an alarm allocated earlier */
-void alarm_free(struct alarm *alarm) {
-	free(alarm);
-}
-
-
-bool alarm_expired(struct alarm *alarm) {
-	uint32_t now  = timer0_count32();
-	uint32_t when = alarm->epoch + alarm->duration;
-	
-	int32_t diff = (int32_t)(now - when);
-	
-	return (diff >= 0);
-}
-#endif
