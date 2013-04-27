@@ -46,7 +46,7 @@ static int stn1110_file_put(char c, FILE *f) {
 }
 
 
-static void stn1110_eat_prompt(uint16_t timeout_ms) {
+static void stn1110_eat_prompt(uint16_t timeout) {
 	// TODO: timeout
 	
 	while (!uart_avail(UART_STN1110) || fgetc(stn1110) != '>') {
@@ -54,7 +54,7 @@ static void stn1110_eat_prompt(uint16_t timeout_ms) {
 	}
 }
 
-static void stn1110_eat_line(uint16_t timeout_ms) {
+static void stn1110_eat_line(uint16_t timeout) {
 	// TODO: timeout
 	
 	while (!uart_avail(UART_STN1110) || fgetc(stn1110) != '\n') {
@@ -167,6 +167,6 @@ void stn1110_init(void) {
 
 
 bool stn1110_at(const char *cmd, char *reply, size_t reply_max,
-	uint16_t timeout_ms) {
+	uint16_t timeout) {
 	// send 'at' first, then call stn1110_cmd
 }
