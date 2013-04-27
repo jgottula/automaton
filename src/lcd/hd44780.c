@@ -17,8 +17,8 @@ static void hd44780_delay_for_addr_incr(void) {
 
 /* private: set the lcd bus to input mode with pull-ups */
 static void hd44780_bus_mode_input(void) {
-	io_write(DDR(IO_LCD_BUS), IO_LCD_BUS_ALL, 0);
 	io_write(PORT(IO_LCD_BUS), IO_LCD_BUS_ALL, IO_LCD_BUS_ALL);
+	io_write(DDR(IO_LCD_BUS), IO_LCD_BUS_ALL, 0);
 }
 
 /* private: set the lcd bus to output mode */
