@@ -68,7 +68,7 @@ static void _lcd_cur_set(bool send) {
 		"lcd cursor assumptions wrong");
 	
 	uint8_t new_addr = lcd_state.cur.c;
-	if ((lcd_state.cur.c % 2) == 0) {
+	if ((lcd_state.cur.r % 2) == 0) {
 		new_addr += (lcd_state.cur.r * 10);
 	} else {
 		new_addr += 64 + ((lcd_state.cur.r - 1) * 10);
