@@ -10,6 +10,25 @@
 
 
 #include "std.h"
+#include "time/alarm.h"
+
+
+enum ui_page {
+	UI_PAGE_SLEEP = 0,
+	UI_PAGE_TIME  = 1,
+	
+	UI_PAGE_DEFAULT = UI_PAGE_TIME,
+};
+
+
+struct ui_state {
+	uint8_t page;
+	
+	struct alarm alarm;
+};
+
+
+extern struct ui_state ui;
 
 
 void ui_loop(void);

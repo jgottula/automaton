@@ -59,25 +59,7 @@ int main(void) {
 	fputs_P(PSTR("main: init ok\n"), stdout);
 	
 	
-	//ui_loop();
-	
-	
-	for ( ; ; ) {
-		time_t t = time(NULL);
-		
-		struct tm tm;
-		gmtime_r(&t, &tm);
-		
-		char pattern[6];
-		strcpy_P(pattern, PSTR("%F %T"));
-		
-		char buf[128];
-		strftime(buf, sizeof(buf), pattern, &tm);
-		
-		fprintf_P(lcd, PSTR("\r%s"), buf);
-		
-		_delay_ms(200);
-	}
+	ui_loop();
 	
 	
 	die();

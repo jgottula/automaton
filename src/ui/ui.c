@@ -6,17 +6,41 @@
 
 
 #include "ui/ui.h"
-#include "lcd/lcd.h"
-#include "obd/stn1110.h"
-#include "time/alarm.h"
-#include "uart/uart.h"
+#include "ui/sleep.h"
+#include "ui/time.h"
 
 
-// TODO: log all stn1110 TX and RX comm lines to the PC uart
+struct ui_state ui = {
+	.page = UI_PAGE_DEFAULT,
+};
 
-extern volatile uint16_t timer0_count;
+
+static void _ui_init(void) {
+	
+}
 
 
+void ui_loop(void) {
+	_ui_init();
+	
+	for ( ; ; ) {
+		switch (ui.page) {
+		case UI_PAGE_SLEEP:
+			ui_page_sleep();
+			break;
+		case UI_PAGE_TIME:
+			ui_page_time();
+			break;
+		default:
+			ASSERT(0);
+		}
+	}
+}
+
+
+
+
+#if 0
 static const uint8_t custom_chars[][8] PROGMEM = {
 	{
 		0b00010000,
@@ -186,3 +210,4 @@ void ui_loop(void) {
 		_delay_us(10);
 	}
 }
+#endif
