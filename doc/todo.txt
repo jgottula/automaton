@@ -2,6 +2,13 @@ automaton
 todo list
 
 
+graphs:
+- use partial vertical blocks to do bar graphs
+
+grouping:
+- put die, reset, wdt, power stuff under one directory
+- keep mcusr value in there somewhere
+
 clock/voltage:
 - run at 3.3V
   - done
@@ -27,9 +34,6 @@ pc uart:
 code:
 - handle all TODO's and #warning's
 - standard greppable comment for REMOVE ME etc
-
-timers:
-- if possible, create a generic 'millisecond' timer that debounce (et al) use
 
 debug:
 - in UART code, _BREAK() then die() on errors (eg: dev is neither 0 nor 1)
@@ -62,7 +66,10 @@ storage:
 
 time:
 - add profiling interface
-  - if we use TIMER1, then function trees with alarms can't be profiled
+  - use TIMER1 to count cycles, probably
+  - profiling targets:
+    - all ISRs (especially TIMER0_COMPA with button_update)
+    - all delay/alarm code (test for correctness)
 
 lcd/hd44780:
 - implement timeout for hd44780_busy_wait
