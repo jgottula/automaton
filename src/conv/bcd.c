@@ -18,7 +18,7 @@ uint8_t bcd_decode_packed(uint8_t bcd_p) {
 
 uint8_t bcd_encode_packed(uint8_t bin) {
 	uint8_t tens = (bin / 10);
-	uint8_t ones = bin - tens;
+	uint8_t ones = (bin % 10);
 	
 	return (tens << 4) | ones;
 }
