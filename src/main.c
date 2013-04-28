@@ -12,7 +12,7 @@
 #include "io/spi.h"
 #include "lcd/lcd.h"
 #include "obd/stn1110.h"
-#include "rtc/rtc.h"
+#include "time/clock.h"
 #include "time/timer0.h"
 #include "uart/direct.h"
 #include "uart/uart.h"
@@ -44,8 +44,8 @@ int main(void) {
 	_main_init(PSTR("lcd"));
 	lcd_init();
 	
-	_main_init(PSTR("rtc"));
-	rtc_init();
+	_main_init(PSTR("clock"));
+	clock_init();
 	
 	_main_init(PSTR("button"));
 	button_init();
@@ -60,6 +60,15 @@ int main(void) {
 	
 	
 	//ui_loop();
+	
+	for ( ; ; ) {
+		time_t t = time(NULL);
+		char buf[128];
+		ctime_r(&t, buf);
+		printf_P(PSTR("%s\n"), buf);
+		
+		_delay_ms(200);
+	}
 	
 	
 	die();
