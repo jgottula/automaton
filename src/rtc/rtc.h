@@ -14,5 +14,8 @@
 
 void rtc_init(void);
 
+void rtc_get_tm(struct tm *tm);
+void rtc_set_tm(const struct tm *tm);
+
 
 #endif
