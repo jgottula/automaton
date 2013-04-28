@@ -9,7 +9,7 @@
 
 
 DWORD get_fattime(void) {
-	// TODO
+	// TODO: use <time.h> fatfs_time
 	return 0;
 }
 
