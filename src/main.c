@@ -61,11 +61,20 @@ int main(void) {
 	
 	//ui_loop();
 	
+	
 	for ( ; ; ) {
 		time_t t = time(NULL);
+		
+		struct tm tm;
+		gmtime_r(&t, &tm);
+		
+		char pattern[6];
+		strcpy_P(pattern, PSTR("%F %T"));
+		
 		char buf[128];
-		ctime_r(&t, buf);
-		printf_P(PSTR("%s\n"), buf);
+		strftime(buf, sizeof(buf), pattern, &tm);
+		
+		fprintf_P(lcd, PSTR("\r%s"), buf);
 		
 		_delay_ms(200);
 	}
