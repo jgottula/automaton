@@ -79,35 +79,28 @@ static void _ui_init_lcd(void) {
 void ui_loop(void) {
 	_ui_init_lcd();
 	
-	alarm_set(1000);
+	/*alarm_set(1000);*/
 	
-	bool tx = false, rx = false;
+	char obd_buf[64];
+	uint8_t obd_idx = 0;
+	
+	bool do_cmd = true;
 	for ( ; ; ) {
 		int c;
 		
-		bool do_cmd = false;
+		/*bool do_cmd = false;
 		ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 			if (timer0_count >= 1000) {
 				do_cmd = true;
 				timer0_count -= 1000;
 			}
-		}
+		}*/
 		
 		if (do_cmd) {
-			// vehicle speed
-			fputs_P(PSTR("010d\n"), stn1110);
-			
-			/* copypasta from tx block below */
-			if (!tx) {
-				tx = true;
-				rx = false;
-				
-				lcd_clear();
-				lcd_goto_xy(0, 0);
-				fputs_P(PSTR(">>\r\n>>\r\n<<\r\n<<"), lcd);
-				lcd_goto_xy(3, 0);
-			}
-			fputs_P(PSTR("010d"), lcd);
+			// get throttle position
+			fputs_P(PSTR("0111\n"), stn1110);
+			obd_idx = 0;
+			do_cmd = false;
 		}
 		
 		/* repeatedly receive and transmit data until neither are available */
@@ -116,7 +109,7 @@ void ui_loop(void) {
 			got_data = false;
 			
 			/* tx */
-			if (uart_avail(UART_PC) && (c = fgetc(stdin)) != EOF) {
+			/*if (uart_avail(UART_PC) && (c = fgetc(stdin)) != EOF) {
 				fputc(c, stn1110);
 				
 				if (!tx) {
@@ -134,21 +127,55 @@ void ui_loop(void) {
 				}
 				
 				got_data = true;
-			}
+			}*/
 			
 			/* rx */
 			if (uart_avail(UART_STN1110) && (c = fgetc(stn1110)) != EOF) {
 				fputc(c, stdout);
 				
-				if (!rx) {
-					tx = false;
-					rx = true;
-					
-					lcd_goto_xy(3, 2);
-				}
-				
 				if (c != '\n') {
-					fputc(c, lcd);
+					obd_buf[obd_idx++] = c;
+				} else {
+					obd_buf[obd_idx] = '\0';
+					
+					/*// REMOVE ME
+					strcpy_P(obd_buf, PSTR("10 41 e8"));*/
+					
+					lcd_clear();
+					// TODO: just overwrite
+					
+					/*static uint8_t counter = 0;*/
+					
+					uint8_t discard, accel;
+					if (sscanf_P(obd_buf, PSTR("%hhx %hhx %hhx"),
+						&discard, &discard, &accel)== 3) {
+						/*accel = counter++;*/
+						
+						int16_t accel_i = (int16_t)accel - 40;
+						accel_i *= 100;
+						accel_i /= (205 - 40);
+						
+						int16_t accel_b = (accel_i * 4) / 5;
+						if (accel_b < 0) accel_b = 0;
+						if (accel_b > 100) accel_b = 100;
+						
+						fprintf_P(lcd, PSTR("%3d"), accel_i);
+						fputc(' ', lcd);
+						
+						while (accel_b >= 5) {
+							lcd_write(0xff);
+							accel_b -= 5;
+						}
+						if (accel_b > 0) {
+							lcd_write(accel_b - 1);
+						}
+					} else {
+						fprintf_P(lcd, PSTR("error:\r\n%s"), obd_buf);
+					}
+					
+					do_cmd = true;
+					
+					/*_delay_ms(100);*/
 				}
 				
 				got_data = true;
