@@ -6,6 +6,7 @@
 
 
 #include "ui/ui.h"
+#include "lcd/lcd.h"
 #include "ui/sleep.h"
 #include "ui/time.h"
 
@@ -34,6 +35,16 @@ void ui_loop(void) {
 		default:
 			ASSERT(0);
 		}
+	}
+}
+
+
+void ui_header(const char *pstr) {
+	lcd_clear();
+	
+	char c;
+	while ((c = pgm_read_byte(pstr++)) != '\0') {
+		fprintf_P(lcd, PSTR("%c\r\n"), c);
 	}
 }
 

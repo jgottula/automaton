@@ -6,17 +6,20 @@
 
 
 #include "ui/time.h"
+#include "lcd/lcd.h"
 #include "ui/ui.h"
 
 
 static void _ui_page_time_init(void) {
-	
+	ui_header(PSTR("TIME"));
 }
 
 
 void ui_page_time(void) {
 	_ui_page_time_init();
 	
+	lcd_goto(0, 2);
 	fputs_P(PSTR("time page"), lcd);
+	
 	for ( ; ; );
 }

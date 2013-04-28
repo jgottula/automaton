@@ -33,5 +33,7 @@ extern struct ui_state ui;
 
 void ui_loop(void);
 
+void ui_header(const char *pstr);
+
 
 #endif
