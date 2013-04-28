@@ -9,9 +9,6 @@
 #include "rtc/rtc.h"
 
 
-// warning: the timer0 hook will get called before clock_init is called
-
-
 /* call from timer0 ISR so system time will tick */
 void clock_timer0_hook(void) {
 	static uint16_t tick_next = 1000;
