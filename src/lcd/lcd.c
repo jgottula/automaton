@@ -19,7 +19,7 @@ enum lcd_init_param {
 };
 
 
-struct state {
+struct lcd_state {
 	bool init;
 	
 	uint8_t ent_mode;
@@ -35,8 +35,8 @@ struct state {
 };
 
 
-struct state lcd_state;
-const struct state lcd_state_init PROGMEM = {
+struct lcd_state lcd_state;
+const struct lcd_state lcd_state_init PROGMEM = {
 	.init = false,
 	
 	.ent_mode = LCD_INIT_ENT_MODE,
