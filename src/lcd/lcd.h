@@ -23,13 +23,13 @@ void lcd_custom_load(uint8_t code, uint8_t data[static 8]);
 
 void lcd_clear(void);
 
-void lcd_goto_xy(uint8_t x, uint8_t y);
-void lcd_goto_x(uint8_t x);
-void lcd_goto_y(uint8_t y);
+void lcd_goto(uint8_t r, uint8_t c);
+void lcd_goto_r(uint8_t r);
+void lcd_goto_c(uint8_t c);
 
-void lcd_rel_xy(int8_t dx, int8_t dy);
-void lcd_rel_x(int8_t dx);
-void lcd_rel_y(int8_t dy);
+void lcd_rel(int8_t delta_r, int8_t delta_c);
+void lcd_rel_r(int8_t delta_r);
+void lcd_rel_c(int8_t delta_c);
 
 void lcd_write(char chr);
 char lcd_read(void);

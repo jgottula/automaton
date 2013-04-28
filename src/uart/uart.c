@@ -89,9 +89,9 @@ static void _uart_debug_fifo_common(const struct fifo *fifo) {
 	fputc('\n', lcd);
 	
 	/* index pointers */
-	lcd_goto_x(fifo->i_push);
+	lcd_goto_c(fifo->i_push);
 	fputc('^', lcd);
-	lcd_goto_x(fifo->i_pop);
+	lcd_goto_c(fifo->i_pop);
 	fputc('^', lcd);
 }
 

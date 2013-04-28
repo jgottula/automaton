@@ -29,8 +29,8 @@ struct lcd_state {
 	uint8_t addr;
 	
 	struct {
-		uint8_t x;
-		uint8_t y;
+		uint8_t r;
+		uint8_t c;
 	} cur;
 };
 
@@ -46,8 +46,8 @@ const struct lcd_state lcd_state_init PROGMEM = {
 	.addr = 0x00,
 	
 	.cur = {
-		.x = 0,
-		.y = 0,
+		.r = 0,
+		.c = 0,
 	},
 };
 
@@ -67,11 +67,11 @@ static void _lcd_cur_set(bool send) {
 	_Static_assert(LCD_ROWS == 4 && LCD_COLS == 20,
 		"lcd cursor assumptions wrong");
 	
-	uint8_t new_addr = lcd_state.cur.x;
-	if ((lcd_state.cur.y % 2) == 0) {
-		new_addr += (lcd_state.cur.y * 10);
+	uint8_t new_addr = lcd_state.cur.c;
+	if ((lcd_state.cur.c % 2) == 0) {
+		new_addr += (lcd_state.cur.r * 10);
 	} else {
-		new_addr += 64 + ((lcd_state.cur.y - 1) * 10);
+		new_addr += 64 + ((lcd_state.cur.r - 1) * 10);
 	}
 	
 	lcd_state.addr = new_addr;
@@ -83,10 +83,10 @@ static void _lcd_cur_set(bool send) {
 /* update local cursor values to match the hd44780's auto-increment activity */
 static void _lcd_cur_adv(void) {
 	/* we assume that the address counter is set to increment */
-	if (++lcd_state.cur.x == LCD_COLS) {
-		lcd_state.cur.x = 0;
-		if (++lcd_state.cur.y == LCD_ROWS) {
-			lcd_state.cur.y = 0;
+	if (++lcd_state.cur.c == LCD_COLS) {
+		lcd_state.cur.c = 0;
+		if (++lcd_state.cur.r == LCD_ROWS) {
+			lcd_state.cur.r = 0;
 		}
 		
 		_lcd_cur_set(true);
@@ -142,44 +142,44 @@ void lcd_clear(void) {
 		return;
 	}
 	
-	lcd_goto_xy(0, 0);
+	lcd_goto(0, 0);
 	hd44780_clear();
 }
 
 
 /* set the cursor position */
-void lcd_goto_xy(uint8_t x, uint8_t y) {
-	lcd_state.cur.x = (x % LCD_COLS);
-	lcd_state.cur.y = (y % LCD_ROWS);
+void lcd_goto(uint8_t r, uint8_t c) {
+	lcd_state.cur.r = (r % LCD_ROWS);
+	lcd_state.cur.c = (c % LCD_COLS);
 	_lcd_cur_set(true);
 }
 
-/* set the cursor position (x only) */
-void lcd_goto_x(uint8_t x) {
-	lcd_state.cur.x = (x % LCD_COLS);
+/* set the cursor position (row only) */
+void lcd_goto_r(uint8_t r) {
+	lcd_state.cur.r = (r % LCD_ROWS);
 	_lcd_cur_set(true);
 }
 
-/* set the cursor position (y only) */
-void lcd_goto_y(uint8_t y) {
-	lcd_state.cur.y = (y % LCD_ROWS);
+/* set the cursor position (col only) */
+void lcd_goto_c(uint8_t c) {
+	lcd_state.cur.c = (c % LCD_COLS);
 	_lcd_cur_set(true);
 }
 
 
 /* adjust the cursor position */
-void lcd_rel_xy(int8_t dx, int8_t dy) {
-	lcd_goto_xy(lcd_state.cur.x + dx, lcd_state.cur.y + dy);
+void lcd_rel(int8_t delta_r, int8_t delta_c) {
+	lcd_goto(lcd_state.cur.r + delta_r, lcd_state.cur.c + delta_c);
 }
 
-/* adjust the cursor position (x only) */
-void lcd_rel_x(int8_t dx) {
-	lcd_goto_x(lcd_state.cur.x + dx);
+/* adjust the cursor position (row only) */
+void lcd_rel_r(int8_t delta_r) {
+	lcd_goto_r(lcd_state.cur.r + delta_r);
 }
 
-/* adjust the cursor position (y only) */
-void lcd_rel_y(int8_t dy) {
-	lcd_goto_y(lcd_state.cur.y + dy);
+/* adjust the cursor position (col only) */
+void lcd_rel_c(int8_t delta_c) {
+	lcd_goto_c(lcd_state.cur.c + delta_c);
 }
 
 
@@ -190,10 +190,10 @@ void lcd_write(char chr) {
 	}
 	
 	if (chr == '\r') {
-		lcd_goto_x(0);
+		lcd_goto_c(0);
 		return;
 	} else if (chr == '\n') {
-		lcd_goto_y(lcd_state.cur.y + 1);
+		lcd_goto_r(lcd_state.cur.r + 1);
 		return;
 	}
 	
