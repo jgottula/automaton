@@ -139,7 +139,7 @@ uint8_t button_avail(void) {
 }
 
 /* get the most recent button event */
-bool button_event(struct button_event *out) {
+bool button_pump(struct button_event *out) {
 	if (!buttons.init || fifo_count(&buttons.events) == 0) {
 		return false;
 	}

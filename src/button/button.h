@@ -41,7 +41,7 @@ void button_timer0_hook(void);
 void button_init(void);
 
 uint8_t button_avail(void);
-bool button_event(struct button_event *out);
+bool button_pump(struct button_event *out);
 
 
 #endif
