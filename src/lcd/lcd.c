@@ -35,8 +35,8 @@ struct lcd_state {
 };
 
 
-struct lcd_state lcd_state;
-const struct lcd_state lcd_state_init PROGMEM = {
+static struct lcd_state lcd_state;
+static const struct lcd_state lcd_state_init PROGMEM = {
 	.init = false,
 	
 	.ent_mode = LCD_INIT_ENT_MODE,
