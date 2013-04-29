@@ -170,9 +170,10 @@ static void _ui_page_time_init(void) {
 void ui_page_time(void) {
 	_ui_page_time_init();
 	
+	bool setting = false;
 	for ( ; ; ) {
-		/* don't adjust the displayed time while it's being modified */
-		if (state.field == TIME_FIELD_NONE) {
+		/* don't update the time while adjusting it */
+		if (!setting) {
 			_ui_page_time_check_time();
 		}
 		
@@ -190,10 +191,13 @@ void ui_page_time(void) {
 				}
 			} else if (event.num == 1 && event.down) {
 				_ui_page_time_adjust_down();
+				setting = true;
 			} else if (event.num == 0 && event.down) {
 				_ui_page_time_adjust_up();
+				setting = true;
 			} else if ((event.num == 0 || event.num == 1) && !event.down) {
 				_ui_page_time_set_time();
+				setting = false;
 			}
 		}
 		
