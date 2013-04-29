@@ -44,7 +44,7 @@ void ui_header(const char *pstr) {
 	
 	char c;
 	while ((c = pgm_read_byte(pstr++)) != '\0') {
-		fprintf_P(lcd, PSTR("%c\r\n"), c);
+		fprintf_P(lcd, PSTR("%c|\r\n"), c);
 	}
 }
 

@@ -6,11 +6,12 @@
 
 
 #include "ui/sleep.h"
+#include "lcd/lcd.h"
 #include "ui/ui.h"
 
 
 static void _ui_page_sleep_init(void) {
-	
+	lcd_clear();
 }
 
 
