@@ -97,7 +97,7 @@ static void _ui_page_time_set_time(void) {
 static void _ui_page_time_adjust_up(void) {
 	if (state.field == TIME_FIELD_YEAR) {
 		if (++state.tm.tm_year > 199) {
-			state.tm.tm_year = 0;
+			state.tm.tm_year = 100;
 		}
 	} else if (state.field == TIME_FIELD_MONTH) {
 		if (++state.tm.tm_mon > 11) {
@@ -116,19 +116,15 @@ static void _ui_page_time_adjust_up(void) {
 			state.tm.tm_min = 0;
 		}
 	} else if (state.field == TIME_FIELD_SEC) {
-		if (++state.tm.tm_sec > 59) {
-			state.tm.tm_sec = 0;
-		}
+		state.tm.tm_sec = 0;
 	}
 	
-	if (state.field != TIME_FIELD_NONE) {
-		_ui_page_time_draw_time();
-	}
+	_ui_page_time_draw_time();
 }
 
 static void _ui_page_time_adjust_down(void) {
 	if (state.field == TIME_FIELD_YEAR) {
-		if (--state.tm.tm_year < 0) {
+		if (--state.tm.tm_year < 100) {
 			state.tm.tm_year = 199;
 		}
 	} else if (state.field == TIME_FIELD_MONTH) {
@@ -148,14 +144,10 @@ static void _ui_page_time_adjust_down(void) {
 			state.tm.tm_min = 59;
 		}
 	} else if (state.field == TIME_FIELD_SEC) {
-		if (--state.tm.tm_sec < 0) {
-			state.tm.tm_sec = 59;
-		}
+		state.tm.tm_sec = 0;
 	}
 	
-	if (state.field != TIME_FIELD_NONE) {
-		_ui_page_time_draw_time();
-	}
+	_ui_page_time_draw_time();
 }
 
 
@@ -170,12 +162,8 @@ static void _ui_page_time_init(void) {
 void ui_page_time(void) {
 	_ui_page_time_init();
 	
-	bool setting = false;
 	for ( ; ; ) {
-		/* don't update the time while adjusting it */
-		if (!setting) {
-			_ui_page_time_check_time();
-		}
+		_ui_page_time_check_time();
 		
 		struct button_event event;
 		while (button_pump(&event)) {
@@ -189,16 +177,21 @@ void ui_page_time(void) {
 				} else {
 					_ui_page_time_change_field(0);
 				}
-			} else if (event.num == 1 && event.down) {
-				_ui_page_time_adjust_down();
-				setting = true;
-			} else if (event.num == 0 && event.down) {
-				_ui_page_time_adjust_up();
-				setting = true;
-			} else if ((event.num == 0 || event.num == 1) && !event.down) {
-				_ui_page_time_set_time();
-				setting = false;
 			}
+			
+			if (state.field != TIME_FIELD_NONE) {
+				if (event.down) {
+					if (event.num == 1) {
+						_ui_page_time_adjust_down();
+					} else {
+						_ui_page_time_adjust_up();
+					}
+				} else {
+					_ui_page_time_set_time();
+				}
+			}
+			
+
 		}
 		
 		// TODO: go to sleep briefly for power savings
