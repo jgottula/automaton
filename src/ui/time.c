@@ -180,18 +180,14 @@ void ui_page_time(void) {
 			}
 			
 			if (state.field != TIME_FIELD_NONE) {
-				if (event.down) {
-					if (event.num == 1) {
-						_ui_page_time_adjust_down();
-					} else {
-						_ui_page_time_adjust_up();
-					}
-				} else {
+				if (event.num == 1 && event.down) {
+					_ui_page_time_adjust_down();
+				} else if (event.num == 0 && event.down) {
+					_ui_page_time_adjust_up();
+				} else if ((event.num == 1 || event.num == 0) && !event.down) {
 					_ui_page_time_set_time();
 				}
 			}
-			
-
 		}
 		
 		// TODO: go to sleep briefly for power savings
