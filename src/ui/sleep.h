@@ -12,7 +12,8 @@
 #include "std.h"
 
 
-void ui_page_sleep(void);
+void ui_page_sleep_init(void);
+bool ui_page_sleep_update(void);
 
 
 #endif

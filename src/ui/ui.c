@@ -16,8 +16,36 @@ struct ui_state ui = {
 };
 
 
-static void _ui_init(void) {
+static const ui_page_init_fn_t ui_func_init[] PROGMEM = {
+	ui_page_sleep_init,
+	ui_page_time_init,
+};
+static const ui_page_update_fn_t ui_func_update[] PROGMEM = {
+	ui_page_sleep_update,
+	ui_page_time_update,
+};
+
+
+static void _ui_call_init(void) {
+	ui_page_init_fn_t init_fn = pgm_read_word(ui_func_init + ui.page);
+	init_fn();
+}
+
+static bool _ui_call_update(void) {
+	ui_page_update_fn_t update_fn = pgm_read_word(ui_func_update + ui.page);
+	return update_fn();
+}
+
+
+static void _ui_change_page(uint8_t new_page) {
+	ui.page = new_page;
 	
+	_ui_call_init();
+}
+
+
+static void _ui_init(void) {
+	_ui_change_page(UI_PAGE_DEFAULT);
 }
 
 
@@ -25,16 +53,18 @@ void ui_loop(void) {
 	_ui_init();
 	
 	for ( ; ; ) {
-		switch (ui.page) {
-		case UI_PAGE_SLEEP:
-			ui_page_sleep();
-			break;
-		case UI_PAGE_TIME:
-			ui_page_time();
-			break;
-		default:
-			ASSERT(0);
+		if (!_ui_call_update()) {
+			if (ui.page != UI_PAGE_LAST) {
+				_ui_change_page(ui.page + 1);
+			} else {
+				_ui_change_page(0);
+			}
 		}
+		
+		_delay_us(100);
+		
+		// TODO: go to sleep briefly for power savings
+		// (use ui.alarm to wake us up at a well-defined interval)
 	}
 }
 

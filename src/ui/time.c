@@ -23,7 +23,7 @@ enum time_field {
 	TIME_FIELD_MIN  = 5,
 	TIME_FIELD_SEC  = 6,
 	
-	TIME_FIELD_WRAP = TIME_FIELD_SEC + 1,
+	TIME_FIELD_LAST = TIME_FIELD_SEC,
 };
 
 
@@ -151,49 +151,38 @@ static void _ui_page_time_adjust_down(void) {
 }
 
 
-static void _ui_page_time_init(void) {
+void ui_page_time_init(void) {
 	ui_header(PSTR("TIME"));
 	
 	_ui_page_time_check_time();
 	_ui_page_time_change_field(TIME_FIELD_NONE);
 }
 
-
-void ui_page_time(void) {
-	_ui_page_time_init();
+bool ui_page_time_update(void) {
+	_ui_page_time_check_time();
 	
-	for ( ; ; ) {
-		_ui_page_time_check_time();
-		
-		struct button_event event;
-		while (button_pump(&event)) {
-			if (event.num == 3 && !event.down) {
-				// TODO: change this
-				ui.page = UI_PAGE_SLEEP;
-				goto done;
-			} else if (event.num == 2 && !event.down) {
-				if ((state.field + 1) != TIME_FIELD_WRAP) {
-					_ui_page_time_change_field(state.field + 1);
-				} else {
-					_ui_page_time_change_field(0);
-				}
-			}
-			
-			if (state.field != TIME_FIELD_NONE) {
-				if (event.num == 1 && event.down) {
-					_ui_page_time_adjust_down();
-				} else if (event.num == 0 && event.down) {
-					_ui_page_time_adjust_up();
-				} else if ((event.num == 1 || event.num == 0) && !event.down) {
-					_ui_page_time_set_time();
-				}
+	struct button_event event;
+	while (button_pump(&event)) {
+		if (event.num == 3 && !event.down) {
+			return false;
+		} else if (event.num == 2 && !event.down) {
+			if (state.field != TIME_FIELD_LAST) {
+				_ui_page_time_change_field(state.field + 1);
+			} else {
+				_ui_page_time_change_field(0);
 			}
 		}
 		
-		// TODO: go to sleep briefly for power savings
-		// (use ui.alarm to wake us up at a well-defined interval)
+		if (state.field != TIME_FIELD_NONE) {
+			if (event.num == 1 && event.down) {
+				_ui_page_time_adjust_down();
+			} else if (event.num == 0 && event.down) {
+				_ui_page_time_adjust_up();
+			} else if ((event.num == 1 || event.num == 0) && !event.down) {
+				_ui_page_time_set_time();
+			}
+		}
 	}
 	
-done:
-	;
+	return true;
 }

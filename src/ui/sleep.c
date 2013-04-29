@@ -6,19 +6,25 @@
 
 
 #include "ui/sleep.h"
+#include "button/button.h"
 #include "lcd/lcd.h"
 #include "ui/ui.h"
 
 
-static void _ui_page_sleep_init(void) {
+void ui_page_sleep_init(void) {
 	lcd_clear();
 }
 
-
-void ui_page_sleep(void) {
-	_ui_page_sleep_init();
-	
-	ASSERT(0);
+bool ui_page_sleep_update(void) {
 	// TODO: go into low power mode
 	// when a button is pressed, leave this mode
+	
+	struct button_event event;
+	while (button_pump(&event)) {
+		if (event.num == 3 && !event.down) {
+			return false;
+		}
+	}
+	
+	return true;
 }

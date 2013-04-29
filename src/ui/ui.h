@@ -13,10 +13,15 @@
 #include "time/alarm.h"
 
 
+typedef void (*ui_page_init_fn_t)(void);
+typedef bool (*ui_page_update_fn_t)(void);
+
+
 enum ui_page {
 	UI_PAGE_SLEEP = 0,
 	UI_PAGE_TIME  = 1,
 	
+	UI_PAGE_LAST    = UI_PAGE_TIME,
 	UI_PAGE_DEFAULT = UI_PAGE_TIME,
 };
 

@@ -12,7 +12,8 @@
 #include "std.h"
 
 
-void ui_page_time(void);
+void ui_page_time_init(void);
+bool ui_page_time_update(void);
 
 
 #endif
