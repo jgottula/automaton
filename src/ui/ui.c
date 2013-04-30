@@ -72,10 +72,7 @@ void ui_loop(void) {
 void ui_header(const char *pstr) {
 	lcd_clear();
 	
-	char c;
-	while ((c = pgm_read_byte(pstr++)) != '\0') {
-		fprintf_P(lcd, PSTR("%c|\r\n"), c);
-	}
+	fputs_P(pstr, lcd);
 }
 
 

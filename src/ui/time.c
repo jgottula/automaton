@@ -41,35 +41,32 @@ static struct {
 
 static const uint8_t field_pos[] PROGMEM = {
 	/* row | col */
-	(1 << 4) | (6),
-	(1 << 4) | (9),
-	(1 << 4) | (12),
-	(3 << 4) | (6),
-	(3 << 4) | (9),
-	(3 << 4) | (12),
+	(3 << 6) | (3),
+	(3 << 6) | (6),
+	(3 << 6) | (9),
+	(3 << 6) | (12),
+	(3 << 6) | (15),
+	(3 << 6) | (18),
 };
 
 
 static void _ui_page_time_draw_time(void) {
-	lcd_goto(0, 3);
-	fprintf_P(lcd, PSTR("%u/%02u/%02u"),
-		state.tm.tm_year + 1900, state.tm.tm_mon + 1, state.tm.tm_mday);
-	
-	lcd_goto(2, 5);
-	fprintf_P(lcd, PSTR("%02u:%02u:%02u"),
+	lcd_goto(2, 0);
+	fprintf_P(lcd, PSTR("%u/%02u/%02u %02u:%02u:%02u"),
+		state.tm.tm_year + 1900, state.tm.tm_mon + 1, state.tm.tm_mday,
 		state.tm.tm_hour, state.tm.tm_min, state.tm.tm_sec);
 }
 
 static void _ui_page_time_change_field(uint8_t new_field) {
 	if (state.field != TIME_FIELD_NONE) {
 		uint8_t pos = pgm_read_byte(field_pos + (state.field - 1));
-		lcd_goto((pos >> 4), (pos & 0x0f));
+		lcd_goto((pos >> 6), (pos & 0x3f));
 		fputc(' ', lcd);
 	}
 	
 	if (new_field != TIME_FIELD_NONE) {
 		uint8_t pos = pgm_read_byte(field_pos + (new_field - 1));
-		lcd_goto((pos >> 4), (pos & 0x0f));
+		lcd_goto((pos >> 6), (pos & 0x3f));
 		fputc('^', lcd);
 	}
 	
@@ -152,7 +149,7 @@ static void _ui_page_time_adjust_down(void) {
 
 
 void ui_page_time_init(void) {
-	ui_header(PSTR("TIME"));
+	ui_header(PSTR("Date/Time"));
 	
 	_ui_page_time_check_time();
 	_ui_page_time_change_field(TIME_FIELD_NONE);
