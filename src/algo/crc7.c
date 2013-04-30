@@ -46,7 +46,7 @@ static const uint8_t crc7_table[] PROGMEM = {
 
 /* compute the CRC7 of one datum */
 uint8_t crc7_byte(uint8_t crc, uint8_t datum) {
-	return crc7_table[(crc << 1) ^ datum];
+	return pgm_read_byte(crc7_table + ((crc << 1) ^ datum));
 }
 
 /* compute the CRC7 of many data */
