@@ -29,6 +29,7 @@
 #define IO_LCD_BUS  A
 #define IO_BTN      A
 #define IO_RTC      B
+#define IO_SD       B
 #define IO_SPI      B
 #define IO_LED      D
 #define IO_LCD_CTRL D
@@ -55,8 +56,8 @@ enum io_port_b {
 	IO_SD_DETECT = _BV(PB3),
 	
 	/* warning: don't set PB4 as input, or spi master mode may be disabled */
-	IO_SPI_SS_SDCARD = _BV(PB4),
-	IO_SPI_SS_ALL    = IO_SPI_SS_SDCARD,
+	IO_SPI_SS_SD  = _BV(PB4),
+	IO_SPI_SS_ALL = IO_SPI_SS_SD,
 	
 	IO_SPI_MOSI = _BV(PB5),
 	IO_SPI_MISO = _BV(PB6),
