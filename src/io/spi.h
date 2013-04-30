@@ -47,12 +47,6 @@ enum spi_divisor {
 #endif
 };
 
-enum spi_devices {
-	SPI_DS1302_MODE   = SPI_MODE_2,
-	SPI_DS1302_ENDIAN = SPI_LSB_FIRST,
-	SPI_DS1302_DIV    = SPI_DIV_1_25M,
-};
-
 
 void spi_init(void);
 
