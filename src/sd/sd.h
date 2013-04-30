@@ -5,14 +5,19 @@
  */
 
 
-#ifndef AUTOMATON_STORAGE_SDCARD_H
-#define AUTOMATON_STORAGE_SDCARD_H
+#ifndef AUTOMATON_SD_SD_H
+#define AUTOMATON_SD_SD_H
 
 
 #include "std.h"
 
 
+/*enum sd_result {
+	SD_R_OK = 0,
+};*/
 
+
+void sd_init(void);
 
 
 #endif

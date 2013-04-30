@@ -5,7 +5,14 @@
  */
 
 
-#include "storage/sdcard.h"
+#ifndef AUTOMATON_SD_CMD_H
+#define AUTOMATON_SD_CMD_H
+
+
+#include "std.h"
 
 
 
+
+
+#endif
