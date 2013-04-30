@@ -142,8 +142,11 @@ void lcd_clear(void) {
 		return;
 	}
 	
-	lcd_goto(0, 0);
 	hd44780_clear();
+	
+	lcd_state.cur.r = 0;
+	lcd_state.cur.c = 0;
+	_lcd_cur_set(false);
 }
 
 
