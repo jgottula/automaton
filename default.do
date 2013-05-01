@@ -81,6 +81,8 @@ AVRDUDE_FLAGS=("${AVRDUDE_PART[@]/#/-p}" "${AVRDUDE_PROG[@]/#/-c}" \
 
 AVRDUDE_FLAGS_LOAD=("${AVRDUDE_FLAGS[@]}" -u \
 	-Uflash:w:"$OUT_BIN":r)
+AVRDUDE_FLAGS_VERIFY=("${AVRDUDE_FLAGS[@]}" -u \
+	-Uflash:v:"$OUT_BIN":r)
 AVRDUDE_FLAGS_FUSE=("${AVRDUDE_FLAGS[@]}" -q \
 	-Ulfuse:w:"$AVRDUDE_LFUSE":m \
 	-Uhfuse:w:"$AVRDUDE_HFUSE":m \
@@ -132,6 +134,10 @@ load)
 	redo all
 	echo "sudo $AVRDUDE ${AVRDUDE_FLAGS_LOAD[@]}"
 	sudo $AVRDUDE "${AVRDUDE_FLAGS_LOAD[@]}"
+	;;
+verify)
+	echo "sudo $AVRDUDE ${AVRDUDE_FLAGS_VERIFY[@]}"
+	sudo $AVRDUDE "${AVRDUDE_FLAGS_VERIFY[@]}"
 	;;
 fuse)
 	echo "sudo $AVRDUDE ${AVRDUDE_FLAGS_FUSE[@]}"
