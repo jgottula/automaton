@@ -3,11 +3,11 @@
 # The source code of this project is distributed under the terms of the
 # simplified BSD license. See the LICENSE file for details.
 # 
-# programmer configuration for dragon_jtag
+# progrmmer configuration for dragon_isp
 
 
-AVRDUDE_PROG=(usbasp)
-AVRDUDE_PORT=()
-AVRDUDE_BITCLOCK=()
+AVRDUDE_PROG=(dragon_isp)
+AVRDUDE_PORT=(usb)
+AVRDUDE_BITCLOCK=(0.4)
 AVRDUDE_BAUDRATE=()
 AVRDUDE_BANGDELAY=()
