@@ -37,8 +37,8 @@ static uint8_t _button_poll(void) {
 }
 
 
-/* call from timer0 ISR to check button states */
-void button_timer0_hook(void) {
+/* call from timer1 ISR to check button states */
+void button_timer1_hook(void) {
 	if (!buttons.init) {
 		return;
 	}
@@ -110,7 +110,7 @@ void button_timer0_hook(void) {
 }
 
 
-/* initialize the button system (timer0 must be enabled) */
+/* initialize the button system (timer1 must be enabled) */
 void button_init(void) {
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 		for (uint8_t i = 0; i < BTN_QTY; ++i) {

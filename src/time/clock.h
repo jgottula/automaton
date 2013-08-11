@@ -12,7 +12,7 @@
 #include "std.h"
 
 
-void clock_timer0_hook(void);
+void clock_timer1_hook(void);
 
 void clock_init(void);
 

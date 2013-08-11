@@ -13,7 +13,7 @@
 #include "lcd/lcd.h"
 #include "obd/stn1110.h"
 #include "time/clock.h"
-#include "time/timer0.h"
+#include "time/timer1.h"
 #include "uart/direct.h"
 #include "uart/uart.h"
 #include "ui/ui.h"
@@ -32,7 +32,7 @@ int main(void) {
 		PSTR("\n[[automaton][pc uart]]\n"));
 	
 	
-	timer0_start();
+	timer1_start();
 	
 	uart_init(UART_PC, UART_DIV_115200, 0, 0);
 	stdfile_open();

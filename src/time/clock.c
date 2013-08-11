@@ -9,8 +9,8 @@
 #include "rtc/rtc.h"
 
 
-/* call from timer0 ISR so system time will tick */
-void clock_timer0_hook(void) {
+/* call from timer1 ISR so system time will tick */
+void clock_timer1_hook(void) {
 	static uint16_t tick_next = 1000;
 	
 	if (--tick_next == 0) {

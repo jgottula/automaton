@@ -11,8 +11,8 @@
 static struct alarm *alarms = NULL;
 
 
-/* call from timer0 ISR so alarms will tick */
-void alarm_timer0_hook(void) {
+/* call from timer1 ISR so alarms will tick */
+void alarm_timer1_hook(void) {
 	struct alarm *this = alarms;
 	while (this != NULL) {
 		if (this->ticking) {
