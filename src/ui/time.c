@@ -160,9 +160,9 @@ bool ui_page_time_update(void) {
 	
 	struct button_event event;
 	while (button_pump(&event)) {
-		if (event.num == 3 && !event.down) {
+		if (event.num == BTN_PAGE && !event.down) {
 			return false;
-		} else if (event.num == 2 && !event.down) {
+		} else if (event.num == BTN_SELECT && !event.down) {
 			if (state.field != TIME_FIELD_LAST) {
 				_ui_page_time_change_field(state.field + 1);
 			} else {
@@ -171,11 +171,12 @@ bool ui_page_time_update(void) {
 		}
 		
 		if (state.field != TIME_FIELD_NONE) {
-			if (event.num == 1 && event.down) {
+			if (event.num == BTN_DOWN && event.down) {
 				_ui_page_time_adjust_down();
-			} else if (event.num == 0 && event.down) {
+			} else if (event.num == BTN_UP && event.down) {
 				_ui_page_time_adjust_up();
-			} else if ((event.num == 1 || event.num == 0) && !event.down) {
+			} else if ((event.num == BTN_DOWN || event.num == BTN_UP) &&
+				!event.down) {
 				_ui_page_time_set_time();
 			}
 		}

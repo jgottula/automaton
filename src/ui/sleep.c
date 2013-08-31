@@ -21,7 +21,7 @@ bool ui_page_sleep_update(void) {
 	
 	struct button_event event;
 	while (button_pump(&event)) {
-		if (event.num == 3 && !event.down) {
+		if (event.num == BTN_PAGE && !event.down) {
 			return false;
 		}
 	}
