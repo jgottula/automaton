@@ -1,0 +1,18 @@
+# automaton
+# (c) 2013 Justin Gottula
+# The source code of this project is distributed under the terms of the
+# simplified BSD license. See the LICENSE file for details.
+# 
+# microcontroller configuration for atmega1284p
+
+
+MCU="atmega1284p"
+
+CPU_KHZ="10000"
+
+
+AVRDUDE_PART=(m1284p)
+
+AVRDUDE_LFUSE="0xd7"
+AVRDUDE_HFUSE="0x17"
+AVRDUDE_EFUSE="0xfd"
