@@ -2,6 +2,14 @@ automaton
 todo list
 
 
+power saving, in order of savings:
+- AVR: turn off peripherals not in use
+- AVR idle: use low-power mode
+- screen off
+- sleep mode: put STN and AVR in low-power mode
+- off switch
+- disconnect obd cable
+
 graphs:
 - use partial vertical blocks to do bar graphs
 
