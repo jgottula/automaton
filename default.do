@@ -24,7 +24,7 @@ PROJ_NAME="automaton"
 
 
 # configuration files for microcontroller and programmer
-CFG_MCU="atmega324a"
+CFG_MCU="atmega1284p"
 CFG_PROG="dragon_jtag"
 
 CFG_FILES=("cfg/mcu/$CFG_MCU" "cfg/prog/$CFG_PROG")
