@@ -24,6 +24,13 @@ enum button_timing {
 	BTN_TIME_REPEAT   = ROUND(100, 8), // time between subsequent DOWN events
 };
 
+enum button_names {
+	BTN_PAGE   = 0,
+	BTN_SELECT = 1,
+	BTN_UP     = 2,
+	BTN_DOWN   = 3,
+};
+
 
 struct button_event {
 	uint8_t num : 2; // button number
