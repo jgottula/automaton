@@ -48,10 +48,10 @@ enum io_port_a {
 };
 
 enum io_port_b {
-	IO_RTC_CE   = _BV(PB0),
+	IO_RTC_IO   = _BV(PB0),
 	IO_RTC_SCLK = _BV(PB1),
-	IO_RTC_IO   = _BV(PB2),
-	IO_RTC_ALL  = IO_RTC_CE | IO_RTC_SCLK | IO_RTC_IO,
+	IO_RTC_CE   = _BV(PB2),
+	IO_RTC_ALL  = IO_RTC_IO | IO_RTC_SCLK | IO_RTC_CE,
 	
 	IO_SD_DETECT = _BV(PB3),
 	
@@ -78,13 +78,13 @@ enum io_port_d {
 	/* PD2: UART1 rx */
 	/* PD3: UART1 tx */
 	
-	IO_LED_0   = _BV(PD4),
-	IO_LED_ALL = IO_LED_0,
-	
-	IO_LCD_CTRL_E   = _BV(PD5),
-	IO_LCD_CTRL_RW  = _BV(PD6),
-	IO_LCD_CTRL_RS  = _BV(PD7),
+	IO_LCD_CTRL_E   = _BV(PD4),
+	IO_LCD_CTRL_RW  = _BV(PD5),
+	IO_LCD_CTRL_RS  = _BV(PD6),
 	IO_LCD_CTRL_ALL = IO_LCD_CTRL_E | IO_LCD_CTRL_RW | IO_LCD_CTRL_RS,
+	
+	IO_LED_0   = _BV(PD7),
+	IO_LED_ALL = IO_LED_0,
 };
 
 
