@@ -8,7 +8,15 @@
 #include "io/spi.h"
 
 
-static void _spi_select(uint8_t slave) {
+static volatile bool spi_xfer_flag = false;
+
+
+ISR(SPI_STC_vect) {
+	spi_xfer_flag = true;
+}
+
+
+static void _spi_select(uint8_t slave){
 	IO_WRITE(PORT(IO_SPI), IO_SPI_SS_ALL, IO_SPI_SS_ALL ^ slave);
 }
 
@@ -25,8 +33,8 @@ void spi_init(void) {
 }
 
 
-void spi_begin(uint8_t slave, uint8_t settings) {
-	SPCR = _BV(SPIE) | _BV(MSTR) | (settings & ~_BV(7));
+void spi_select(uint8_t slave, uint8_t settings) {
+	SPCR = _BV(MSTR) | (settings & ~_BV(7));
 	SPSR = ((settings & _BV(7)) ? _BV(SPI2X) : 0);
 	
 	/* clear out any existing state */
@@ -36,14 +44,33 @@ void spi_begin(uint8_t slave, uint8_t settings) {
 	_spi_select(slave);
 }
 
-void spi_end(void) {
+void spi_deselect(void) {
 	_spi_deselect();
 }
 
 
-uint8_t spi_xfer(uint8_t byte) {
-	SPDR = byte;
+uint8_t spi_xfer(uint8_t tx) {
+	SPDR = tx;
 	
 	while (!(SPSR & _BV(SPIF)));
 	return SPDR;
+}
+
+
+void spi_async_begin(uint8_t tx) {
+	SPCR |= _BV(SPIE);
+	
+	spi_xfer_flag = false;
+	SPDR = tx;
+}
+
+bool spi_async_end(uint8_t *rx) {
+	if (spi_xfer_flag) {
+		SPCR &= ~_BV(SPIE);
+		
+		*rx = SPDR;
+		return true;
+	} else {
+		return false;
+	}
 }

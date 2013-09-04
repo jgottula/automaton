@@ -50,10 +50,13 @@ enum spi_divisor {
 
 void spi_init(void);
 
-void spi_begin(uint8_t slave, uint8_t settings);
-void spi_end(void);
+void spi_select(uint8_t slave, uint8_t settings);
+void spi_deselect(void);
 
-uint8_t spi_xfer(uint8_t byte);
+uint8_t spi_xfer(uint8_t tx);
+
+void spi_async_begin(uint8_t tx);
+bool spi_async_end(uint8_t *rx);
 
 
 #endif
