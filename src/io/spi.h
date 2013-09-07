@@ -38,10 +38,18 @@ enum spi_divisor {
 	SPI_DIV_78K   = _BV(SPR1) | _BV(SPR0),
 	SPI_DIV_156K  = _BV(SPR1),
 	SPI_DIV_312K  = _BV(SPR1) | _BV(7),
-	SPI_DIV_625M  = _BV(SPR0),
+	SPI_DIV_625K  = _BV(SPR0),
 	SPI_DIV_1_25M = _BV(SPR0) | _BV(7),
 	SPI_DIV_2_5M  = 0,
 	SPI_DIV_5M    = 0 | _BV(7),
+#elif F_CPU == 8000000UL
+	SPI_DIV_63K  = _BV(SPR1) | _BV(SPR0),
+	SPI_DIV_125K = _BV(SPR1),
+	SPI_DIV_250K = _BV(SPR1) | _BV(7),
+	SPI_DIV_500K = _BV(SPR0),
+	SPI_DIV_1M   = _BV(SPR0) | _BV(7),
+	SPI_DIV_2M   = 0,
+	SPI_DIV_4M   = 0 | _BV(7),
 #else
 #error SPI clock dividers are wrong
 #endif
