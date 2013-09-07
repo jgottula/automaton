@@ -55,6 +55,24 @@ enum uart_divisor {
 	UART_DIV_115200 = _BV(12) | 10,
 	UART_DIV_250K   = _BV(12) | 4,
 	UART_DIV_1_25M  = _BV(12) | 0,
+#elif F_CPU == 8000000UL
+	UART_DIV_300    = 1666,
+	UART_DIV_600    = 831,
+	UART_DIV_1200   = 416,
+	UART_DIV_2400   = 207,
+	UART_DIV_4800   = 103,
+	UART_DIV_9600   = 51,
+	UART_DIV_14400  = 34,
+	UART_DIV_19200  = 25,
+	UART_DIV_28800  = 16,
+	UART_DIV_38400  = 12,
+	UART_DIV_57600  = 8,
+	UART_DIV_250K   = 1,
+	UART_DIV_500K   = 0,
+	
+	UART_DIV_76800  = _BV(12) | 12,
+	UART_DIV_115200 = _BV(12) | 8,
+	UART_DIV_1M     = _BV(12) | 0,
 #else 
 #error UART baud rate divisors are wrong
 #endif
