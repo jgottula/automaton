@@ -8,7 +8,7 @@
 
 MCU="atmega1284p"
 
-CPU_KHZ="10000"
+CPU_KHZ="8000"
 
 
 AVRDUDE_PART=(m1284p)

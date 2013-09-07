@@ -8,7 +8,7 @@
 
 MCU="atmega324a"
 
-CPU_KHZ="10000"
+CPU_KHZ="8000"
 
 
 AVRDUDE_PART=(m324a)
