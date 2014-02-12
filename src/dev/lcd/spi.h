@@ -5,15 +5,17 @@
  */
 
 
-#ifndef AUTOMATON_ALGO_CRC7_H
-#define AUTOMATON_ALGO_CRC7_H
+#ifndef AUTOMATON_DEV_LCD_SPI_H
+#define AUTOMATON_DEV_LCD_SPI_H
 
 
 #include "std.h"
 
 
-uint8_t crc7_byte(uint8_t crc, uint8_t datum);
-uint8_t crc7_arr(uint8_t crc, uint8_t len, const uint8_t data[static len]);
+void lcd_spi_init(void);
+
+void lcd_spi_write(uint8_t byte);
+void lcd_spi_write_many(uint16_t len, const uint8_t bytes[static len]);
 
 
 #endif

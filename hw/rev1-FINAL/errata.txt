@@ -1,0 +1,8 @@
+rev3 errata
+
+
+1. GPS UART pin assignments on the XMEGA are idiotic (should be GPS_TX on PD2
+   and GPS_RX on PD3)
+   MITIGATION: cut PD1, PD2, PD3, rewire so that PD1 is CAN_STANDY, and PD2 and
+   PD3 are GPS_TX and GPS_RX (not easy but probably doable)
+   MITIGATION: bitbang the uart (nope)

@@ -5,15 +5,15 @@
  */
 
 
-#ifndef AUTOMATON_ALGO_CRC7_H
-#define AUTOMATON_ALGO_CRC7_H
+#ifndef AUTOMATON_MCU_CLOCK_H
+#define AUTOMATON_MCU_CLOCK_H
 
 
 #include "std.h"
 
 
-uint8_t crc7_byte(uint8_t crc, uint8_t datum);
-uint8_t crc7_arr(uint8_t crc, uint8_t len, const uint8_t data[static len]);
+void mcu_use_xtal(void);
+void mcu_use_pll(void);
 
 
 #endif

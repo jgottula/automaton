@@ -5,20 +5,7 @@
  */
 
 
-#ifndef AUTOMATON_DEBUG_BREAK_H
-#define AUTOMATON_DEBUG_BREAK_H
+#include "dev/lcd/lcd.h"
 
 
-#include "std.h"
 
-
-#define BREAK() \
-	__asm__ __volatile__( \
-		"\nbreak" \
-		: \
-		: \
-		: "memory" \
-	)
-
-
-#endif

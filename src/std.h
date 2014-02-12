@@ -1,5 +1,5 @@
 /* automaton
- * (c) 2013 Justin Gottula
+ * (c) 2014 Justin Gottula
  * The source code of this project is distributed under the terms of the
  * simplified BSD license. See the LICENSE file for details.
  */
@@ -31,12 +31,13 @@
 
 
 /* project: common headers */
-#include "common/macro.h"
-#include "debug/assert.h"
+#include "macro.h"
+//#include "debug/assert.h"
 #include "debug/break.h"
-#include "debug/stdfile.h"
-#include "io/io.h"
-#include "io/led.h"
+//#include "debug/stdfile.h"
+//#include "io/port.h"
+//#include "dev/led.h"
+// die and reset too?
 
 
 #endif

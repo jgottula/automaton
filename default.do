@@ -24,7 +24,7 @@ PROJ_NAME="automaton"
 
 
 # configuration files for microcontroller and programmer
-CFG_MCU="atmega1284p"
+CFG_MCU="atxmega128a3u"
 CFG_PROG="dragon_jtag"
 
 CFG_FILES=("cfg/mcu/$CFG_MCU" "cfg/prog/$CFG_PROG")
@@ -62,10 +62,12 @@ LIBS=()
 
 CFLAGS_STD=(-std=gnu11)
 CFLAGS_CPU=("-mmcu=$MCU" -fpack-struct -funsigned-bitfields)
-CFLAGS_DEBUG=(-ggdb)
-CFLAGS_OPT=(-Os -flto -fuse-linker-plugin -fwhole-program -mcall-prologues \
-	-mrelax -mstrict-X -fmerge-all-constants -ffast-math -fno-jump-tables \
+CFLAGS_DEBUG=(-ggdb -fno-omit-frame-pointer -fvar-tracking-assignments)
+CFLAGS_OPT=(-Os -flto -fuse-linker-plugin -fwhole-program \
+	-mrelax -mstrict-X -fmerge-constants -ffast-math -fno-jump-tables \
 	-fshort-enums -Wl,--gc-sections)
+# TODO: put -fmerge-all-constants back after compiler error is figured out
+# TODO: put -mcall-prologues back after apparent problems are figured out
 CFLAGS_WARN=(-Wall -Wextra -Wno-unused-function -fno-diagnostics-show-caret)
 CFLAGS_ETC=(-pipe)
 
@@ -146,6 +148,11 @@ fuse)
 term)
 	echo "sudo $AVRDUDE ${AVRDUDE_FLAGS_TERM[@]}"
 	sudo $AVRDUDE "${AVRDUDE_FLAGS_TERM[@]}"
+	;;
+reset)
+	# TODO: variable-ize this
+	echo "avarice -g -P atmega1284p -R"
+	avarice -g -P atmega1284p -R
 	;;
 *)
 	echo "unknown target '$TARGET'"

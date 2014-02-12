@@ -2,6 +2,13 @@ automaton
 todo list
 
 
+ui pages:
+- trouble code viewer
+- trouble code clearer
+- proprietary PID scanner
+  (brute force modes and PIDs; try the AT MA command, page 40 of the ELM327 ds)
+  (also try AT SH to address commands to other bus endpoints/controllers)
+
 power saving, in order of savings:
 - AVR: turn off peripherals not in use
 - AVR idle: use low-power mode

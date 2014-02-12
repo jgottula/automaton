@@ -1,0 +1,58 @@
+bill of materials
+
+
+
+enclosure		1591XXCBK
+	alt:		1951XXCSBK (econo version)
+	alt:		1591XXBBK (slightly smaller)
+pcb screw		6004 (qty: 4)
+power supply	R-78E3.3-0.5
+	alt:		ROF-78E3.3-0.5SMD-R
+5v regulator	L78L05ACZ
+avr xmega		ATXMEGA128A3U
+lcd				adafruit st7565 128x64 rgb negative (owned already)
+gps				FGPMMOPA6H
+	alt:		Venus638FLPx-L
+can controller	MCP2515
+can transceiver	MCP2562
+usb/serial		FT231XS
+rtc				DS1390U-33+T&R
+usb port		0675031020
+sd socket		5033980891
+battery holder	BLP2032SM-GTR (rather large... smaller batt or vertical holder?)
+avr xtal		ATS16B
+can xtal		ATS250B-E
+rtc xtal		CFS206-32.768KEZB
+button			B3F-1050
+	cap:		B32-2000/B32-2010 (5mm round)
+	cap:		B32-1060/B32-1010 (4mm square)
+piezo			???
+power switch	???
+
+
+NEED: 12-pin IDC ribbon cable terminator (female) for LCD connection (11 pins)
+
+
+LED 1206 R/1.8	LH N974-KN-1
+LED 1206 G/2.2	LG N971-KN-1
+
+R 1206    27	RC3216J270CS
+R 1206   120	RC3216J121CS
+R 1206    1k	RC3216J102CS
+R 1206  1.5k	RC3216J152CS
+R 1206  4.7k	RC3216J472CS
+R 1206   10k	RC3216F103CS
+
+C 1206 5.6pF	CL31C5R6CBCNNNC
+C 1206  18pF	CL31C180JBCNNNC
+C 1206  47pF	CL31C470JCCNNNC
+C 1206   1nF	CL31B102KBCNNNC
+C 1206  10nF	CL31B103KBCNNNC
+C 1206 100nF	CL31B104KBCNNNC
+C 1206 330nF	CL31B334KBFNNNE
+C 1206   1uF	CL31B105KAHNNNE
+C 2x5  4.7uF	ESH475M050AC3AA
+C 2x5   10uF	ESK106M016AC3AA
+
+L 1812  bead	HF50ACB453215-T
+L 1812  10uH	CM453232-100KL

@@ -1,24 +1,20 @@
 /* automaton
- * (c) 2014 Justin Gottula
+ * (c) 2013 Justin Gottula
  * The source code of this project is distributed under the terms of the
  * simplified BSD license. See the LICENSE file for details.
  */
 
 
-#ifndef AUTOMATON_DEBUG_BREAK_H
-#define AUTOMATON_DEBUG_BREAK_H
+#ifndef AUTOMATON_UI_RAW_H
+#define AUTOMATON_UI_RAW_H
 
 
 #include "std.h"
 
 
-#define BREAK() \
-	__asm__ __volatile__( \
-		"\nbreak" \
-		: \
-		: \
-		: "memory" \
-	)
+void ui_page_raw_init(void);
+void ui_page_raw_cleanup(void);
+bool ui_page_raw_update(void);
 
 
 #endif

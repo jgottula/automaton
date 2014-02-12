@@ -1,0 +1,46 @@
+rev1 errata
+
+
+major
+
+- GPS UART pin assignments on the XMEGA are idiotic (should be GPS_TX on PD2 and
+  GPS_RX on PD3)
+  - WORKAROUND: cut PD1, PD2, PD3, rewire so that PD1 is CAN_STANDY, and PD2 and 
+    PD3 are GPS_TX and GPS_RX
+
+- Upper-right PCB mount hole should be at (99.5, 51) mm but is actually at
+  (99.5, 50) mm
+  - WORKAROUND: use 3 mounting screws
+
+- MOSFETs for LCD backlight are all wrong: currently they have drain connected
+  to +3.3V and source connected thru resistor to BL- pin; should have source
+  connected to GND, and drain connected to resistor/BL- pin
+  - WORKAROUND: use MCU IO ports directly
+
+
+minor
+
+- Insufficient clearance between the 3.3v regulator and the box of the OBD
+  right-angle header (very tight clearance with 5v regulator as well)
+
+- USB connector protrudes too far: makes inserting PCB into box difficult
+
+- Battery connector impinges on capacitor to the right; also, the negative
+  terminal is completely beneath the plastic and therefore difficult to solder
+
+- Reset button solder pads are too tiny (don't extend out enough) to make good
+  electrical connections
+
+
+component changes
+
+- Mini USB connector: switch for one that's easier to solder
+
+- Battery connector: switch for one that's easier to solder (upright?)
+
+
+CHECK THESE THINGS!
+
+- All actual component footprints: check for overlaps!
+
+- Pin headers need pin 1 marked in silkscreen
