@@ -11,7 +11,7 @@ offset the innumerable hours its users spend driving.
 what is it
 ----------
 **Hardware** currently consists of a professionally fabricated PCB, mounted in a
-sturdy project box with an RGB-backlit 96x64 graphics LCD for output and a
+sturdy project box with an RGB-backlit 128x64 graphics LCD for output and a
 series of pushbuttons for input. IO connections on the board include **OBD-II**
 (of course), **MicroSD** (for data logging), **MiniUSB** (for debug logging),
 **JTAG** (for programming/debugging), and **PDI** (also for
@@ -71,7 +71,7 @@ Hardware is subject to change, but it's pretty locked down at this point.
 - Real-time clock: Maxim DS1390U
 - GPS module: GlobalTop FGPMMOPA6H
 - Debug UART: FTDI FT231XS
-- LCD: 96x64 ST7565 graphic RGB-backlit LCD
+- LCD: 128x64 ST7565 graphic RGB-backlit LCD
 
 compiling
 ---------
