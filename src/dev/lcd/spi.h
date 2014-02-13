@@ -16,6 +16,7 @@ void lcd_spi_init(void);
 
 void lcd_spi_write(uint8_t byte);
 void lcd_spi_write_many(uint16_t len, const uint8_t bytes[static len]);
+void lcd_spi_write_many_P(uint16_t len, const uint8_t *bytes);
 
 
 #endif

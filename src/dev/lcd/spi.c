@@ -39,5 +39,8 @@ void lcd_spi_write_many(uint16_t len, const uint8_t bytes[static len]) {
 	}
 }
 
-
-// TODO: functions for **fast** DMA block writes, from RAM or flash
+void lcd_spi_write_many_P(uint16_t len, const uint8_t *bytes) {
+	while (len-- != 0) {
+		lcd_spi_write(pgm_read_byte(bytes++));
+	}
+}

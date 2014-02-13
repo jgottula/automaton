@@ -5,17 +5,14 @@
  */
 
 
-#ifndef AUTOMATON_DEV_LCD_LCD_H
-#define AUTOMATON_DEV_LCD_LCD_H
+#ifndef AUTOMATON_DEV_LCD_BACKLIGHT_H
+#define AUTOMATON_DEV_LCD_BACKLIGHT_H
 
 
 #include "std.h"
 
 
-void lcd_init(void);
-
-void lcd_onoff(bool on);
-void lcd_contrast(uint8_t value);
+void lcd_bl_init(void);
 
 
 #endif
