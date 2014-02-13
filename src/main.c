@@ -6,6 +6,7 @@
 
 
 #include "std.h"
+#include "dev/lcd/backlight.h"
 #include "dev/lcd/lcd.h"
 #include "mcu/clock.h"
 
@@ -52,42 +53,61 @@ extern uint8_t mcusr;
 #endif
 
 
+#include "dev/lcd/st7565.h"
 int main(void) {
-	// test LCD backlight stuff
-	PORTE.DIRSET = 0b00000111;
-	PORTE.OUT = 0b00000000;
-	for (uint8_t i = 0; i < 8; ++i) {
-		PORTE.OUT = (PORTE.OUT + 1) & 0b111;
-		_delay_ms(25);
-	}
-	
-	mcu_use_xtal();
-	
-	// test LCD backlight stuff
-	PORTE.DIRSET = 0b00000111;
-	PORTE.OUT = 0b00000000;
-	for (uint8_t i = 0; i < 8; ++i) {
-		PORTE.OUT = (PORTE.OUT + 1) & 0b111;
-		_delay_ms(200);
-	}
-	
+	mcu_setup_xtal();
+	mcu_setup_pll();
 	mcu_use_pll();
 	
-	// test LCD backlight stuff
-	PORTE.DIRSET = 0b00000111;
+	lcd_bl_init();
+	//button_init();
+	
 	PORTE.OUT = 0b00000000;
-	for (uint8_t i = 0; i < 8; ++i) {
-		PORTE.OUT = (PORTE.OUT + 1) & 0b111;
-		_delay_ms(400);
+	lcd_init();
+	lcd_onoff(true);
+	
+	//st7565_cmd(ST7565_DISP_ALL_PTS | 0b1);
+	
+	for (uint16_t i = 0; i < 8; ++i) {
+		st7565_cmd(ST7565_PAGE_ADDR_SET | i);
+		st7565_cmd(ST7565_COL_ADDR_SET_HI | 0b0000);
+		st7565_cmd(ST7565_COL_ADDR_SET_LO | 0b0000);
+		
+		for (uint16_t j = 0; j < 128; ++j) {
+			if (j % 2 == 0) {
+				st7565_data(0b10101010);
+			} else {
+				st7565_data(0b01010101);
+			}
+		}
+		
+		st7565_data(0b00000000);
+		st7565_data(0b00000000);
+		st7565_data(0b00000000);
+		st7565_data(0b00000000);
+		st7565_data(0b00000000);
 	}
 	
-	for (;;);
+	
+	uint8_t colors[] = {
+		0b000, // white
+		0b011, // red
+		0b001, // yellow
+		0b101, // green
+		0b100, // cyan
+		0b110, // blue
+		0b010, // purple
+	};
+	for (;;) {
+		for (uint8_t i = 0; i < sizeof(colors); ++i) {
+			_delay_ms(500);
+			PORTE.OUT = colors[i];
+		}
+	}
 	
 	
-/*	reset_defuse();
 	
-	
-	uart_direct_write_pstr(UART_PC, UART_DIV_PC,
+	/*uart_direct_write_pstr(UART_PC, UART_DIV_PC,
 		PSTR("\n[[automaton][pc uart]]\n"));
 	
 	
@@ -129,8 +149,5 @@ int main(void) {
 	_DEBUG_passthru_uart();
 	
 	
-	ui_loop();
-	
-	
-	die();*/
+	ui_loop();*/
 }
