@@ -62,7 +62,6 @@ int main(void) {
 	lcd_bl_init();
 	//button_init();
 	
-	PORTE.OUT = 0b00000000;
 	lcd_init();
 	lcd_onoff(true);
 	
@@ -88,8 +87,36 @@ int main(void) {
 		st7565_data(0b00000000);
 	}
 	
+	lcd_bl_rgb(255, 0, 0);
+	for (;;) {
+		for (uint8_t i = 0; i < 255; ++i) {
+			lcd_bl_rgb(255, i + 1, 0);
+			_delay_ms(2);
+		}
+		for (uint8_t i = 0; i < 255; ++i) {
+			lcd_bl_rgb(255 - (i + 1), 255, 0);
+			_delay_ms(2);
+		}
+		for (uint8_t i = 0; i < 255; ++i) {
+			lcd_bl_rgb(0, 255, i + 1);
+			_delay_ms(2);
+		}
+		for (uint8_t i = 0; i < 255; ++i) {
+			lcd_bl_rgb(0, 255 - (i + 1), 255);
+			_delay_ms(2);
+		}
+		for (uint8_t i = 0; i < 255; ++i) {
+			lcd_bl_rgb(i + 1, 0, 255);
+			_delay_ms(2);
+		}
+		for (uint8_t i = 0; i < 255; ++i) {
+			lcd_bl_rgb(255, 0, 255 - (i + 1));
+			_delay_ms(2);
+		}
+	}
 	
-	uint8_t colors[] = {
+	
+	/*uint8_t colors[] = {
 		0b000, // white
 		0b011, // red
 		0b001, // yellow
@@ -103,7 +130,7 @@ int main(void) {
 			_delay_ms(500);
 			PORTE.OUT = colors[i];
 		}
-	}
+	}*/
 	
 	
 	
