@@ -1,9 +1,13 @@
 /* automaton
- * (c) 2013 Justin Gottula
+ * (c) 2014 Justin Gottula
  * The source code of this project is distributed under the terms of the
  * simplified BSD license. See the LICENSE file for details.
  */
 
+
+/* TODO: set up timer in "button_init", put the ISR in this file */
+
+#if 0
 
 #include "button/button.h"
 #include "algo/fifo.h"
@@ -147,3 +151,5 @@ bool button_pump(struct button_event *out) {
 	/* type punning is legal for char type (8-bit) */
 	return fifo_pop(&buttons.events, (uint8_t *)out);
 }
+
+#endif

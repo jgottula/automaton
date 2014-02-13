@@ -1,17 +1,18 @@
 /* automaton
- * (c) 2013 Justin Gottula
+ * (c) 2014 Justin Gottula
  * The source code of this project is distributed under the terms of the
  * simplified BSD license. See the LICENSE file for details.
  */
 
 
-#ifndef AUTOMATON_BUTTON_BUTTON_H
-#define AUTOMATON_BUTTON_BUTTON_H
+#ifndef AUTOMATON_DEV_BUTTON_BUTTON_H
+#define AUTOMATON_DEV_BUTTON_BUTTON_H
 
 
 #include "std.h"
 
 
+#if 0
 #define BTN_QTY 4
 
 
@@ -49,6 +50,7 @@ void button_init(void);
 
 uint8_t button_avail(void);
 bool button_pump(struct button_event *out);
+#endif
 
 
 #endif
