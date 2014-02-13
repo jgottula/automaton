@@ -8,57 +8,70 @@ sort of data logging and analysis that bored drivers of the past could only
 dream about. `automaton` will undoubtably provide multiple hours of fun to
 offset the innumerable hours its users spend driving.
 
-status
-------
-The AVR firmware is under heavy development. The hardware design is still
-preliminary. The PC support programs for data analysis have not been written.
+what is it
+----------
+**Hardware** currently consists of a professionally fabricated PCB, mounted in a
+sturdy project box with an RGB-backlit 96x64 graphics LCD for output and a
+series of pushbuttons for input. IO connections on the board include **OBD-II**
+(of course), **MicroSD** (for data logging), **MiniUSB** (for debug logging),
+**JTAG** (for programming/debugging), and **PDI** (also for
+programming/debugging).
 
-The current implementation is on a breadboard. Once the hardware design is
-solidified, a PCB version will probably be manufactured.
+**Firmware** consists of the AVR Xmega firmware program written in C that
+operates the primary microcontroller.
+
+**Software** will consist of PC-based Python scripts that can analyze logged
+data to produce graphs and other statistical eye candy.
+
+project status
+--------------
+**Hardware** is in its third version: first came the breadboard version that
+used an AVR ATmega and the STN1110 OBD chip; second came a largely similar, but
+more permanent, iteration built on perfboard; and now, the hardware is on a PCB
+as described in the previous section. Hardware is essentially finalized, but a
+second revision of the PCB may be produced if enough errata are found in the
+first.
+
+**Firmware** is where development is currently taking place. This is where most
+of the work will be done, and a great deal of code needs to be ported over from
+the older version.
+
+**Software** is currently vaporware. Once the firmware is producing data, then
+the software can be developed to analyze it.
 
 supported vehicles
 ------------------
 Vehicles must support OBD-II. Any vehicle made after 1996 is required by law to
-implement OBD-II. Only certain protocols are actually implemented in hardware.
-This limitation has not been made because of any fundamental limitation, but
-rather, to reduce the mountain of hardware needed to support the many mutually
-incompatible protocols under the OBD-II umbrella.
+implement OBD-II. However, the geniuses behind this standard decided that no
+less than a half-dozen different physical layer implementations needed to be
+developed to transmit the exact same information.
 
-The STN1110 chip is a universal transceiver, so the addition of support for more
-OBD-II protocols is limited only by the developer's patience.
+This means that vehicle support is limited by the type of bus in use. Vehicles
+made after 2008 are required to support CAN (ISO 15765), so that is what the
+current version of `automaton` supports. Future versions could feasibly support
+more bus standards, pending developer motivation.
 
-Supported protocols:
-
-- SAE J1850 VPW
-- CAN (ISO 15765)
-
-Unsupported protocols:
-
-- SAE J1850 PWM
-- ISO 9141-2
-- KWP (ISO 14230)
-
-features
---------
-
-Most of these are not yet done.
+planned features
+----------------
 
 - Live data via LCD
-- Deferred data analysis via SD card and Python scripts
-- GPS logging
+- Deferred data analysis via micro SD card and Python scripts
+- GPS waypoint logging
 - Check Engine Light zapper
+- Undocumented OBD-II PID sweeper
 
-hardware
---------
+hardware and chips
+------------------
 
-All hardware is subject to change as project requirements shift.
+Hardware is subject to change, but it's pretty locked down at this point.
 
-- Microcontroller: Atmel ATmega324A @ 20MHz (32KB flash; 2KB SRAM)
-- OBD transceiver: OBD Solutions STN1110
-- Real-time clock: TBD
-- GPS module: TBD
-- Debug UART: FTDI FT230X (TBD)
-- LCD: 4x20 HD44780
+- Microcontroller: Atmel ATxmega128A3U @ 32MHz (128KB flash; 8KB SRAM)
+- CAN transceiver: Microchip MCP2562
+- CAN controller: Microchip MCP2515
+- Real-time clock: Maxim DS1390U
+- GPS module: GlobalTop FGPMMOPA6H
+- Debug UART: FTDI FT231XS
+- LCD: 96x64 ST7565 graphic RGB-backlit LCD
 
 compiling
 ---------
