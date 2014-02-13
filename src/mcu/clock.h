@@ -12,6 +12,9 @@
 #include "std.h"
 
 
+void mcu_setup_xtal(void);
+void mcu_setup_pll(void);
+
 void mcu_use_xtal(void);
 void mcu_use_pll(void);
 
