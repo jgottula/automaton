@@ -50,6 +50,12 @@ void st7565_cmd(uint8_t cmd) {
 	PORTC.OUTCLR = 0b00000100;
 	
 	lcd_spi_write(cmd);
+	
+	/* prevent back-to-back commands from failing */
+	_NOP();
+	_NOP();
+	_NOP();
+	_NOP();
 }
 
 void st7565_data(uint8_t data) {
