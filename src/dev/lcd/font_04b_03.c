@@ -684,7 +684,7 @@ const uint8_t font_04b_03_mask[] PROGMEM = {
 };
 
 const uint8_t font_04b_03_widths[] PROGMEM = {
-	0, // space (CHECK THIS)
+	0, // space
 	1, // !
 	3, // "
 	5, // #
