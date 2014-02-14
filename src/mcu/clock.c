@@ -36,12 +36,12 @@ void mcu_setup_pll(void) {
 
 void mcu_use_xtal(void) {
 	/* use external crystal as system clock */
-	CCP = CCP_IOREG_gc;
+	CPU_CCP = CCP_IOREG_gc;
 	CLK.CTRL = CLK_SCLKSEL_XOSC_gc;
 }
 
 void mcu_use_pll(void) {
 	/* use PLL output as system clock */
-	CCP = CCP_IOREG_gc;
+	CPU_CCP = CCP_IOREG_gc;
 	CLK.CTRL = CLK_SCLKSEL_PLL_gc;
 }
