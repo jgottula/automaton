@@ -12,8 +12,11 @@
 #include "std.h"
 
 
-void *safe_malloc(size_t size);
+void *safe_malloc(size_t size) __attribute__((__malloc__));
 #define malloc safe_malloc
+
+void *safe_calloc(size_t nele, size_t size) __attribute__((__malloc__));
+#define calloc safe_calloc
 
 
 #endif

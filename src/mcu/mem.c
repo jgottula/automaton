@@ -15,3 +15,12 @@ void *safe_malloc(size_t size) {
 	
 	return buf;
 }
+
+
+#undef calloc
+void *safe_calloc(size_t nele, size_t size) {
+	void *buf = calloc(nele, size);
+	ASSERT(buf);
+	
+	return buf;
+}
