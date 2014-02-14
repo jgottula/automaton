@@ -22,6 +22,7 @@
 
 
 /* avr-libc specific */
+#include <avr/cpufunc.h>
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <avr/pgmspace.h>
