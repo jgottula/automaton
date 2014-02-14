@@ -22,26 +22,26 @@ void st7565_init(void) {
 	_delay_us(1);
 	
 	/* set LCD bias to 1/7 duty cycle */
-	st7565_cmd(ST7565_LCD_BIAS_SET | 0b1);
+	st7565_cmd(ST_CMD_LCD_BIAS | 0b1);
 	/* set ADC direction to normal */
-	st7565_cmd(ST7565_ADC_SELECT | 0b0);
+	st7565_cmd(ST_CMD_ADC | 0b0);
 	/* set COM output direction to reversed */
-	st7565_cmd(ST7565_COM_MODE_SELECT | (0b1 << 3));
+	st7565_cmd(ST_CMD_COM | (0b1 << 3));
 	
 	/* turn on voltage converter and wait */
-	st7565_cmd(ST7565_PWR_CTRL_SET | 0b100);
+	st7565_cmd(ST_CMD_PWR_CTRL | 0b100);
 	_delay_ms(1);
 	/* turn on voltage regulator and wait */
-	st7565_cmd(ST7565_PWR_CTRL_SET | 0b110);
+	st7565_cmd(ST_CMD_PWR_CTRL | 0b110);
 	_delay_ms(1);
 	/* turn on voltage follower and wait */
-	st7565_cmd(ST7565_PWR_CTRL_SET | 0b111);
+	st7565_cmd(ST_CMD_PWR_CTRL | 0b111);
 	_delay_ms(1);
 	
-	st7565_cmd(ST7565_START_LINE_SET | 0b100000);
-	st7565_cmd(ST7565_PAGE_ADDR_SET | 0b0000);
-	st7565_cmd(ST7565_COL_ADDR_SET_HI | 0b0000);
-	st7565_cmd(ST7565_COL_ADDR_SET_LO | 0b0000);
+	st7565_cmd(ST_CMD_START_LINE | ST7565_START_LINE);
+	st7565_cmd(ST_CMD_PAGE_ADDR | 0b0000);
+	st7565_cmd(ST_CMD_COL_ADDR_HI | 0b0000);
+	st7565_cmd(ST_CMD_COL_ADDR_LO | 0b0000);
 }
 
 
