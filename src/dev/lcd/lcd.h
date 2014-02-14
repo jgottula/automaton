@@ -12,10 +12,23 @@
 #include "std.h"
 
 
+enum {
+	LCD_ROWS = 64,
+	LCD_COLS = 128,
+};
+
+
 void lcd_init(void);
 
 void lcd_onoff(bool on);
 void lcd_contrast(uint8_t value);
+
+void lcd_clear(void);
+
+void lcd_update(void);
+
+void lcd_draw_sprite(uint8_t r, uint8_t c, uint8_t width,
+	const uint8_t sprite[static width], const uint8_t mask[static width]);
 
 
 #endif
