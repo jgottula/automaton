@@ -65,27 +65,51 @@ int main(void) {
 	lcd_init();
 	lcd_onoff(true);
 	
-	//st7565_cmd(ST7565_DISP_ALL_PTS | 0b1);
+	uint8_t sprite[] = {
+		0b00111100,
+		0b01000010,
+		0b10000001,
+		0b10000001,
+		0b10000001,
+		0b10000001,
+		0b01000010,
+		0b00111100,
+	};
+	uint8_t mask[] = {
+		0b00111100,
+		0b01111110,
+		0b11111111,
+		0b11111111,
+		0b11111111,
+		0b11111111,
+		0b01111110,
+		0b00111100,
+	};
 	
-	for (uint16_t i = 0; i < 8; ++i) {
-		st7565_cmd(ST7565_PAGE_ADDR_SET | i);
-		st7565_cmd(ST7565_COL_ADDR_SET_HI | 0b0000);
-		st7565_cmd(ST7565_COL_ADDR_SET_LO | 0b0000);
-		
-		for (uint16_t j = 0; j < 128; ++j) {
-			if (j % 2 == 0) {
-				st7565_data(0b10101010);
-			} else {
-				st7565_data(0b01010101);
-			}
-		}
-		
-		st7565_data(0b00000000);
-		st7565_data(0b00000000);
-		st7565_data(0b00000000);
-		st7565_data(0b00000000);
-		st7565_data(0b00000000);
+	lcd_bl_rgb(255, 255, 255);
+	
+	for (;;) {
+		_delay_ms(50);
+		lcd_draw_sprite(rand() % 64, rand() % 128, 8, sprite, mask);
+		lcd_update();
 	}
+	
+	_delay_ms(1000);
+	lcd_draw_sprite(0, 0, 8, sprite, mask);
+	lcd_update();
+	_delay_ms(1000);
+	lcd_draw_sprite(0, 4, 8, sprite, mask);
+	lcd_update();
+	_delay_ms(1000);
+	lcd_draw_sprite(1, 16, 8, sprite, mask);
+	lcd_update();
+	_delay_ms(1000);
+	lcd_draw_sprite(2, 24, 8, sprite, mask);
+	lcd_update();
+	_delay_ms(1000);
+	lcd_draw_sprite(3, 32, 8, sprite, mask);
+	lcd_update();
+	_delay_ms(1000);
 	
 	lcd_bl_rgb(255, 0, 0);
 	for (;;) {
