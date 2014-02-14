@@ -79,3 +79,33 @@ bool fifo_pop(struct fifo *fifo, uint8_t *out) {
 	
 	return result;
 }
+
+
+/* atomic: try to push two values onto a fifo; returns false if full */
+bool fifo_push16(struct fifo *fifo, uint16_t val) {
+	bool result = false;
+	
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+		if (fifo->count + 1 < fifo->size) {
+			_fifo_push(fifo, val);
+			_fifo_push(fifo, val >> 8);
+			result = true;
+		}
+	}
+	
+	return result;
+}
+
+/* atomic: try to pop two values off of a fifo; returns false if empty */
+bool fifo_pop16(struct fifo *fifo, uint16_t *out) {
+	bool result = false;
+	
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+		if (fifo->count > 1) {
+			*out = (_fifo_pop(fifo) | ((uint16_t)_fifo_pop(fifo) << 8));
+			result = true;
+		}
+	}
+	
+	return result;
+}

@@ -29,5 +29,8 @@ void fifo_deinit(struct fifo *fifo);
 bool fifo_push(struct fifo *fifo, uint8_t val);
 bool fifo_pop(struct fifo *fifo, uint8_t *out);
 
+bool fifo_push16(struct fifo *fifo, uint16_t val);
+bool fifo_pop16(struct fifo *fifo, uint16_t *out);
+
 
 #endif
