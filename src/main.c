@@ -7,6 +7,7 @@
 
 #include "std.h"
 #include "dev/lcd/backlight.h"
+#include "dev/lcd/font.h"
 #include "dev/lcd/lcd.h"
 #include "mcu/clock.h"
 
@@ -53,7 +54,6 @@ extern uint8_t mcusr;
 #endif
 
 
-#include "dev/lcd/st7565.h"
 int main(void) {
 	mcu_setup_xtal();
 	mcu_setup_pll();
@@ -88,28 +88,45 @@ int main(void) {
 	
 	lcd_bl_rgb(255, 255, 255);
 	
-	for (;;) {
+	lcd_draw_str("quick: brown, fox. jump!");
+	lcd_update(false);
+	
+	/*for (char c = ' '; c <= '~'; ++c) {
+		_delay_ms(50);
+		lcd_draw_chr(c);
+		lcd_update(false);
+	}*/
+	
+	/*extern uint8_t font_04b_03_glyphs[];
+	uint8_t fmask[] = { 0xff, 0xff, 0xff, 0xff, 0xff };
+	for (uint8_t i = 0; i < 16; ++i) {
+		_delay_ms(50);
+		lcd_draw_sprite(1, 1 + (i * 6), 5, font_04b_03_glyphs + (i * 5), fmask);
+		lcd_update(false);
+	} for (;;);*/
+	
+	/*for (;;) {
 		_delay_ms(50);
 		lcd_draw_sprite(rand() % 64, rand() % 128, 8, sprite, mask);
-		lcd_update();
-	}
-	
+		lcd_update(false);
+	}*/
+	/*
 	_delay_ms(1000);
 	lcd_draw_sprite(0, 0, 8, sprite, mask);
-	lcd_update();
+	lcd_update(false);
 	_delay_ms(1000);
 	lcd_draw_sprite(0, 4, 8, sprite, mask);
-	lcd_update();
+	lcd_update(false);
 	_delay_ms(1000);
 	lcd_draw_sprite(1, 16, 8, sprite, mask);
-	lcd_update();
+	lcd_update(false);
 	_delay_ms(1000);
 	lcd_draw_sprite(2, 24, 8, sprite, mask);
-	lcd_update();
+	lcd_update(false);
 	_delay_ms(1000);
 	lcd_draw_sprite(3, 32, 8, sprite, mask);
-	lcd_update();
-	_delay_ms(1000);
+	lcd_update(false);
+	_delay_ms(1000);*/
 	
 	lcd_bl_rgb(255, 0, 0);
 	for (;;) {
