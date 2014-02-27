@@ -6,14 +6,13 @@
 
 
 #include "mcu/die.h"
-//#include "uart/uart.h"
+#include "dev/uart/uart.h"
 
 
 noreturn void die(void) {
-#warning TODO: mcu/die.c
-	//uart_flush(UART_PC, 1000);
+	uart_flush();
 	
 	cli();
-	//BREAK();
-	for ( ; ; );
+	
+	for ( ;; );
 }
