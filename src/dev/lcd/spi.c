@@ -9,20 +9,27 @@
 
 
 void lcd_spi_init(void) {
-	/* no interrupts */
-	USARTC0.CTRLA = USART_RXCINTLVL_OFF_gc | USART_TXCINTLVL_OFF_gc |
-		USART_DREINTLVL_OFF_gc;
-	/* enable transmission only */
-	USARTC0.CTRLB = USART_TXEN_bm;
-	/* master SPI mode, sample on trailing clock edge */
-	USARTC0.CTRLC = USART_CMODE_MSPI_gc | USART_CHSIZE1_bm;
-	
 	/* invert clock (default high) */
 	PORTC.PIN1CTRL |= PORT_INVEN_bm;
 	
-	/* max baud rate (2 Mbps) */
-	USARTC0.BAUDCTRLA = 0;
-	USARTC0.BAUDCTRLB = 0;
+	/* set TX high, XCK low, and both as output */
+	PORTC.OUTSET = 0b00001000;
+	PORTC.OUTCLR = 0b00000010;
+	PORTC.DIRSET = 0b00001010;
+	
+	/* use max baud rate: 2 Mbps */
+	uint16_t bsel   = 0;
+	uint8_t  bscale = 0;
+	USARTF0.BAUDCTRLA = bsel & 0xff;
+	USARTF0.BAUDCTRLB = ((bsel >> 8) & 0x0f) | (bscale & 0x0f);
+	
+	/* master SPI mode, sample on trailing clock edge */
+	USARTC0.CTRLC = USART_CMODE_MSPI_gc | USART_CHSIZE1_bm;
+	/* enable transmission only */
+	USARTC0.CTRLB = USART_TXEN_bm;
+	/* no interrupts */
+	USARTC0.CTRLA = USART_RXCINTLVL_OFF_gc | USART_TXCINTLVL_OFF_gc |
+		USART_DREINTLVL_OFF_gc;
 }
 
 
