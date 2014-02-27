@@ -109,3 +109,26 @@ bool fifo_pop16(struct fifo *fifo, uint16_t *out) {
 	
 	return result;
 }
+
+
+/* atomic: push a value onto a fifo; removes the oldest value if full */
+void fifo_push_force(struct fifo *fifo, uint8_t val) {
+	if (fifo->count >= fifo->size) {
+		/* pop into bit bucket */
+		(void)_fifo_pop(fifo);
+	}
+	
+	_fifo_push(fifo, val);
+}
+
+/* atomic: push two values onto a fifo; removes the oldest value pair if full */
+void fifo_push16_force(struct fifo *fifo, uint16_t val) {
+	if (fifo->count + 1 >= fifo->size) {
+		/* pop into bit bucket */
+		(void)_fifo_pop(fifo);
+		(void)_fifo_pop(fifo);
+	}
+	
+	_fifo_push(fifo, val);
+	_fifo_push(fifo, val >> 8);
+}

@@ -32,5 +32,8 @@ bool fifo_pop(struct fifo *fifo, uint8_t *out);
 bool fifo_push16(struct fifo *fifo, uint16_t val);
 bool fifo_pop16(struct fifo *fifo, uint16_t *out);
 
+void fifo_push_force(struct fifo *fifo, uint8_t val);
+void fifo_push16_force(struct fifo *fifo, uint16_t val);
+
 
 #endif
