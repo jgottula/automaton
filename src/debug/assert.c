@@ -1,23 +1,23 @@
 /* automaton
- * (c) 2013 Justin Gottula
+ * (c) 2014 Justin Gottula
  * The source code of this project is distributed under the terms of the
  * simplified BSD license. See the LICENSE file for details.
  */
 
 
 #include "debug/assert.h"
-#include "debug/die.h"
-#include "debug/reset.h"
-#include "uart/direct.h"
+#include "dev/uart/uart.h"
+#include "mcu/die.h"
+#include "mcu/reset.h"
 
 
 noreturn void assert_fail(const __flash char *file, uint16_t line) {
-	uart_flush(UART_PC, 1000);
+	printf_P(PSTR("\nassertion failed: %S:%" PRIu16 "\n"), file, line);
+	uart_flush();
 	
-	char buf[64];
-	snprintf_P(buf, sizeof(buf), PSTR("\nassertion failed: %S:%" PRIu16 "\n"),
-		file, line);
-	uart_direct_write_str(UART_PC, UART_DIV_PC, buf);
+#if ASSERT_FAIL_BREAK
+	BREAK();
+#endif
 	
 #if ASSERT_FAIL_RESET
 	reset();

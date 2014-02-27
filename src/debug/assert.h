@@ -1,5 +1,5 @@
 /* automaton
- * (c) 2013 Justin Gottula
+ * (c) 2014 Justin Gottula
  * The source code of this project is distributed under the terms of the
  * simplified BSD license. See the LICENSE file for details.
  */
@@ -12,8 +12,10 @@
 #include "std.h"
 
 
-/* set to 1 to immediately reset instead of dying when an assertion fails */
+/* on assertion failure: reset immediately */
 #define ASSERT_FAIL_RESET 0
+/* on assertion failure: break for debugging */
+#define ASSERT_FAIL_BREAK 1
 
 
 #define ASSERT(_expr) \
