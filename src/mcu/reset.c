@@ -6,16 +6,17 @@
 
 
 #include "mcu/reset.h"
+#include "dev/uart/uart.h"
 
 
 noreturn void reset(void) {
+	uart_flush();
+	
 	cli();
 	
 	/* invoke a software reset */
 	CCP = CCP_IOREG_gc;
 	RST.CTRL |= RST_SWRST_bm;
 	
-#warning TODO: mcu/reset.c
-	//BREAK();
-	for ( ; ; );
+	for ( ;; );
 }
