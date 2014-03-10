@@ -16,9 +16,21 @@ static struct {
 } cur;
 
 
+void _lcd_newline(void) {
+	cur.row += 6;
+	// TODO: return to top if we would now clip thru the bottom
+}
+
+
 void lcd_draw_chr(char c) {
-	/* only handle the printable ASCII set */
+	/* only draw the printable ASCII set, and handle CR & NL specially */
 	if (c < ' ' || c > '~') {
+		if (c == '\r') {
+			cur.col = 0;
+		} else if (c == '\n') {
+			_lcd_newline();
+		}
+		
 		return;
 	}
 	
