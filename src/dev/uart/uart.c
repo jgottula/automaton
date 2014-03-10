@@ -35,7 +35,7 @@ ISR(USARTF0_DRE_vect) {
 	/* last byte: disable future DRE interrupts */
 	if (fifo_tx.count == 1) {
 		status.tx_active = false;
-		USARTF0.CTRLA = USART_RXCINTLVL_HI_gc;
+		USARTF0.CTRLA &= ~USART_DREINTLVL_LO_gc;
 	}
 	
 	uint8_t byte;
@@ -128,7 +128,7 @@ bool uart_write(char chr) {
 			/* first byte: enable DRE interrupts */
 			if (!status.tx_active) {
 				status.tx_active = true;
-				USARTF0.CTRLA = USART_RXCINTLVL_HI_gc | USART_DREINTLVL_LO_gc;
+				USARTF0.CTRLA |= USART_DREINTLVL_LO_gc;
 			}
 		}
 	}
