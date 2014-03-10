@@ -63,8 +63,8 @@ void uart_init(void) {
 			USART_CHSIZE_8BIT_gc;
 		/* enable receipt and transmission */
 		USARTF0.CTRLB = USART_RXEN_bm | USART_TXEN_bm;
-		/* use high RXC priority to prevent overruns */
-		USARTF0.CTRLA = USART_RXCINTLVL_HI_gc;
+		/* use higher RXC priority to prevent overruns */
+		USARTF0.CTRLA = USART_RXCINTLVL_MED_gc;
 	}
 	
 	/* 64 characters ought to be enough for anyone */
