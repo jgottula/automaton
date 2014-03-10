@@ -48,9 +48,9 @@ ISR(USARTF0_DRE_vect) {
 
 void uart_init(void) {
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-		/* set TX high, then as output */
+		/* set our TX high; also set FTDI's CTS# permanently low */
 		PORTF.OUTSET = 0b00001000;
-		PORTF.DIRSET = 0b00001000;
+		PORTF.DIRSET = 0b00101000;
 		
 		/* use 9600 baud for now */
 		uint16_t bsel   = 12;
