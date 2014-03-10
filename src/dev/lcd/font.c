@@ -44,6 +44,12 @@ void lcd_draw_chr(char c) {
 	}
 	width = pgm_read_byte(font_04b_03_widths + (c - ' '));
 	
+	/* automatically go to the next line if we overflow */
+	if (cur.col + width >= LCD_COLS) {
+		_lcd_newline();
+		cur.col = 0;
+	}
+	
 	uint8_t space = 0b00000000;
 	lcd_draw_sprite(cur.row, cur.col, 1, &space, mask);
 	lcd_draw_sprite(cur.row, cur.col + 1, width, sprite, mask);
