@@ -13,7 +13,7 @@ static void _fifo_push(struct fifo *fifo, uint8_t val) {
 	fifo->data[fifo->i_push] = val;
 	
 	++fifo->i_push;
-	if (++fifo->i_push >= fifo->size) {
+	if (fifo->i_push >= fifo->size) {
 		fifo->i_push = 0;
 	}
 	
@@ -25,7 +25,7 @@ static uint8_t _fifo_pop(struct fifo *fifo) {
 	uint8_t val = fifo->data[fifo->i_pop];
 	
 	++fifo->i_pop;
-	if (++fifo->i_pop >= fifo->size) {
+	if (fifo->i_pop >= fifo->size) {
 		fifo->i_pop = 0;
 	}
 	
