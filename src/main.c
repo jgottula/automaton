@@ -10,12 +10,7 @@
 #include "dev/lcd/font.h"
 #include "dev/lcd/lcd.h"
 #include "mcu/clock.h"
-
-
-#if 0
-static void _main_init(const char *pstr) {
-	printf_P(PSTR("main: init %S\n"), pstr);
-}
+#include "mcu/pmic.h"
 
 
 static void _DEBUG_passthru_uart(void) {
@@ -58,6 +53,12 @@ int main(void) {
 	mcu_setup_xtal();
 	mcu_setup_pll();
 	mcu_use_pll();
+	
+	pmic_init();
+	
+	uart_init();
+	stdfile_open();
+	
 	
 	lcd_bl_init();
 	//button_init();
