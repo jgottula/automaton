@@ -20,8 +20,8 @@ void lcd_spi_init(void) {
 	/* use max baud rate: 2 Mbps */
 	uint16_t bsel   = 0;
 	uint8_t  bscale = 0;
-	USARTF0.BAUDCTRLA = bsel & 0xff;
-	USARTF0.BAUDCTRLB = ((bsel >> 8) & 0x0f) | (bscale & 0x0f);
+	USARTC0.BAUDCTRLA = bsel & 0xff;
+	USARTC0.BAUDCTRLB = ((bsel >> 8) & 0x0f) | (bscale << 4);
 	
 	/* master SPI mode, sample on trailing clock edge */
 	USARTC0.CTRLC = USART_CMODE_MSPI_gc | USART_CHSIZE1_bm;
