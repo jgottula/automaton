@@ -49,14 +49,14 @@ ISR(USARTF0_DRE_vect) {
 void uart_init(void) {
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 		/* set TX high, then as output */
-		PORTF.OUTSET = 0b00000100;
-		PORTF.DIRSET = 0b00000100;
+		PORTF.OUTSET = 0b00001000;
+		PORTF.DIRSET = 0b00001000;
 		
 		/* use 9600 baud for now */
 		uint16_t bsel   = 12;
 		uint8_t  bscale = 4;
 		USARTF0.BAUDCTRLA = bsel & 0xff;
-		USARTF0.BAUDCTRLB = ((bsel >> 8) & 0x0f) | (bscale & 0x0f);
+		USARTF0.BAUDCTRLB = ((bsel >> 8) & 0x0f) | (bscale << 4);
 		
 		/* UART with no parity, one stop bit, 8-bit word size (8N1) */
 		USARTF0.CTRLC = USART_CMODE_ASYNCHRONOUS_gc | USART_PMODE_DISABLED_gc |
