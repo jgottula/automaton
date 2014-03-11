@@ -6,7 +6,11 @@
 
 
 #include "dev/uart/stdfile.h"
+#include "dev/lcd/font.h"
 #include "dev/uart/uart.h"
+
+
+FILE *lcd = NULL;
 
 
 /* write to ftdi uart */
@@ -38,12 +42,23 @@ static int _get_ftdi(FILE *f) {
 }
 
 
+/* write to lcd */
+static int _put_lcd(char c, FILE *f) {
+	(void)f;
+	
+	lcd_draw_chr(c);
+	return 0;
+}
+
+
 /* open std{in,out,err} and other files */
 void stdfile_open(void) {
 	(void)fdevopen(_put_ftdi, _get_ftdi);
+	lcd = fdevopen(_put_lcd, NULL);
 }
 
 /* close all files */
 void stdfile_close(void) {
 	fclose(stdin);
+	fclose(lcd);
 }

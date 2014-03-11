@@ -12,6 +12,9 @@
 #include "std.h"
 
 
+extern FILE *lcd;
+
+
 void stdfile_open(void);
 void stdfile_close(void);
 
