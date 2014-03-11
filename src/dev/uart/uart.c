@@ -114,8 +114,6 @@ bool uart_read(char *chr) {
 }
 
 bool uart_write(char chr) {
-	bool result = false;
-	
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 		if (status.init) {
 			/* wait until tx fifo has room */
@@ -133,5 +131,5 @@ bool uart_write(char chr) {
 		}
 	}
 	
-	return result;
+	return true;
 }
