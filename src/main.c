@@ -9,7 +9,6 @@
 #include "dev/lcd/backlight.h"
 #include "dev/lcd/font.h"
 #include "dev/lcd/lcd.h"
-#include "dev/uart/stdfile.h"
 #include "dev/uart/uart.h"
 #include "mcu/clock.h"
 #include "mcu/pmic.h"
