@@ -38,7 +38,7 @@
 #include "mcu/reset.h"
 #include "debug/assert.h"
 #include "debug/break.h"
-//#include "debug/stdfile.h"
+#include "io/stdfile.h"
 //#include "io/port.h"
 //#include "dev/led.h"
 // die and reset too?
