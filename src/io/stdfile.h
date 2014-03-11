@@ -5,8 +5,8 @@
  */
 
 
-#ifndef AUTOMATON_DEV_UART_STDFILE_H
-#define AUTOMATON_DEV_UART_STDFILE_H
+#ifndef AUTOMATON_IO_STDFILE_H
+#define AUTOMATON_IO_STDFILE_H
 
 
 #include "std.h"
