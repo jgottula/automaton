@@ -22,9 +22,11 @@ void can_spi_init(void) {
 
 void can_spi_select(void) {
 	PORTD.OUTCLR = 0b00010000;
+	_NOP();
 }
 
 void can_spi_deselect(void) {
+	_NOP();
 	PORTD.OUTSET = 0b00010000;
 }
 
