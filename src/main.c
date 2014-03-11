@@ -102,4 +102,6 @@ int main(void) {
 	
 	
 	ui_loop();*/
+	
+	die();
 }
