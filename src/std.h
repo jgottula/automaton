@@ -33,7 +33,9 @@
 
 /* project: common headers */
 #include "macro.h"
+#include "mcu/die.h"
 #include "mcu/mem.h"
+#include "mcu/reset.h"
 #include "debug/assert.h"
 #include "debug/break.h"
 //#include "debug/stdfile.h"
