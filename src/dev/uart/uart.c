@@ -80,6 +80,8 @@ void uart_flush(void) {
 		return;
 	}
 	
+	// TODO: flush MANUALLY in the future so that uart_flush can be called even
+	// if interrupts are disabled (adjust die/reset/assert accordingly)
 	for (bool done = false; !done; ) {
 		ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 			done = (fifo_tx.count == 0);
