@@ -6,30 +6,14 @@
 
 
 #include "std.h"
+#include "dev/can/can.h"
 #include "dev/lcd/backlight.h"
 #include "dev/lcd/font.h"
 #include "dev/lcd/lcd.h"
 #include "dev/uart/uart.h"
 #include "mcu/clock.h"
 #include "mcu/pmic.h"
-
-
-static void _DEBUG_passthru_uart(void) {
-	for ( ;; ) {
-		/*char c;
-		while ((c = fgetc(stdin)) != EOF) {
-			fputc(c, stdout);
-		}*/
-		
-		while (uart_avail() != 0) {
-			char c;
-			
-			if (uart_read(&c)) {
-				uart_write(c);
-			}
-		}
-	}
-}
+#include "obd/obd.h"
 
 
 int main(void) {
@@ -48,14 +32,16 @@ int main(void) {
 	
 	lcd_init();
 	lcd_onoff(true);
-	lcd_bl_rgb(255, 255, 255);
+	lcd_bl_rgb(255, 255, 0);
 	
+	fputs_P(PSTR("hello!\n"), stdout);
+	
+	can_init();
+	obd_test();
 	
 	
 	// TODO: test 16-bit fifo functions
-	
-	
-	
+	// TODO: test ASSERT()
 	
 	
 	/*uart_direct_write_pstr(UART_PC, UART_DIV_PC,
