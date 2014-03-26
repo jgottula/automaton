@@ -36,17 +36,29 @@ void can_bitrate(uint16_t kbps) {
 
 
 void can_tx(uint16_t id, uint8_t dlc, const uint8_t data[static dlc]) {
-	uint8_t txb0sidh = (id >> 3);
-	mcp2515_cmd_write(MCP_REG_TXB0SIDH, txb0sidh);
-	uint8_t txb0sidl = (id << 5);
-	mcp2515_cmd_write(MCP_REG_TXB0SIDL, txb0sidl);
+	struct {
+		uint8_t sidh;
+		uint8_t sidl;
+		
+		uint8_t eid8;
+		uint8_t eid0;
+		
+		uint8_t dlc;
+		uint8_t data[8];
+	} tx_buf;
 	
-	uint8_t txb0dlc = (dlc & 0b1111);
-	mcp2515_cmd_write(MCP_REG_TXB0DLC, txb0dlc);
+	tx_buf.sidh = (id >> 3);
+	tx_buf.sidl = (id << 5);
 	
-	for (uint8_t i = 0; i < dlc; ++i) {
-		mcp2515_cmd_write(MCP_REG_TXB0D0 + i, data[i]);
-	}
+	tx_buf.eid8 = 0;
+	tx_buf.eid0 = 0;
+	
+	tx_buf.dlc = dlc;
+	memcpy(tx_buf.data, data, dlc);
+	
+	
+	/* load tx buffer all at once */
+	mcp2515_cmd_load_tx_buf(0b000, 5 + dlc, &tx_buf);
 	
 	/* request transmission */
 	mcp2515_cmd_rts(0b00000001);
