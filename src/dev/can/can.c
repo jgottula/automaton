@@ -51,9 +51,11 @@ void can_tx(uint16_t id, uint8_t dlc, const uint8_t data[static dlc]) {
 	memcpy(tx_buf.data, data, dlc);
 	
 	
+	uint8_t tx_buf_idx = mcp2515_choose_tx_buf();
+	
 	/* load tx buffer all at once */
-	mcp2515_cmd_load_tx_buf(0b000, 5 + dlc, &tx_buf);
+	mcp2515_cmd_load_tx_buf(tx_buf_idx << 1, 5 + dlc, &tx_buf);
 	
 	/* request transmission */
-	mcp2515_cmd_rts(0b00000001);
+	mcp2515_cmd_rts(1 << tx_buf_idx);
 }
