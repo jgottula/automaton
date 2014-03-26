@@ -17,9 +17,6 @@ void can_init(uint16_t kbps) {
 
 
 void can_bitrate(uint16_t kbps) {
-	/* enter configuration mode */
-	mcp2515_mode(0b10000000);
-	
 	if (kbps == 500) {
 		/* BRP = 0 */
 		mcp2515_setup_bit_timings(2, 0, 8, 8, 8);
@@ -29,9 +26,6 @@ void can_bitrate(uint16_t kbps) {
 	} else {
 		ASSERT(0);
 	}
-	
-	/* return to normal mode */
-	mcp2515_mode(0b00000000);
 }
 
 

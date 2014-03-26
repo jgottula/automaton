@@ -126,6 +126,9 @@ void mcp2515_init(void) {
 
 void mcp2515_setup_bit_timings(uint8_t sjw, uint8_t brp, uint8_t prop,
 	uint8_t ps1, uint8_t ps2) {
+	/* enter configuration mode */
+	mcp2515_mode(0b10000000);
+	
 	sjw -= 1;
 	sjw &= 0b11;
 	sjw <<= 6;
@@ -148,6 +151,9 @@ void mcp2515_setup_bit_timings(uint8_t sjw, uint8_t brp, uint8_t prop,
 	mcp2515_cmd_write(MCP_REG_CNF2, 0b11000000 | ps1 | prop);
 	/* CNF3: SOF, WAKFIL, PHSEG2 */
 	mcp2515_cmd_write(MCP_REG_CNF3, 0b01000000 | ps2);
+	
+	/* return to normal mode */
+	mcp2515_mode(0b00000000);
 }
 
 
