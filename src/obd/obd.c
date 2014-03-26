@@ -18,7 +18,7 @@ void obd_test(void) {
 	uint8_t data[8] = {
 		2, 1, 0,
 	};
-	can_tx(0x7df, 8, &data);
+	can_tx(0x7df, 8, data);
 	
 	for ( ;; );
 }
