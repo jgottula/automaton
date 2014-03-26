@@ -157,6 +157,27 @@ void mcp2515_setup_bit_timings(uint8_t sjw, uint8_t brp, uint8_t prop,
 }
 
 
+uint8_t mcp2515_choose_tx_buf(void) {
+	/* wait for a tx buffer to be empty and return its index */
+	for ( ;; ) {
+		uint8_t txb0ctrl = mcp2515_cmd_read(MCP_REG_TXB0CTRL);
+		if (!(txb0ctrl & 0b00001000)) {
+			return 0;
+		}
+		
+		uint8_t txb1ctrl = mcp2515_cmd_read(MCP_REG_TXB1CTRL);
+		if (!(txb1ctrl & 0b00001000)) {
+			return 1;
+		}
+		
+		uint8_t txb2ctrl = mcp2515_cmd_read(MCP_REG_TXB2CTRL);
+		if (!(txb2ctrl & 0b00001000)) {
+			return 2;
+		}
+	}
+}
+
+
 void mcp2515_mode(uint8_t mode) {
 	mode &= 0b11100000;
 	
