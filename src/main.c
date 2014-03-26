@@ -34,9 +34,9 @@ int main(void) {
 	lcd_onoff(true);
 	lcd_bl_rgb(255, 255, 0);
 	
-	fputs_P(PSTR("hello!\n"), stdout);
+	fputs_P(PSTR("\nhello!\n"), stdout);
 	
-	can_init();
+	//can_init();
 	obd_test();
 	
 	
