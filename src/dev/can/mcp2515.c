@@ -10,9 +10,6 @@
 
 
 ISR(PORTB_INT0_vect) {
-#warning REMOVE ME!!
-	_delay_ms(100);
-	
 	uint8_t intf = mcp2515_cmd_read(MCP_REG_CANINTF);
 	
 	for (uint8_t i = 0; i < 8; ++i) {
@@ -77,7 +74,7 @@ ISR(PORTB_INT0_vect) {
 }
 
 
-static void _DUMP_ALL_REGS(void) {
+static void _mcp2515_dump_regs(void) {
 	uint8_t addr = 0x00;
 	do {
 		if (addr % 16 == 0) {
@@ -97,7 +94,37 @@ static void _DUMP_ALL_REGS(void) {
 }
 
 
-static void _mcp2515_setup_bit_time(uint8_t sjw, uint8_t brp, uint8_t prop,
+void mcp2515_init(void) {
+	can_spi_init();
+	
+	/* drive CAN_STANDBY low */
+	PORTD.OUTCLR = 0b00000010;
+	PORTD.DIRSET = 0b00000010;
+	
+	mcp2515_cmd_reset();
+	_delay_us(1);
+	
+	/* enter configuration mode */
+	mcp2515_mode(0b10000000);
+	
+	/* receive all messages (no filter/mask) */
+	mcp2515_cmd_write(MCP_REG_RXB0CTRL, 0b01100000);
+	mcp2515_cmd_write(MCP_REG_RXB1CTRL, 0b01100000);
+	
+	/* set up pin-change interrupt for CAN_INT with high priority */
+	PORTB.PIN2CTRL |= PORT_ISC_LEVEL_gc;
+	PORTB.INTCTRL   = PORT_INT0LVL_HI_gc;
+	PORTB.INT0MASK  = 0b00000100;
+	
+	/* interrupts: MERRE, WAKIE, ERRIE, RX1IE, RX0IE */
+	mcp2515_cmd_write(MCP_REG_CANINTE, 0b11100011);
+	
+	/* enter normal mode */
+	mcp2515_mode(0b00000000);
+}
+
+
+void mcp2515_setup_bit_timings(uint8_t sjw, uint8_t brp, uint8_t prop,
 	uint8_t ps1, uint8_t ps2) {
 	sjw -= 1;
 	sjw &= 0b11;
@@ -121,51 +148,6 @@ static void _mcp2515_setup_bit_time(uint8_t sjw, uint8_t brp, uint8_t prop,
 	mcp2515_cmd_write(MCP_REG_CNF2, 0b11000000 | ps1 | prop);
 	/* CNF3: SOF, WAKFIL, PHSEG2 */
 	mcp2515_cmd_write(MCP_REG_CNF3, 0b01000000 | ps2);
-}
-
-
-void mcp2515_init(void) {
-	can_spi_init();
-	
-	/* drive CAN_STANDBY low */
-	PORTD.OUTCLR = 0b00000010;
-	PORTD.DIRSET = 0b00000010;
-	
-#warning change can reset delay to 1 microsecond
-	mcp2515_cmd_reset();
-	_delay_ms(100);
-	
-	/* enter configuration mode */
-	mcp2515_mode(0b10000000);
-	
-	/* receive all messages (no filter/mask) */
-	mcp2515_cmd_write(MCP_REG_RXB0CTRL, 0b01100000);
-	mcp2515_cmd_write(MCP_REG_RXB1CTRL, 0b01100000);
-	
-	/* 500 kbps: BRP = 0 */
-	_mcp2515_setup_bit_time(2, 0, 8, 8, 8);
-	
-#if 0
-	/* SJW = 1T_Q, BRP = 4 (125 kHz) */
-	mcp2515_cmd_write(MCP_REG_CNF1, 0b00000100);
-	/* SAM = 3x, PS1 = 7T_Q, PSL = 2T_Q */
-	mcp2515_cmd_write(MCP_REG_CNF2, 0b11110001);
-	/* SOF = clkout, WAKFIL = on, PS2 = 6T_Q */
-	mcp2515_cmd_write(MCP_REG_CNF3, 0b01000101);
-#endif
-	
-	/* set up pin-change interrupt for CAN_INT with high priority */
-	PORTB.PIN2CTRL |= PORT_ISC_LEVEL_gc;
-	PORTB.INTCTRL   = PORT_INT0LVL_HI_gc;
-	PORTB.INT0MASK  = 0b00000100;
-	
-	/* enable all interrupts */
-	mcp2515_cmd_write(MCP_REG_CANINTE, 0b11111111);
-	
-	/* enter normal mode */
-	mcp2515_mode(0b00000000);
-	
-	_DUMP_ALL_REGS();
 }
 
 

@@ -12,7 +12,9 @@
 #include "std.h"
 
 
-void can_init(void);
+void can_init(uint16_t kbps);
+
+void can_bitrate(uint16_t kbps);
 
 void can_tx(uint16_t id, uint8_t dlc, const uint8_t data[static dlc]);
 
