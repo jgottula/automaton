@@ -12,18 +12,21 @@
 #include "std.h"
 
 
+enum {
+	BTN_COUNT = 8,
+	
+	/* periods in milliseconds; note that the true DELAY time includes the
+	 * DEBOUNCE time, since the time between the initial button press and the
+	 * second DOWN event is the sum of the two */
+	BTN_TIME_DEBOUNCE = 50,  // time before first DOWN event
+	BTN_TIME_DELAY    = 200, // time before second DOWN event
+	BTN_TIME_REPEAT   = 100, // time between subsequent DOWN events
+};
+
+
 #if 0
 #define BTN_QTY 4
 
-
-/* periods in milliseconds, divided by eight (must not exceed 255);
- * note that the true DELAY time includes BTN_TIME_DEBOUNCE, since the time
- * between button press and the second DOWN event is the sum of the two */
-enum button_timing {
-	BTN_TIME_DEBOUNCE = ROUND(50,  8), // time before first DOWN event
-	BTN_TIME_DELAY    = ROUND(200, 8), // time before second DOWN event
-	BTN_TIME_REPEAT   = ROUND(100, 8), // time between subsequent DOWN events
-};
 
 enum button_names {
 	BTN_PAGE   = 0,

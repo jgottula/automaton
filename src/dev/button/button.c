@@ -5,7 +5,23 @@
  */
 
 
-/* TODO: set up timer in "button_init", put the ISR in this file */
+#include "dev/button/button.h"
+#include "algo/fifo.h"
+
+
+static struct fifo btn_fifo;
+
+
+void button_init(void) {
+	/* all eight pins: inputs with pull-ups */
+	PORTA.DIRCLR = 0b11111111;
+	PORTCFG_MPCMASK = 0b11111111;
+	PORTA.PIN0CTRL = PORT_OPC_PULLUP_gc;
+	
+	fifo_init(&btn_fifo, 32);
+}
+
+
 
 #if 0
 
