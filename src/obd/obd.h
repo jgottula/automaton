@@ -14,5 +14,9 @@
 
 void obd_test(void);
 
+bool obd_check_pid_support(uint8_t pid);
+
+uint8_t obd_query(uint8_t pid, uint8_t data[static 5]);
+
 
 #endif
