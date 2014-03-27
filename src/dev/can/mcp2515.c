@@ -174,12 +174,13 @@ uint8_t mcp2515_choose_tx_buf(void) {
 
 
 struct mcp_rx_buf *mcp2515_get_rx_buf(void) {
-	uintptr_t ptr;
-	if (fifo_pop16(&rx_bufs, &ptr)) {
-		return (struct mcp_rx_buf *)ptr;
-	} else {
-		return NULL;
+	uintptr_t ptr = NULL;
+	
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+		fifo_pop16(&rx_bufs, &ptr);
 	}
+	
+	return (struct mcp_rx_buf *)ptr;
 }
 
 
