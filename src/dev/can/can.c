@@ -29,7 +29,7 @@ void can_bitrate(uint16_t kbps) {
 }
 
 
-void can_tx(const struct can_msg *msg) {
+bool can_tx(const struct can_msg *msg) {
 	struct mcp_tx_buf tx_buf;
 	
 	tx_buf.sid_h8 = (msg->id >> 3);
@@ -55,4 +55,22 @@ void can_tx(const struct can_msg *msg) {
 	
 	/* request transmission */
 	mcp2515_cmd_rts(1 << tx_buf_idx);
+	
+	// TODO: wait for TXnIF (or an error int) and return success/failure
+	return true;
+}
+
+bool can_rx(struct can_msg *msg) {
+	struct mcp_rx_buf *rx_buf;
+	if ((rx_buf = mcp2515_get_rx_buf()) == NULL) {
+		return false;
+	}
+	
+	msg->id = ((uint16_t)rx_buf->sid_h8 << 3) | rx_buf->sid_l3;
+	
+	msg->dlc = rx_buf->dlc;
+	memcpy(msg->data, rx_buf->d, rx_buf->dlc);
+	
+	//free(rx_buf);
+	return true;
 }

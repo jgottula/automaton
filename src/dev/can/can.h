@@ -32,7 +32,8 @@ void can_init(uint16_t kbps);
 
 void can_bitrate(uint16_t kbps);
 
-void can_tx(const struct can_msg *msg);
+bool can_tx(const struct can_msg *msg);
+bool can_rx(struct can_msg *msg);
 
 
 #endif
