@@ -172,6 +172,8 @@ void mcp2515_setup_bit_timings(uint8_t sjw, uint8_t brp, uint8_t prop,
 
 uint8_t mcp2515_choose_tx_buf(void);
 
+struct mcp_rx_buf *mcp2515_get_rx_buf(void);
+
 void mcp2515_mode(uint8_t mode);
 
 void mcp2515_cmd_reset(void);

@@ -6,9 +6,25 @@
 
 
 #include "dev/can/mcp2515.h"
+#include "algo/fifo.h"
 #include "dev/can/spi.h"
 
 
+static struct fifo rx_bufs;
+
+
+static void _mcp2515_rx(uint8_t rx_buf_idx) {
+	struct mcp_rx_buf *rx_buf = malloc(sizeof(*rx_buf));
+	
+	/* read rx buffer all at once */
+	mcp2515_cmd_read_rx_buf(rx_buf_idx << 2, rx_buf);
+	
+	/* push onto the rx_bufs fifo, and assert that it was successful */
+	ASSERT(fifo_push16(&rx_bufs, (uintptr_t)rx_buf));
+}
+
+
+#warning we are getting two interrupts here for some reason, needs fixing
 ISR(PORTB_INT0_vect) {
 	uint8_t intf = mcp2515_cmd_read(MCP_REG_CANINTF);
 	
@@ -24,14 +40,19 @@ ISR(PORTB_INT0_vect) {
 				fputs_P(PSTR("ERRIF\r\n"), lcd);
 			} else if (flag == MCP_CANINTF_TX2IF) {
 				fputs_P(PSTR("TX2IF\r\n"), lcd);
+				/* ignored */
 			} else if (flag == MCP_CANINTF_TX1IF) {
 				fputs_P(PSTR("TX1IF\r\n"), lcd);
+				/* ignored */
 			} else if (flag == MCP_CANINTF_TX0IF) {
 				fputs_P(PSTR("TX0IF\r\n"), lcd);
+				/* ignored */
 			} else if (flag == MCP_CANINTF_RX1IF) {
 				fputs_P(PSTR("RX1IF\r\n"), lcd);
+				_mcp2515_rx(1);
 			} else if (flag == MCP_CANINTF_RX0IF) {
 				fputs_P(PSTR("RX0IF\r\n"), lcd);
+				_mcp2515_rx(0);
 			}
 			
 			/* acknowlegde interrupt */
@@ -43,34 +64,6 @@ ISR(PORTB_INT0_vect) {
 	uint8_t tec = mcp2515_cmd_read(MCP_REG_TEC);
 	uint8_t rec = mcp2515_cmd_read(MCP_REG_REC);
 	fprintf_P(lcd, PSTR("EFLG: %02x TEC: %02x REC: %02x\r\n"), eflg, tec, rec);
-	uint8_t txb0ctrl = mcp2515_cmd_read(MCP_REG_TXB0CTRL);
-	fprintf_P(lcd, PSTR("TXB0CTRL: %02x\r\n"), txb0ctrl);
-	uint8_t rxb0ctrl = mcp2515_cmd_read(MCP_REG_RXB0CTRL);
-	fprintf_P(lcd, PSTR("RXB0CTRL: %02x\r\n"), rxb0ctrl);
-	uint8_t rxb0sidh = mcp2515_cmd_read(MCP_REG_RXB0SIDH);
-	uint8_t rxb0sidl = mcp2515_cmd_read(MCP_REG_RXB0SIDL);
-	fprintf_P(lcd, PSTR("RXB0SID[H:L]: %02x %02x\r\n"), rxb0sidh, rxb0sidl);
-	uint8_t rxb0eid8 = mcp2515_cmd_read(MCP_REG_RXB0EID8);
-	uint8_t rxb0eid0 = mcp2515_cmd_read(MCP_REG_RXB0EID0);
-	fprintf_P(lcd, PSTR("RXB0EID: %02x %02x\r\n"), rxb0eid8, rxb0eid0);
-	uint8_t rxb0dlc = mcp2515_cmd_read(MCP_REG_RXB0DLC);
-	fprintf_P(lcd, PSTR("RXB0DLC: %02x\r\n"), rxb0dlc);
-	uint8_t rxb0d0 = mcp2515_cmd_read(MCP_REG_RXB0D0);
-	uint8_t rxb0d1 = mcp2515_cmd_read(MCP_REG_RXB0D1);
-	uint8_t rxb0d2 = mcp2515_cmd_read(MCP_REG_RXB0D2);
-	uint8_t rxb0d3 = mcp2515_cmd_read(MCP_REG_RXB0D3);
-	fprintf_P(lcd, PSTR("RXB0D[0:3]: %02x %02x %02x %02x\r\n"),
-		rxb0d0, rxb0d1, rxb0d2, rxb0d3);
-	uint8_t rxb0d4 = mcp2515_cmd_read(MCP_REG_RXB0D4);
-	uint8_t rxb0d5 = mcp2515_cmd_read(MCP_REG_RXB0D5);
-	uint8_t rxb0d6 = mcp2515_cmd_read(MCP_REG_RXB0D6);
-	uint8_t rxb0d7 = mcp2515_cmd_read(MCP_REG_RXB0D7);
-	fprintf_P(lcd, PSTR("RXB0D[4:7]: %02x %02x %02x %02x\r\n"),
-		rxb0d4, rxb0d5, rxb0d6, rxb0d7);
-	
-#warning REMOVE STOP CONDITION IN CAN INTERRUPT
-	lcd_update(false);
-	for(;;);
 }
 
 
@@ -95,6 +88,8 @@ static void _mcp2515_dump_regs(void) {
 
 
 void mcp2515_init(void) {
+	fifo_init(&rx_bufs, 16);
+	
 	can_spi_init();
 	
 	/* drive CAN_STANDBY low */
@@ -174,6 +169,16 @@ uint8_t mcp2515_choose_tx_buf(void) {
 		if (!(txb2ctrl & 0b00001000)) {
 			return 2;
 		}
+	}
+}
+
+
+struct mcp_rx_buf *mcp2515_get_rx_buf(void) {
+	uintptr_t ptr;
+	if (fifo_pop16(&rx_bufs, &ptr)) {
+		return (struct mcp_rx_buf *)ptr;
+	} else {
+		return NULL;
 	}
 }
 
