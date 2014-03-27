@@ -46,7 +46,7 @@ mode 1 supported PIDs:
 45
 47
 49
-4b
+4a
 4c
 4d
 4e
