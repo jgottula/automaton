@@ -31,6 +31,9 @@ minor
 - Reset button solder pads are too tiny (don't extend out enough) to make good
   electrical connections
 
+- LED resistors are too high-value: switch to 110ohm for green (FTDI RX, pwr)
+  and 150ohm for red (FTDI TX)
+
 
 component changes
 
