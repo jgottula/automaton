@@ -106,6 +106,65 @@ enum {
 };
 
 
+struct mcp_rx_buf {
+	/* RXBnSIDH */
+	uint8_t sid_h8 : 8;
+	
+	/* RXBnSIDL */
+	uint8_t eid_h2 : 2;
+	uint8_t _pad0  : 1;
+	uint8_t ide    : 1;
+	uint8_t srr    : 1;
+	uint8_t sid_l3 : 3;
+	
+	/* RXBnEID8 */
+	uint8_t eid_m8 : 8;
+	
+	/* RXBnEID0 */
+	uint8_t eid_l8 : 8;
+	
+	/* RXBnDLC */
+	uint8_t dlc    : 4;
+	uint8_t _rb    : 2;
+	uint8_t rtr    : 1;
+	uint8_t _pad1  : 1;
+	
+	/* RXBnDm */
+	uint8_t d[8];
+};
+_Static_assert(sizeof(struct mcp_rx_buf) == 13,
+	"struct mcp_rx_buf must be 13 bytes");
+
+struct mcp_tx_buf {
+	/* TXBnSIDH */
+	uint8_t sid_h8 : 8;
+	
+	/* TXBnSIDL */
+	uint8_t eid_h2 : 2;
+	int8_t _pad1   : 1;
+	uint8_t exide  : 1;
+	uint8_t _pad0  : 1;
+	uint8_t sid_l3 : 3;
+	
+	/* TXBnEID8 */
+	uint8_t eid_m8 : 8;
+	
+	/* TXBnEID0 */
+	uint8_t eid_l8 : 8;
+	
+	/* TXBnDLC */
+	uint8_t dlc    : 4;
+	uint8_t _pad3  : 2;
+	uint8_t rtr    : 1;
+	uint8_t _pad2  : 1;
+	
+	/* TXBnDm */
+	uint8_t d[8];
+};
+_Static_assert(sizeof(struct mcp_tx_buf) == 13,
+	"struct mcp_tx_buf must be 13 bytes");
+
+
 void mcp2515_init(void);
 
 void mcp2515_setup_bit_timings(uint8_t sjw, uint8_t brp, uint8_t prop,
@@ -130,10 +189,8 @@ void mcp2515_cmd_read_many(uint8_t addr, uint8_t len, uint8_t data[static len]);
 void mcp2515_cmd_write_many(uint8_t addr, uint8_t len,
 	const uint8_t data[static len]);
 
-void mcp2515_cmd_read_rx_buf(uint8_t start, uint8_t len,
-	uint8_t data[static len]);
-void mcp2515_cmd_load_tx_buf(uint8_t start, uint8_t len,
-	const uint8_t data[static len]);
+void mcp2515_cmd_read_rx_buf(uint8_t start, struct mcp_rx_buf *rx_buf);
+void mcp2515_cmd_load_tx_buf(uint8_t start, const struct mcp_tx_buf *tx_buf);
 
 
 #endif

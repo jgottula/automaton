@@ -305,34 +305,46 @@ void mcp2515_cmd_write_many(uint8_t addr, uint8_t len,
 }
 
 
-void mcp2515_cmd_read_rx_buf(uint8_t start, uint8_t len,
-	uint8_t data[static len]) {
+void mcp2515_cmd_read_rx_buf(uint8_t start, struct mcp_rx_buf *rx_buf) {
 	start &= 0b00000110;
+	
+	uint8_t *dst = (uint8_t *)rx_buf;
+	uint8_t len = 13;
+	
+	if (start & 0b00000010) {
+		dst += 5;
+		len -= 5;
+	}
 	
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 		can_spi_select();
 		(void)can_spi_xfer(0b10010000 | start);
-		
-		uint8_t *byte = data;
+			
 		while (len-- != 0) {
-			*(byte++) = can_spi_xfer(0x00);
+			*(dst++) = can_spi_xfer(0x00);
 		}
 		
 		can_spi_deselect();
 	}
 }
 
-void mcp2515_cmd_load_tx_buf(uint8_t start, uint8_t len,
-	const uint8_t data[static len]) {
+void mcp2515_cmd_load_tx_buf(uint8_t start, const struct mcp_tx_buf *tx_buf) {
 	start &= 0b00000111;
+	
+	const uint8_t *src = (uint8_t *)tx_buf;
+	uint8_t len = 13;
+	
+	if (start & 0b00000001) {
+		src += 5;
+		len -= 5;
+	}
 	
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 		can_spi_select();
 		(void)can_spi_xfer(0b01000000 | start);
 		
-		const uint8_t *byte = data;
 		while (len-- != 0) {
-			can_spi_xfer(*(byte++));
+			can_spi_xfer(*(src++));
 		}
 		
 		can_spi_deselect();
