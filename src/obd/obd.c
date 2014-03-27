@@ -22,7 +22,6 @@ static void _obd_get_pid_bitmask(void) {
 			break;
 		}
 		
-		printf_P(PSTR("_obd_get_pid_bitmask: 0x%02x\n"), pid); uart_flush();
 		ASSERT((len = obd_query(pid, data)) == 4);
 		memcpy(pid_bitmask + (i * 4), data, 4);
 	}
@@ -88,10 +87,6 @@ uint8_t obd_query(uint8_t pid, uint8_t data[static 5]) {
 	_delay_ms(50); // TODO: get rid of this delay!
 	
 	if (can_rx(&msg)) {
-		printf_P(PSTR("obd_query: resp: %02x %02x %02x %02x "
-			"%02x %02x %02x %02x\n"), msg.data[0], msg.data[1], msg.data[2],
-			msg.data[3], msg.data[4], msg.data[5], msg.data[6], msg.data[7]);
-		
 		uint8_t len = msg.data[0];
 		ASSERT(len > 2);
 		
