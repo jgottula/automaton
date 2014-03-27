@@ -55,7 +55,7 @@ ISR(PORTB_INT0_vect) {
 				_mcp2515_rx(0);
 			}
 			
-			/* acknowlegde interrupt */
+			/* acknowledge interrupt */
 			mcp2515_cmd_modify(MCP_REG_CANINTF, flag, 0);
 		}
 	}
