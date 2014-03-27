@@ -47,6 +47,7 @@ static int _put_lcd(char c, FILE *f) {
 	(void)f;
 	
 	lcd_draw_chr(c);
+	lcd_update(false);
 	return 0;
 }
 
