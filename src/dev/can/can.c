@@ -29,32 +29,29 @@ void can_bitrate(uint16_t kbps) {
 }
 
 
-void can_tx(uint16_t id, uint8_t dlc, const uint8_t data[static dlc]) {
-	struct {
-		uint8_t sidh;
-		uint8_t sidl;
-		
-		uint8_t eid8;
-		uint8_t eid0;
-		
-		uint8_t dlc;
-		uint8_t data[8];
-	} tx_buf;
+void can_tx(const struct can_msg *msg) {
+	struct mcp_tx_buf tx_buf;
 	
-	tx_buf.sidh = (id >> 3);
-	tx_buf.sidl = (id << 5);
+	tx_buf.sid_h8 = (msg->id >> 3);
+	tx_buf.sid_l3 = msg->id;
 	
-	tx_buf.eid8 = 0;
-	tx_buf.eid0 = 0;
+	tx_buf.exide  = 0;
+	tx_buf.eid_h2 = 0;
+	tx_buf.eid_m8 = 0;
+	tx_buf.eid_l8 = 0;
 	
-	tx_buf.dlc = dlc;
-	memcpy(tx_buf.data, data, dlc);
+	tx_buf.rtr = 0;
+	
+	tx_buf.rtr = 0;
+	
+	tx_buf.dlc = msg->dlc;
+	memcpy(tx_buf.d, msg->data, msg->dlc);
 	
 	
 	uint8_t tx_buf_idx = mcp2515_choose_tx_buf();
 	
 	/* load tx buffer all at once */
-	mcp2515_cmd_load_tx_buf(tx_buf_idx << 1, 5 + dlc, &tx_buf);
+	mcp2515_cmd_load_tx_buf(tx_buf_idx << 1, &tx_buf);
 	
 	/* request transmission */
 	mcp2515_cmd_rts(1 << tx_buf_idx);
