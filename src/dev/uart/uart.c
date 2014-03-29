@@ -91,6 +91,8 @@ void uart_flush(void) {
 			_delay_us(1);
 		}
 	}
+	
+#warning TODO: wait for TX done int flag before returning
 }
 
 
