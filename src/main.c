@@ -32,9 +32,10 @@ int main(void) {
 	
 	lcd_init();
 	lcd_onoff(true);
-	lcd_bl_rgb(255, 0, 0);
+	lcd_bl_rgb(255, 255, 255);
 	
 	fputs_P(PSTR("\nhello from automaton!\n"), stdout);
+	
 	
 	//can_init();
 	obd_test();
