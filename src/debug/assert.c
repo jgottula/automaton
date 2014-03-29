@@ -6,22 +6,22 @@
 
 
 #include "debug/assert.h"
-#include "dev/uart/uart.h"
-#include "mcu/die.h"
-#include "mcu/reset.h"
+#include "debug/fatal.h"
 
 
-noreturn void assert_fail(const __flash char *file, uint16_t line) {
-	printf_P(PSTR("\nassertion failed: %S:%" PRIu16 "\n"), file, line);
-	uart_flush();
+noreturn void assert_fail(const char *func, const char *file, uint16_t line) {
+	char str[192];
+	sprintf_P(str, PSTR("Assertion failure\nin %s()\nat %S:%" PRIu16),
+		func, file, line);
 	
-#if ASSERT_FAIL_BREAK
-	BREAK();
-#endif
+	fatal_S(str);
+}
+
+noreturn void assert_fail_ex(const char *expr, const char *func,
+	const char *file, uint16_t line) {
+	char str[192];
+	sprintf_P(str, PSTR("Assertion failure\n%S\nin %s()\nat %S:%" PRIu16),
+		expr, func, file, line);
 	
-#if ASSERT_FAIL_RESET
-	reset();
-#else
-	die();
-#endif
+	fatal_S(str);
 }
