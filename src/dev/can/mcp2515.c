@@ -33,25 +33,25 @@ ISR(PORTB_INT0_vect) {
 		
 		if (intf & flag) {
 			if (flag == MCP_CANINTF_MERRF) {
-				fputs_P(PSTR("MERRF\r\n"), lcd);
+				//fputs_P(PSTR("MERRF\n"), lcd);
 			} else if (flag == MCP_CANINTF_WAKIF) {
-				fputs_P(PSTR("WAKIF\r\n"), lcd);
+				//fputs_P(PSTR("WAKIF\n"), lcd);
 			} else if (flag == MCP_CANINTF_ERRIF) {
-				fputs_P(PSTR("ERRIF\r\n"), lcd);
+				//fputs_P(PSTR("ERRIF\n"), lcd);
 			} else if (flag == MCP_CANINTF_TX2IF) {
-				fputs_P(PSTR("TX2IF\r\n"), lcd);
+				//fputs_P(PSTR("TX2IF\n"), lcd);
 				/* ignored */
 			} else if (flag == MCP_CANINTF_TX1IF) {
-				fputs_P(PSTR("TX1IF\r\n"), lcd);
+				//fputs_P(PSTR("TX1IF\n"), lcd);
 				/* ignored */
 			} else if (flag == MCP_CANINTF_TX0IF) {
-				fputs_P(PSTR("TX0IF\r\n"), lcd);
+				//fputs_P(PSTR("TX0IF\n"), lcd);
 				/* ignored */
 			} else if (flag == MCP_CANINTF_RX1IF) {
-				fputs_P(PSTR("RX1IF\r\n"), lcd);
+				//fputs_P(PSTR("RX1IF\n"), lcd);
 				_mcp2515_rx(1);
 			} else if (flag == MCP_CANINTF_RX0IF) {
-				fputs_P(PSTR("RX0IF\r\n"), lcd);
+				//fputs_P(PSTR("RX0IF\n"), lcd);
 				_mcp2515_rx(0);
 			}
 			
@@ -63,7 +63,10 @@ ISR(PORTB_INT0_vect) {
 	uint8_t eflg = mcp2515_cmd_read(MCP_REG_EFLG);
 	uint8_t tec = mcp2515_cmd_read(MCP_REG_TEC);
 	uint8_t rec = mcp2515_cmd_read(MCP_REG_REC);
-	fprintf_P(lcd, PSTR("EFLG: %02x TEC: %02x REC: %02x\r\n"), eflg, tec, rec);
+	//fprintf_P(lcd, PSTR("EFLG: %02x TEC: %02x REC: %02x\n"), eflg, tec, rec);
+	uint8_t txb0ctrl = mcp2515_cmd_read(MCP_REG_TXB0CTRL);
+	//fprintf_P(lcd, PSTR("TXB0CTRL: %02x\n"), txb0ctrl);
+	//for(;;);
 }
 
 
