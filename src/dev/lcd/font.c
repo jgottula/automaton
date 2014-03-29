@@ -57,8 +57,8 @@ void lcd_draw_chr(char c) {
 	}
 	
 	uint8_t space = 0b00000000;
-	lcd_draw_sprite(cur.row, cur.col, 1, &space, mask);
-	lcd_draw_sprite(cur.row, cur.col + 1, width, sprite, mask);
+	lcd_draw_sprite(cur.row, cur.col, width, sprite, mask);
+	lcd_draw_sprite(cur.row, cur.col + width, 1, &space, mask);
 	
 	cur.col += (width + 1);
 }
