@@ -38,6 +38,7 @@
 #include "mcu/reset.h"
 #include "debug/assert.h"
 #include "debug/break.h"
+#include "debug/fatal.h"
 #include "io/stdfile.h"
 //#include "io/port.h"
 //#include "dev/led.h"
