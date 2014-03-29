@@ -85,6 +85,21 @@ uint8_t obd_query(uint8_t pid, uint8_t data[static 5]) {
 		},
 	};
 	
+#if 0
+	can_tx(&msg);
+	
+	while (!can_rx(&msg));
+	
+	uint8_t len = msg.data[0];
+	ASSERT(len > 2);
+	
+	ASSERT(msg.data[1] == 0x41);
+	ASSERT(msg.data[2] == pid);
+	
+	memcpy(data, msg.data + 3, len - 2);
+	return len - 2;
+#endif
+	
 	can_tx(&msg);
 	_delay_ms(50); // TODO: get rid of this delay!
 	
