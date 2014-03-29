@@ -28,17 +28,38 @@ DSTATUS disk_status(BYTE pdrv) {
 	} else {
 		return STA_NOINIT | STA_NODISK;
 	}
+	
+	// remove me
+	return 0xff;
 }
 
 DRESULT disk_read(BYTE pdrv, BYTE *buf, DWORD sector, BYTE count) {
 	// TODO
+	(void)pdrv;
+	(void)buf;
+	(void)sector;
+	(void)count;
+	
+	// remove me
+	return 0xff;
 }
 
 DRESULT disk_write(BYTE pdrv, const BYTE *buf, DWORD sector, BYTE count) {
 	// TODO
+	(void)pdrv;
+	(void)buf;
+	(void)sector;
+	(void)count;
+	
+	// remove me
+	return 0xff;
 }
 
 DRESULT disk_ioctl(BYTE pdrv, BYTE cmd, void *buf) {
+	(void)pdrv;
+	(void)cmd;
+	(void)buf;
+	
 	switch (cmd) {
 	case CTRL_SYNC:
 		// TODO
