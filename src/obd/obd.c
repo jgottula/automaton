@@ -36,7 +36,8 @@ void obd_test(void) {
 	can_init(500);
 	_delay_ms(100); // TODO: remove me!
 	
-	_obd_get_pid_bitmask();
+#warning TODO: re-enable PID bitmask checking!!
+	//_obd_get_pid_bitmask();
 	
 	fputs_P(PSTR("\nOBD-II PID support:"), stdout);
 	uint16_t total = 0;
