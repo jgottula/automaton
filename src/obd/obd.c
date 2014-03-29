@@ -32,7 +32,9 @@ void obd_test(void) {
 	printf_P(PSTR("obd_test()\n"));
 	uart_flush();
 	
+	_delay_ms(100); // TODO: remove me!
 	can_init(500);
+	_delay_ms(100); // TODO: remove me!
 	
 	_obd_get_pid_bitmask();
 	
