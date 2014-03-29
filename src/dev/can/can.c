@@ -71,6 +71,6 @@ bool can_rx(struct can_msg *msg) {
 	msg->dlc = rx_buf->dlc;
 	memcpy(msg->data, rx_buf->d, rx_buf->dlc);
 	
-	//free(rx_buf);
+	free(rx_buf);
 	return true;
 }
