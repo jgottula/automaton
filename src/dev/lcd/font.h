@@ -12,6 +12,8 @@
 #include "std.h"
 
 
+void lcd_set_cur(uint8_t row, uint8_t col);
+
 void lcd_draw_chr(char c);
 void lcd_draw_str(const char *s);
 

@@ -22,6 +22,12 @@ void _lcd_newline(void) {
 }
 
 
+void lcd_set_cur(uint8_t row, uint8_t col) {
+	cur.row = row;
+	cur.col = col;
+}
+
+
 void lcd_draw_chr(char c) {
 	/* only draw the printable ASCII set, and handle CR & NL specially */
 	if (c < ' ' || c > '~') {
