@@ -7,6 +7,7 @@
 
 #include "io/stdfile.h"
 #include "dev/lcd/font.h"
+#include "dev/lcd/lcd.h"
 #include "dev/uart/uart.h"
 
 
@@ -15,6 +16,7 @@ FILE *lcd = NULL;
 
 /* write to ftdi uart */
 static int _put_ftdi(char c, FILE *f) {
+	/* unused */
 	(void)f;
 	
 	/* convert LF to CRLF */
@@ -31,6 +33,7 @@ static int _put_ftdi(char c, FILE *f) {
 
 /* read from ftdi uart */
 static int _get_ftdi(FILE *f) {
+	/* unused */
 	(void)f;
 	
 	char c;
@@ -44,7 +47,13 @@ static int _get_ftdi(FILE *f) {
 
 /* write to lcd */
 static int _put_lcd(char c, FILE *f) {
+	/* unused */
 	(void)f;
+	
+	/* convert LF to CRLF */
+	if (c == '\n') {
+		lcd_draw_chr('\r');
+	}
 	
 	lcd_draw_chr(c);
 	lcd_update(false);
