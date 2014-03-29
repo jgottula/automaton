@@ -53,6 +53,35 @@ void obd_test(void) {
 		}
 	}
 	printf_P(PSTR("\n(total: %u)\n"), total);
+	
+	
+	_delay_ms(500);
+	
+	for ( ; ; ) {
+		lcd_set_cur(0, 0);
+		
+		uint8_t data[5];
+		uint8_t len;
+		
+		if ((len = obd_query(0x0d, data)) != 1) {
+			fputs_P(PSTR("error\n"), lcd);
+		} else {
+			uint16_t kmh = data[0];
+			uint16_t mph = (kmh * 5) / 8;
+			
+			fprintf_P(lcd, PSTR("mph: %u            \n"), mph);
+		}
+		
+		if ((len = obd_query(0x0c, data)) != 2) {
+			fputs_P(PSTR("error\n"), lcd);
+		} else {
+			uint16_t rpm = (((uint16_t)data[0] * 256) + data[1]) / 4;
+			
+			fprintf_P(lcd, PSTR("rpm: %u            \n"), rpm);
+		}
+		
+		_delay_ms(100);
+	}
 }
 
 
