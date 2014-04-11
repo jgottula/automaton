@@ -42,8 +42,6 @@ bool can_tx(const struct can_msg *msg) {
 	
 	tx_buf.rtr = 0;
 	
-	tx_buf.rtr = 0;
-	
 	tx_buf.dlc = msg->dlc;
 	memcpy(tx_buf.d, msg->data, msg->dlc);
 	
