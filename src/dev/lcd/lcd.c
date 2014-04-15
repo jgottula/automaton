@@ -9,7 +9,7 @@
 #include "dev/lcd/st7565.h"
 
 
-static uint8_t lcd_buf[(LCD_ROWS * LCD_COLS) / 8];
+uint8_t lcd_buf[(LCD_ROWS * LCD_COLS) / 8];
 static struct {
 	uint8_t min;
 	uint8_t max;
@@ -35,7 +35,7 @@ static void _lcd_mod_reset(void) {
 	}
 }
 
-static void _lcd_mod_set(uint8_t page, uint8_t col, uint8_t len) {
+void _lcd_mod_set(uint8_t page, uint8_t col, uint8_t len) {
 	uint8_t from = col;
 	uint8_t to = (col + len) - 1;
 	
@@ -50,7 +50,7 @@ static void _lcd_mod_set(uint8_t page, uint8_t col, uint8_t len) {
 	}
 }
 
-static void _lcd_mod_set_all(void) {
+void _lcd_mod_set_all(void) {
 	for (uint8_t i = 0; i < LCD_PAGES; ++i) {
 		lcd_mod[i].min = 0;
 		lcd_mod[i].max = LCD_COLS - 1;
@@ -109,57 +109,4 @@ void lcd_update(bool force) {
 	}
 	
 	_lcd_mod_reset();
-}
-
-
-void lcd_draw_sprite(uint8_t row, uint8_t col, uint8_t width,
-	const uint8_t sprite[static width], const uint8_t mask[static width]) {
-	uint8_t page = row / 8;
-	uint8_t *tgt = lcd_buf + ((page * LCD_COLS) + col);
-	uint8_t shift = row % 8;
-	
-	/* prevent overruns */
-	if (col + width > LCD_COLS) {
-		if (col >= LCD_COLS) {
-			return;
-		}
-		
-		width = LCD_COLS - col;
-	}
-	
-	_lcd_mod_set(page, col, width);
-	
-	if (shift == 0) { /* no page crossings: easy */
-		for (uint8_t i = 0; i < width; ++i) {
-			*tgt = (*tgt & ~mask[i]) | sprite[i];
-			
-			++tgt;
-		}
-	} else if (page >= 7) { /* screen-bottom overrun; clip it */
-		for (uint8_t i = 0; i < width; ++i) {
-			uint8_t mask_top   = mask[i] << shift;
-			uint8_t sprite_top = sprite[i] << shift;
-			
-			*tgt = (*tgt & ~mask_top) | sprite_top;
-			
-			++tgt;
-		}
-	} else { /* normal case for cross-page sprites */
-		uint8_t *tgt_below = tgt + LCD_COLS;
-		
-		for (uint8_t i = 0; i < width; ++i) {
-			uint8_t mask_top      = mask[i] << shift;
-			uint8_t sprite_top    = sprite[i] << shift;
-			uint8_t mask_bottom   = mask[i] >> (8 - shift);
-			uint8_t sprite_bottom = sprite[i] >> (8 - shift);
-			
-			*tgt       = (*tgt & ~mask_top) | sprite_top;
-			*tgt_below = (*tgt_below & ~mask_bottom) | sprite_bottom;
-			
-			++tgt;
-			++tgt_below;
-		}
-		
-		_lcd_mod_set(page + 1, col, width);
-	}
 }
