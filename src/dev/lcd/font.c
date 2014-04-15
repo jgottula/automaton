@@ -7,6 +7,7 @@
 
 #include "dev/lcd/font.h"
 #include "dev/lcd/font_04b_03.h"
+#include "dev/lcd/gfx.h"
 #include "dev/lcd/lcd.h"
 
 
@@ -57,8 +58,8 @@ void lcd_draw_chr(char c) {
 	}
 	
 	uint8_t space = 0b00000000;
+	lcd_draw_sprite(cur.row, cur.col - 1, 1, &space, mask);
 	lcd_draw_sprite(cur.row, cur.col, width, sprite, mask);
-	lcd_draw_sprite(cur.row, cur.col + width, 1, &space, mask);
 	
 	cur.col += (width + 1);
 }
