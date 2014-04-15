@@ -105,6 +105,10 @@ void mcp2515_init(void) {
 	/* enter configuration mode */
 	mcp2515_mode(0b10000000);
 	
+#warning MCP2515: stop using one-shot mode! implement error recovery/clearing!
+	/* TEMPORARY: use one-shot mode */
+	mcp2515_cmd_modify(MCP_REG_CANCTRL, 0b00001000, 0b00001000);
+	
 	/* receive all messages (no filter/mask); enable rollover */
 	mcp2515_cmd_write(MCP_REG_RXB0CTRL, 0b01100100);
 	mcp2515_cmd_write(MCP_REG_RXB1CTRL, 0b01100000);
