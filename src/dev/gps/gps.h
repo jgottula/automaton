@@ -5,20 +5,16 @@
  */
 
 
-#ifndef AUTOMATON_DEBUG_BREAK_H
-#define AUTOMATON_DEBUG_BREAK_H
+#ifndef AUTOMATON_DEV_GPS_GPS_H
+#define AUTOMATON_DEV_GPS_GPS_H
 
 
 #include "std.h"
 
 
-#define BREAK() \
-	asm volatile ( \
-		"\nbreak" \
-		: \
-		: \
-		: "memory" \
-	)
+void gps_init(void);
+
+void gps_poll(void);
 
 
 #endif

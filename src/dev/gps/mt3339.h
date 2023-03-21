@@ -5,20 +5,14 @@
  */
 
 
-#ifndef AUTOMATON_DEBUG_BREAK_H
-#define AUTOMATON_DEBUG_BREAK_H
+#ifndef AUTOMATON_DEV_GPS_MT3339_H
+#define AUTOMATON_DEV_GPS_MT3339_H
 
 
 #include "std.h"
 
 
-#define BREAK() \
-	asm volatile ( \
-		"\nbreak" \
-		: \
-		: \
-		: "memory" \
-	)
+
 
 
 #endif

@@ -5,20 +5,19 @@
  */
 
 
-#ifndef AUTOMATON_DEBUG_BREAK_H
-#define AUTOMATON_DEBUG_BREAK_H
+#ifndef AUTOMATON_MCU_DEFER_H
+#define AUTOMATON_MCU_DEFER_H
 
 
 #include "std.h"
 
 
-#define BREAK() \
-	asm volatile ( \
-		"\nbreak" \
-		: \
-		: \
-		: "memory" \
-	)
+enum {
+	DEFER_GPS,
+};
+
+
+void defer(uint8_t mask);
 
 
 #endif

@@ -7,6 +7,8 @@
 
 #include "std.h"
 #include "dev/can/can.h"
+#include "dev/gps/gps.h"
+#include "dev/gps/uart.h"
 #include "dev/lcd/backlight.h"
 #include "dev/lcd/font.h"
 #include "dev/lcd/lcd.h"
@@ -32,9 +34,78 @@ int main(void) {
 	
 	lcd_init();
 	lcd_onoff(true);
+	lcd_contrast(0x18);
 	lcd_bl_rgb(255, 255, 255);
 	
 	fputs_P(PSTR("\nhello from automaton!\n"), stdout);
+	
+	
+	/*fputs_P(PSTR("This is a\nGREAT PROJECT"), lcd);
+	lcd_update(false);
+	
+	
+	lcd_bl_rgb(255, 0, 0);
+	for (;;) {
+		for (uint8_t i = 0; i < 255; ++i) {
+			lcd_bl_rgb(255, i + 1, 0);
+			_delay_ms(2);
+		}
+		for (uint8_t i = 0; i < 255; ++i) {
+			lcd_bl_rgb(255 - (i + 1), 255, 0);
+			_delay_ms(2);
+		}
+		for (uint8_t i = 0; i < 255; ++i) {
+			lcd_bl_rgb(0, 255, i + 1);
+			_delay_ms(2);
+		}
+		for (uint8_t i = 0; i < 255; ++i) {
+			lcd_bl_rgb(0, 255 - (i + 1), 255);
+			_delay_ms(2);
+		}
+		for (uint8_t i = 0; i < 255; ++i) {
+			lcd_bl_rgb(i + 1, 0, 255);
+			_delay_ms(2);
+		}
+		for (uint8_t i = 0; i < 255; ++i) {
+			lcd_bl_rgb(255, 0, 255 - (i + 1));
+			_delay_ms(2);
+		}
+	}*/
+	
+	
+	gps_uart_init();
+	//gps_test();
+	#warning come back to this!
+	
+	
+	// groovy colors
+	/*lcd_bl_rgb(255, 0, 0);
+	for (;;) {
+		for (uint8_t i = 0; i < 255; ++i) {
+			lcd_bl_rgb(255, i + 1, 0);
+			_delay_ms(2);
+		}
+		for (uint8_t i = 0; i < 255; ++i) {
+			lcd_bl_rgb(255 - (i + 1), 255, 0);
+			_delay_ms(2);
+		}
+		for (uint8_t i = 0; i < 255; ++i) {
+			lcd_bl_rgb(0, 255, i + 1);
+			_delay_ms(2);
+		}
+		for (uint8_t i = 0; i < 255; ++i) {
+			lcd_bl_rgb(0, 255 - (i + 1), 255);
+			_delay_ms(2);
+		}
+		for (uint8_t i = 0; i < 255; ++i) {
+			lcd_bl_rgb(i + 1, 0, 255);
+			_delay_ms(2);
+		}
+		for (uint8_t i = 0; i < 255; ++i) {
+			lcd_bl_rgb(255, 0, 255 - (i + 1));
+			_delay_ms(2);
+		}
+	}*/
 	
 	
 	//can_init();

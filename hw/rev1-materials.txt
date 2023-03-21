@@ -11,7 +11,8 @@ my stuff	78L05, headers, ribbon cable
 
 costs:
 osh park	$53.65 (3x PCB r1)
-digikey		~$49.94 (1x Bill of matls)
+digikey		~$49.94 (1x Bill of matls) + ~8.07 (replacement LED & microSD)
+			+ ~$14.95 (GPS antenna and SMA connector)
 adafruit	$18.95+ (1x LCD)
 adafruit	$33.77 (1x GPS)
 home depot	$3.21 (1x Velcro 4x2" Industrial StrengthStrips)

@@ -5,20 +5,17 @@
  */
 
 
-#ifndef AUTOMATON_DEBUG_BREAK_H
-#define AUTOMATON_DEBUG_BREAK_H
+#ifndef AUTOMATON_DEV_GPS_UART_H
+#define AUTOMATON_DEV_GPS_UART_H
 
 
 #include "std.h"
 
 
-#define BREAK() \
-	asm volatile ( \
-		"\nbreak" \
-		: \
-		: \
-		: "memory" \
-	)
+void gps_uart_init(void);
+
+bool gps_uart_read(char *chr);
+bool gps_uart_write(char chr);
 
 
 #endif

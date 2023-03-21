@@ -5,20 +5,17 @@
  */
 
 
-#ifndef AUTOMATON_DEBUG_BREAK_H
-#define AUTOMATON_DEBUG_BREAK_H
+#include "mcu/defer.h"
 
 
-#include "std.h"
+uint8_t defer_mask = 0;
 
 
-#define BREAK() \
-	asm volatile ( \
-		"\nbreak" \
-		: \
-		: \
-		: "memory" \
-	)
+// TOOD: timer ISR goes here
 
 
-#endif
+void defer(uint8_t mask) {
+	// setup a one-shot timer to basically implement low-priority DPCs
+}
+
+

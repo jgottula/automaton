@@ -5,20 +5,11 @@
  */
 
 
-#ifndef AUTOMATON_DEBUG_BREAK_H
-#define AUTOMATON_DEBUG_BREAK_H
+#include "dev/gps/nmea0183.h"
 
 
-#include "std.h"
-
-
-#define BREAK() \
-	asm volatile ( \
-		"\nbreak" \
-		: \
-		: \
-		: "memory" \
-	)
-
-
-#endif
+void nmea0183_parse(uint8_t len, const char sent[static len]) {
+	
+	// TODO: verify checksum
+	
+}

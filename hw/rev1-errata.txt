@@ -34,12 +34,69 @@ minor
 - LED resistors are too high-value: switch to 110ohm for green (FTDI RX, pwr)
   and 150ohm for red (FTDI TX)
 
+- Need to label all headers ("JTAG", "LCD", etc) AND label all pin 1's
+
+- Add test points for all voltages (GND, 3V3, 5V, 12V)
+
+- Add SMA/MCX connector for GPS external antenna (APAMP-107 for $7.80)
+
+- Pads for MicroSD detect/ground terminals are too tiny
+
+- Reconsider which ports need to be externally accessible thru side of box;
+  consider making ports on the backside of the PCB that protrude thru box bottom
+
+- Add convenient header for non-car power supply
+
 
 component changes
 
 - Mini USB connector: switch for one that's easier to solder
+  - switch to micro USB (even type C?) if possible
 
 - Battery connector: switch for one that's easier to solder (upright?)
+
+- Crystals: use smaller package
+
+- Capacitors: don't use shitty thru-hole electrolytics
+
+
+features
+
+- Input phy for OBD signal protocols other than CAN (test these with breadboard)
+  - SAE J1850 PWM
+  - SAE J1850 VPW
+  - ISO 9141-2 (same phy as ISO 14230 KWP2000)
+
+- Battery sense analog input
+  - use precision resistors for voltage divider
+  - base it on STN1110 figure 5
+
+
+protection
+
+- Power inputs (before regulation)
+  - overcurrent: fuse/resistor
+  - reversal: blocking diode
+  - overvoltage: zener diode
+  - ESD: TVS diode
+
+- Vcc power rails (3.3 and 5.0)
+  - reversal: blocking diode
+  - overvoltage: zener diode
+
+- External IO pins
+  - overcurrent: fuse/resistor
+  - overvoltage: zener diode (make sure that this won't mess up bus stuff!)
+  - ESD: zener diodes (see STN1110 datasheet)
+
+- AVR reset pin
+  - overcurrent: 1k resistor directly on RESET pin
+
+- Make sure that all LCD input/output is up to spec
+
+- Check all IC datasheets and ensure that caps & inductors are up to spec
+
+- Use low-ESR caps for all power caps
 
 
 CHECK THESE THINGS!

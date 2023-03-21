@@ -70,7 +70,7 @@ CFLAGS_OPT=(-Os -flto -fuse-linker-plugin -fwhole-program \
 # TODO: put -fmerge-all-constants back after compiler error is figured out
 # TODO: put -mcall-prologues back after apparent problems are figured out
 CFLAGS_WARN=(-Wall -Wextra -Wno-unused-function -fno-diagnostics-show-caret)
-CFLAGS_ETC=(-pipe)
+CFLAGS_ETC=()
 
 CFLAGS=("${CFLAGS_STD[@]}" "${CFLAGS_CPU[@]}" "${CFLAGS_DEBUG[@]}" \
 	"${CFLAGS_OPT[@]}" "${CFLAGS_WARN[@]}" "${CFLAGS_ETC[@]}")

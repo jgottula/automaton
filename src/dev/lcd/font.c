@@ -18,8 +18,12 @@ static struct {
 
 
 void _lcd_newline(void) {
-	cur.row += 6;
-	// TODO: return to top if we would now clip thru the bottom
+	cur.row += 7;
+	
+	/* return to the top if we hit the bottom */
+	if (cur.row > (LCD_ROWS - 7)) {
+		cur.row = 0;
+	}
 }
 
 
